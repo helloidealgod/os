@@ -3,7 +3,9 @@
 .text
 
 .equ DEMOSEG,0x1020
-.equ LEN,54
+.equ LEN,47
+
+.global myprint
 
 show_text:
 	mov $DEMOSEG,%ax
@@ -19,10 +21,20 @@ show_text:
 	int $0x10
 
 	call main
+#	pushl $loop_forever
+#	pushl $main
+#	ret
 
 loop_forever:
 	jmp loop_forever
+#myprint:
+#	movl 4(%esp),%ecx
+#	movl 8(%esp),%edx
+#	movl $1,%ebx
+#	movl $4,%eax
+#	int $0x80
+#	ret
 msg:
 	.byte 13,10
 	.ascii "You've successfully load the floppy int RAM"
-	.byte 13,10,13,10
+	.byte 13,10

@@ -17,11 +17,7 @@ _bootstart:
 	mov $BOOTSEG,%ax
 	mov %ax,%es
 	mov $_string,%bp
-	#mov $0x13,%ah
-	#mov $0x01,%al
 	mov $0x1301,%ax
-	#mov $0x00,%bh
-	#mov $0x07,%bl
 	mov $0x0007,%bx
 	mov $20,%cx
 	int $0x10	#printf string
