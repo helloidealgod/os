@@ -16,9 +16,9 @@ _start:
     int $0x80
     
 #模仿linux 0.11中的入栈动作    
-    pushl $0
-    pushl $0
-    pushl $0
+   # pushl $0
+   # pushl $0
+   # pushl $0
     
 #调用c函数，显示hello, in hello.c!
     call main

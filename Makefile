@@ -15,13 +15,14 @@ bootsect: bootsect.o ld-bootsect.ld
 	@- ld -T ld-bootsect.ld bootsect.o -o bootsect
 	@- objcopy -O binary -j .text bootsect
 
-demo: demo.o ld-bootsect.ld
-	@ld -T ld-bootsect.ld demo.o -o demo
+demo: demo.o ld-bootsect.ld hello.o
+	@ld -T ld-bootsect.ld demo.o hello.o -o demo
 	@objcopy -O binary -j .text demo
 
 demo.o: demo.s
 	@as --32 demo.s -o demo.o
-
+hello.o: hello.c
+	@gcc -m32 -c hello.c -o hello.o
 Image: bootsect demo
 	@dd if=bootsect of=Image bs=512 count=1
 	@dd if=demo of=Image bs=512 count=4 seek=1

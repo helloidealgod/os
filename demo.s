@@ -18,6 +18,8 @@ show_text:
 	mov $msg,%bp
 	int $0x10
 
+	call main
+
 loop_forever:
 	jmp loop_forever
 msg:
