@@ -16,8 +16,11 @@ bootsect: bootsect.o ld-bootsect.ld
 	@- objcopy -O binary -j .text bootsect
 
 demo: demo.o ld-bootsect.ld hello.o
-	@ld -T ld-bootsect.ld demo.o hello.o -o demo
-	@objcopy -O binary -j .text demo
+	#@ld -T ld-bootsect.ld demo.o hello.o -o demo
+	@ld -T ld-bootsect.ld -Ttext 0 demo.o hello.o -o demo.sym
+	@strip demo.sym -o demo.o
+	@objcopy -O binary -j .text demo.o demo
+	#@objcopy -O binary -j .text demo
 
 demo.o: demo.s
 	@as --32 demo.s -o demo.o
@@ -29,4 +32,4 @@ Image: bootsect demo
 	@echo "Image built done"
 
 clean:
-	@- rm -f *.o bootsect demo Image
+	@- rm -f *.o bootsect demo Image *.sym
