@@ -31,10 +31,6 @@ show_text:
 
 loop_forever:
 	jmp loop_forever
-msg:
-	.byte 13,10
-	.ascii "You've successfully load the floppy int RAM"
-	.byte 13,10
 myprint:
 	movl 4(%esp),%ecx
 	movl 8(%esp),%edx
@@ -42,4 +38,9 @@ myprint:
 	movl $4,%eax
 	int $0x80
 	ret
-#.=512
+msg:
+	.byte 13,10
+	.ascii "You've successfully load the floppy int RAM"
+	.byte 13,10
+
+.align 4
