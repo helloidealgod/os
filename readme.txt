@@ -4,3 +4,4 @@
 4 objdump -m i8086 -S bootsect.o
 5 objcopy -O binary bootsect.o
 6 .ld 
+7 .code16 & .code32

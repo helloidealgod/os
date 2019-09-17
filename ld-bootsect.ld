@@ -5,7 +5,9 @@ SECTIONS {
 	.text 0x0000 : {
 		*(.text)
 	}
-
+	.data :{
+		*(.data)
+	}
 	/DISCARD/ : {
 
 	}	
