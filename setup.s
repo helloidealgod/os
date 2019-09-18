@@ -17,10 +17,9 @@ show_text:
 	mov $LEN,%cx
 	mov $msg,%bp
 	int $0x10
-
-loop_forever:
-	jmp loop_forever
+load_system:
+	ljmp $0x1000,$0x0000
 msg:
 	.byte 13,10
-	.ascii "You've successfully load the floppy into RAM"
-	.byte 13,10,13,10
+	.ascii "You've successfully load the setup into RAM"
+	.byte 13,10

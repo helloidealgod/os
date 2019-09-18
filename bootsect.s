@@ -54,17 +54,31 @@ _load_setup:
 	mov $0x02,%ah
 	mov $4,%al
 	int $0x13
-	jnc _setup_load_ok
+	jnc _load_system #load setup ok then load system
 	jmp _load_setup
 
-_setup_load_ok:
+_load_system:
+	mov $0x0000,%dx  #DL driver number(0=a),
+			 #DH head number(0 - 15)
+	mov $0x0006,%cx  #CH track/cylinder number (0 - 1023)
+			 #CL sector number(1 - 17)
+	mov $SYSSEG,%ax
+	mov %ax,%es
+	mov $0x0000,%bx  # load data to %es:%bx
+	mov $0x02,%ah     
+	mov $4,%al       # number of sectors to read
+	int $0x13
+
+	jnc _system_load_ok
+	jmp _load_system
+
+_system_load_ok:
 	mov $SETUPSEG,%ax
 	mov %ax,%ds
-	ljmp $0x9020,$0			
-	
+	ljmp $0x9020,$0	
 _string:
 	.ascii "hello bootloader!"
-	.byte 13,10,13,10
+	.byte 13,10
 .=510
 
 signature:
