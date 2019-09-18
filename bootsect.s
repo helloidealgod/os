@@ -39,7 +39,14 @@ mov_bootsect:
 	inc %bx
 	loop mov_bootsect
 
+	ljmp $INITSEG,$_load_demo
 _load_demo:
+	mov %cs,%ax
+	mov %ax,%ds
+	mov %ax,%es
+	mov %ax,%ss
+	mov $0xFF00,%sp
+
 	mov $0x0000,%dx
 	mov $0x0002,%cx
 	mov $DEMOSEG,%ax
