@@ -4,7 +4,6 @@
 
 .equ BOOTSEG,0x07c0
 .equ INITSEG,0x9000
-.equ DEMOSEG,0x1000
 .equ SETUPSEG,0x9020
 .equ SYSSEG,0x1000
 
@@ -27,7 +26,7 @@ _bootstart:
 	# copy bootsect from 0x7c00:0x0000 to 0x9000:0x0000 total 512 bytes 
 	mov $0,%bx
 	mov $512,%cx
-mov_bootsect:
+_copy_bootsect:
 	mov $BOOTSEG,%ax
 	mov %ax,%ds
 	mov %ds:(%bx),%dl
@@ -37,31 +36,31 @@ mov_bootsect:
 	mov %dl,%ds:(%bx)
 	
 	inc %bx
-	loop mov_bootsect
+	loop _copy_bootsect
 
-	ljmp $INITSEG,$_load_demo
-_load_demo:
+	ljmp $INITSEG,$_set_reg
+_set_reg:
 	mov %cs,%ax
 	mov %ax,%ds
 	mov %ax,%es
 	mov %ax,%ss
 	mov $0xFF00,%sp
-
+_load_setup:
 	mov $0x0000,%dx
 	mov $0x0002,%cx
-	mov $DEMOSEG,%ax
+	mov $SETUPSEG,%ax
 	mov %ax,%es
-	mov $0x0200,%bx
+	mov $0x0000,%bx  # load data to %es:%bx
 	mov $0x02,%ah
 	mov $4,%al
 	int $0x13
-	jnc demo_load_ok
-	jmp _load_demo
+	jnc _setup_load_ok
+	jmp _load_setup
 
-demo_load_ok:
-	mov $DEMOSEG,%ax
+_setup_load_ok:
+	mov $SETUPSEG,%ax
 	mov %ax,%ds
-	ljmp $0x1020,$0			
+	ljmp $0x9020,$0			
 	
 _string:
 	.ascii "hello bootloader!"
