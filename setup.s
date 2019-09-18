@@ -22,5 +22,5 @@ loop_forever:
 	jmp loop_forever
 msg:
 	.byte 13,10
-	.ascii "You've successfully load the floppy int RAM"
+	.ascii "You've successfully load the floppy into RAM"
 	.byte 13,10,13,10
