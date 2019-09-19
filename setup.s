@@ -34,6 +34,10 @@ show_text:
 	#reprogram interruptor
 
 	#set cr0,set pe = 1
+	mov %cr0,%eax
+	or  $1,%eax
+	mov %eax,%cr0
+
 	ljmp $0x1000,$0x0000
 msg:
 	.byte 13,10
