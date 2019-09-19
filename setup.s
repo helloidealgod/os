@@ -17,7 +17,23 @@ show_text:
 	mov $LEN,%cx
 	mov $msg,%bp
 	int $0x10
-load_system:
+	
+	#use bios to read system data,and save in 0x90000 ~ 0x901fd
+
+	#start change real model to protected model 
+
+	#disable interrupt and copy system to 0x00000
+	cli #disable interrupt
+	    #copy system
+	sti #enable interrupt	
+
+	#set GDT & IDT
+
+	#open A20,and check it
+
+	#reprogram interruptor
+
+	#set cr0,set pe = 1
 	ljmp $0x1000,$0x0000
 msg:
 	.byte 13,10
