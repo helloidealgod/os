@@ -1,4 +1,4 @@
-.code16
+.code32
 
 .text
 
@@ -6,21 +6,28 @@
 .equ LEN,54
 
 show_text:
-	mov $SYSSEG,%ax
-	mov %ax,%es
-	mov $0x03,%ah
-	xor %bh,%bh
-	int $0x10
+	#mov $SYSSEG,%ax
+	#mov %ax,%es
+	#mov $0x03,%ah
+	#xor %bh,%bh
+	#int $0x10
 
-	mov $0x000a,%bx
-	mov $0x1301,%ax
-	mov $LEN,%cx
-	mov $msg,%bp
-	int $0x10
-
-loop_forever:
-	jmp loop_forever
-msg:
-	.byte 13,10
-	.ascii "You've successfully load the system head into RAM"
-	.byte 13,10
+	#mov $0x000a,%bx
+	#mov $0x1301,%ax
+	#mov $LEN,%cx
+	#mov $msg,%bp
+	#int $0x10
+#	mov $123,%ax
+#	mov $124,%bx
+#	
+	mov $0x10,%ax
+	mov %ax,%ds
+#	mov %ax,%es
+#	mov %ax,%ss
+#loop_forever:
+#	ljmp loop_forever
+	#jmp $8,$0
+#msg:
+#	.byte 13,10
+#	.ascii "You've successfully load the system head into RAM"
+#	.byte 13,10

@@ -3,6 +3,7 @@
 .text
 
 .equ SETUPSEG,0x9020
+.equ SYSSEG,0x1000
 .equ LEN,54
 
 show_text:
@@ -25,6 +26,20 @@ show_text:
 	#disable interrupt and copy system to 0x00000
 	cli #disable interrupt
 	    #copy system
+	mov $0,%bx
+	mov $2048,%cx
+_mov_system:
+	mov $SYSSEG,%ax
+	mov %ax,%ds
+	mov %ds:(%bx),%dl
+
+	mov $0,%ax
+	mov %ax,%ds
+	mov %dl,%ds:(%bx)
+
+	inc %bx
+	loop _mov_system
+
 	sti #enable interrupt	
 
 	#set GDT & IDT

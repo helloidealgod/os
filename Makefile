@@ -28,9 +28,11 @@ setup: setup.o ld-bootsect.ld
 head.o: head.s
 	@as --32 head.s -o head.o
 
-head: head.o ld-bootsect.ld
-	@ld -T ld-bootsect.ld head.o -o head
+head: head.o main.o ld-bootsect.ld
+	@ld -T ld-bootsect.ld head.o main.o -o head
 	@objcopy -O binary -j .text head
+main.o: main.c
+	@gcc -m32 -c main.c -o main.o
 
 System: bootsect setup head 
 	@dd if=bootsect of=System bs=512 count=1
