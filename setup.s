@@ -45,7 +45,7 @@ _mov_system:
 	#set GDT & IDT
 	mov $SETUPSEG,%ax
 	mov %ax,%ds
-	lidt idt_48  #set IDTR,from ds:idt_48 total 48 bytes
+#	lidt idt_48  #set IDTR,from ds:idt_48 total 48 bytes
 	lgdt gdt_48  #set GDTR,from ds:gdt_48 total 48 bytes
 
 //	call empty_8042

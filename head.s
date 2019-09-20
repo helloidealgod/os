@@ -27,6 +27,7 @@ show_text:
 #loop_forever:
 #	ljmp loop_forever
 	#jmp $8,$0
+	cli
 #msg:
 #	.byte 13,10
 #	.ascii "You've successfully load the system head into RAM"
