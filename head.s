@@ -17,18 +17,8 @@ show_text:
 	#mov $LEN,%cx
 	#mov $msg,%bp
 	#int $0x10
-#	mov $123,%ax
-#	mov $124,%bx
-#	
 	mov $0x10,%ax
 	mov %ax,%ds
 #	mov %ax,%es
 #	mov %ax,%ss
-#loop_forever:
-#	ljmp loop_forever
-	#jmp $8,$0
 	cli
-#msg:
-#	.byte 13,10
-#	.ascii "You've successfully load the system head into RAM"
-#	.byte 13,10
