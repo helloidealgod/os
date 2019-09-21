@@ -22,3 +22,4 @@ show_text:
 #	mov %ax,%es
 #	mov %ax,%ss
 #	cli
+#	ljmp $8,$0x100000 #protected mode cs=16 bit eip=32 bit
