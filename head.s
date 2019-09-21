@@ -21,4 +21,4 @@ show_text:
 	mov %ax,%ds
 #	mov %ax,%es
 #	mov %ax,%ss
-	cli
+#	cli
