@@ -23,3 +23,11 @@ show_text:
 #	mov %ax,%ss
 #	cli
 #	ljmp $8,$0x100000 #protected mode cs=16 bit eip=32 bit
+	pushl $0
+	pushl $0
+	pushl $0
+	pushl $L6
+	pushl $main
+	ret
+L6:
+	jmp L6
