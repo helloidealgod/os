@@ -53,7 +53,8 @@ _load_setup:
 	mov $0x0000,%bx  # load data to %es:%bx
 	mov $0x02,%ah
 	mov $4,%al
-	int $0x13
+	int $0x13	
+
 	jnc _load_system #load setup ok then load system
 	jmp _load_setup
 
