@@ -27,7 +27,7 @@ show_text:
 	cli #disable interrupt
 	#copy system
 	mov $0,%bx
-	mov $2048,%cx
+	mov $1024*25+512,%cx
 _mov_system:
 	mov $SYSSEG,%ax
 	mov %ax,%ds

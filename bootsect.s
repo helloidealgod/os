@@ -53,7 +53,8 @@ _load_setup:
 	mov $0x0000,%bx  # load data to %es:%bx
 	mov $0x02,%ah
 	mov $4,%al
-	int $0x13
+	int $0x13	
+
 	jnc _load_system #load setup ok then load system
 	jmp _load_setup
 
@@ -66,7 +67,7 @@ _load_system:
 	mov %ax,%es
 	mov $0x0000,%bx  # load data to %es:%bx
 	mov $0x02,%ah     
-	mov $4,%al       # number of sectors to read
+	mov $51,%al       # number of sectors to read
 	int $0x13
 
 	jnc _system_load_ok
@@ -78,6 +79,9 @@ _system_load_ok:
 	ljmp $0x9020,$0	
 _string:
 	.ascii "hello bootloader!"
+	.byte 13,10
+_s_load_system:
+	.ascii "load system ..."
 	.byte 13,10
 .=510
 
