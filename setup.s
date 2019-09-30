@@ -27,7 +27,7 @@ show_text:
 	cli #disable interrupt
 	#copy system
 	mov $0,%bx
-	mov $1024*25+512,%cx
+	mov $512*4,%cx
 _mov_system:
 	mov $SYSSEG,%ax
 	mov %ax,%ds
@@ -128,3 +128,4 @@ msg:
 	.byte 13,10
 	.ascii "You've successfully load the setup into RAM"
 	.byte 13,10
+.=512
