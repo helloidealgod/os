@@ -27,7 +27,8 @@ show_text:
 	cli #disable interrupt
 	#copy system
 	mov $0,%bx
-	mov $512*4,%cx
+	mov $512*51,%cx
+#	mov $512*38+256+128+64+32+16-8-4-2,%cx
 _mov_system:
 	mov $SYSSEG,%ax
 	mov %ax,%ds
@@ -40,8 +41,7 @@ _mov_system:
 	inc %bx
 	loop _mov_system
 
-	sti #enable interrupt	
-
+#	sti #enable interrupt	
 	#set GDT & IDT
 	mov $SETUPSEG,%ax
 	mov %ax,%ds

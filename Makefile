@@ -37,7 +37,7 @@ main.o: main.c
 System: bootsect setup head 
 	@dd if=bootsect of=System bs=512 count=1
 	@dd if=setup of=System bs=512 count=4 seek=1
-	@dd if=head of=System bs=512 count=4 seek=5
+	@dd if=head of=System bs=512 seek=5
 	@echo "System Image built done"
 	@rm -f *.0 
 

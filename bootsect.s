@@ -67,7 +67,7 @@ _load_system:
 	mov %ax,%es
 	mov $0x0000,%bx  # load data to %es:%bx
 	mov $0x02,%ah     
-	mov $4,%al       # number of sectors to read
+	mov $51,%al       # number of sectors to read
 	int $0x13
 
 	jnc _system_load_ok
