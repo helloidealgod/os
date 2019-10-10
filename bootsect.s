@@ -20,7 +20,7 @@ _bootstart:
 	mov $_string,%bp
 	mov $0x1301,%ax
 	mov $0x000a,%bx
-	mov $20,%cx
+	mov $19,%cx
 	int $0x10	#printf string
 
 	# copy bootsect from 0x7c00:0x0000 to 0x9000:0x0000 total 512 bytes 

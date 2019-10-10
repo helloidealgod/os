@@ -4,7 +4,7 @@
 
 .equ SETUPSEG,0x9020
 .equ SYSSEG,0x1000
-.equ LEN,54
+.equ LEN,47
 
 show_text:
 	mov $SETUPSEG,%ax

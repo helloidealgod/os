@@ -15,8 +15,8 @@ starup_32:
 	mov %ax,%gs
 #	lss _stack_start,%esp
 
-#	call setup_idt
-#	call setup_gdt
+	call setup_idt
+	call setup_gdt
 
 	mov $0x10,%eax
 	mov %ax,%ds
