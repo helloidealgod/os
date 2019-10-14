@@ -1,3 +1,4 @@
+/**
 int do_exit(long code);
 void page_exception(void);
 void divide_error(void);
@@ -24,4 +25,8 @@ static void die(char * str, long esp_ptr, long nr)
 ｛
 	long * esp = (long *)esp_ptr;
 	int i;
-｝
+｝*/
+void trap_init(void)
+{
+
+}
