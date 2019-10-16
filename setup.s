@@ -2,6 +2,7 @@
 
 .text
 
+.equ INITSEG,0X9000
 .equ SETUPSEG,0x9020
 .equ SYSSEG,0x1000
 .equ LEN,47
@@ -20,7 +21,28 @@ show_text:
 	int $0x10
 	
 	#use bios to read system data,and save in 0x90000 ~ 0x901fd
-
+	mov $INITSEG,%ax
+	mov %ax,%ds
+	mov $0x03,%ah
+	xor %bh,%bh
+	int $0x10
+	mov %dx,%ds:(0)
+	
+	mov $0x88,%ah
+	int $0x15
+	mov %ax,%ds:(2)
+	
+	mov $0x0f,%ah
+	int $0x10
+	mov %bx,%ds:(4)
+	mov %ax,%ds:(6)
+	
+	mov $0x12,%ah
+	mov $0x10,%bl
+	int $0x10
+	mov %ax,%ds:(8)
+	mov %bx,%ds:(10)
+	mov %cx,%ds:(12)
 	#start change real model to protected model 
 
 	#disable interrupt and copy system to 0x00000
