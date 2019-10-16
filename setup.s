@@ -43,6 +43,43 @@ show_text:
 	mov %ax,%ds:(8)
 	mov %bx,%ds:(10)
 	mov %cx,%ds:(12)
+
+	mov $0x0000,%ax
+	mov %ax,%ds
+	lds %ds:(4*0x41),%si
+	mov $INITSEG,%ax
+	mov %ax,%es
+	mov $0x0080,%di
+	mov $0x10,%cx
+	rep
+ 	movsb
+	
+	mov $0x0000,%ax
+	mov %ax,%ds
+	lds %ds:(4*0x46),%si
+	mov $INITSEG,%ax
+	mov %ax,%es
+	mov $0x0090,%di
+	mov $0x10,%cx
+	rep
+	movsb
+	
+	mov $0x01500,%ax
+	mov $0x81,%dl
+	int $0x13
+	jc no_disk1
+	cmp $3,%ah
+	je is_disk1
+
+no_disk1:
+	mov $INITSEG,%ax
+	mov %ax,%es
+	mov $0x0090,%di
+	mov $0x10,%cx
+	mov $0x00,%ax
+	rep
+	stosb
+is_disk1:
 	#start change real model to protected model 
 
 	#disable interrupt and copy system to 0x00000
