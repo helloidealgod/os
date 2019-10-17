@@ -86,7 +86,7 @@ is_disk1:
 	cli #disable interrupt
 	#copy system
 	mov $0,%bx
-	mov $512*51,%cx
+	mov $512*52,%cx
 #	mov $512*38+256+128+64+32+16-8-4-2,%cx
 _mov_system:
 	mov $SYSSEG,%ax
