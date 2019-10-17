@@ -1,5 +1,5 @@
 //#include "traps.c"
-#include "console.c"
+//#include "console.c"
 int main(void){
 	/*||内核||高速缓存||虚拟盘||主内存区*/
 	//高速缓存结束4M 主内存区开始4.5M  物理内存 16M
