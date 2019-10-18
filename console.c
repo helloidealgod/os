@@ -40,8 +40,7 @@ static unsigned char attr=0x07;
 void con_init(void)
 {
 	register unsigned char a;
-	char *display_desc = "????";	
-	char *display_desc_1 = "ABCD";
+	char display_desc[4] = {'?'};	
 
 	char *display_ptr;
 
@@ -57,11 +56,18 @@ void con_init(void)
 		if ((ORIG_VIDEO_EGA_BX & 0xff) != 0x10){
 			video_type = VIDEO_TYPE_EGAM;
 			video_mem_end = 0xb8000;
-			display_desc = "EGAm";
+			display_desc[0] = 'E';
+			display_desc[1] = 'G';
+			display_desc[2] = 'A';
+			display_desc[3] = 'm';
 		}else{
 			video_type = VIDEO_TYPE_MDA;
 			video_mem_end = 0xb2000;
-			display_desc = "*MDA";
+			//display_desc = "*MDA";	
+			display_desc[0] = '*';
+			display_desc[1] = 'M';
+			display_desc[2] = 'D';
+			display_desc[3] = 'A';
 		}
 	}else{
 		video_mem_start = 0xb8000;
@@ -70,30 +76,56 @@ void con_init(void)
 		if ((ORIG_VIDEO_EGA_BX & 0xff) != 0x10){
 			video_type = VIDEO_TYPE_EGAC;
 			video_mem_end = 0xbc000;
-			display_desc = "EGAc";
+			//display_desc = "EGAc";	
+			display_desc[0] = 'E';
+			display_desc[1] = 'G';
+			display_desc[2] = 'A';
+			display_desc[3] = 'c';
 		}else{
 			video_type = VIDEO_TYPE_CGA;
 			video_mem_end = 0xba000;
-			display_desc = "*CGA";
+			//display_desc = "*CGA";	
+			display_desc[0] = '*';
+			display_desc[1] = 'C';
+			display_desc[2] = 'G';
+			display_desc[3] = 'A';
+
 		}
 	}
-	video_mem_start = 0xb0000;	
-	video_port_reg = 0x3b4;
-	video_port_val = 0x3b5;
+	display_desc[0] = '*';
+	display_desc[1] = 'M';
+	display_desc[2] = 'D';
+	display_desc[3] = 'A';
 
-	display_ptr = ((char *)video_mem_start) + video_size_row - 8;
-	while (*display_desc){
-		*display_ptr++ = *display_desc++;
-		display_ptr++;
+//	while (*display_desc){
+	display_ptr = (char *)video_mem_start;
+//	display_ptr = ((char *)video_mem_start) + video_size_row - 8;
+	int i;
+	for(i=0;i<4;i++){
+		*display_ptr++ = display_desc[i];
+		*display_ptr++ = 0x04;
 	}
-/*	video_mem_start = 0xb8000;
-	video_port_reg = 0x3d4;
-	video_port_val = 0x3d5;
-	display_ptr = ((char *)video_mem_start) + video_size_row - 8;
-	while (*display_desc_1){
-		*display_ptr++ = *display_desc++;
-		display_ptr++;
-	}*/
+	for(i=12;i<16;i++){
+		*display_ptr++ = '1' + i -12;
+		*display_ptr++ = 0x04;
+	}
 }
 
-
+void printk(){
+	char * ptr;
+	unsigned long video_mem_start = 0xb8000;
+	ptr=(char *)video_mem_start;
+	char *px,*py;
+	px = ORIG_X;
+	py = ORIG_Y;
+	int p = 160 * (*px) + 2 * (*py);
+	char s = 'A';
+       	int i;
+	for(i=0;i<26;i++){
+		*(ptr+p)=s;
+		ptr++;
+		*(ptr+p)=0x04;
+		ptr++;
+		s+=1;
+	}	
+}
