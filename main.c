@@ -7,7 +7,7 @@ int main(void){
 	int main_memory_start = 4.5 * 1024 * 1024;
 	//mem_init(main_memory_start,memory_end);
 //	trap_init();
-	con_init();	
+//	con_init();	
 	//blk_dev_init();
 	//chr_dev_init();
 	//tty_init();

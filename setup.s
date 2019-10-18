@@ -5,6 +5,7 @@
 .equ INITSEG,0X9000
 .equ SETUPSEG,0x9020
 .equ SYSSEG,0x1000
+.equ VGASEG,0xb800
 .equ LEN,47
 
 show_text:
@@ -20,6 +21,20 @@ show_text:
 	mov $msg,%bp
 	int $0x10
 	
+	mov $0,%bx
+	mov $10,%cx
+	mov $0x41,%dl
+	mov $0x02,%dh
+show:
+	mov $VGASEG,%ax
+	mov %ax,%ds
+	mov %dl,%ds:(%bx)
+	inc %dl
+	inc %bx	
+	mov %dh,%ds:(%bx)
+	inc %bx
+	loop show 
+
 	#use bios to read system data,and save in 0x90000 ~ 0x901fd
 	mov $INITSEG,%ax
 	mov %ax,%ds
