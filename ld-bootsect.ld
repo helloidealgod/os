@@ -8,6 +8,9 @@ SECTIONS {
 	.data :{
 		*(.data)
 	}
+	.bss :{
+		*(.bss)
+	}
 	/DISCARD/ : {
 
 	}	

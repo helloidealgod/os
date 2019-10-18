@@ -40,7 +40,9 @@ static unsigned char attr=0x07;
 void con_init(void)
 {
 	register unsigned char a;
-	char *display_desc = "????";
+	char *display_desc = "????";	
+	char *display_desc_1 = "ABCD";
+
 	char *display_ptr;
 
 	video_num_columns = ORIG_VIDEO_COLS;
@@ -75,11 +77,23 @@ void con_init(void)
 			display_desc = "*CGA";
 		}
 	}
+	video_mem_start = 0xb0000;	
+	video_port_reg = 0x3b4;
+	video_port_val = 0x3b5;
+
 	display_ptr = ((char *)video_mem_start) + video_size_row - 8;
 	while (*display_desc){
 		*display_ptr++ = *display_desc++;
 		display_ptr++;
 	}
+/*	video_mem_start = 0xb8000;
+	video_port_reg = 0x3d4;
+	video_port_val = 0x3d5;
+	display_ptr = ((char *)video_mem_start) + video_size_row - 8;
+	while (*display_desc_1){
+		*display_ptr++ = *display_desc++;
+		display_ptr++;
+	}*/
 }
 
 
