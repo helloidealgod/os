@@ -1,3 +1,5 @@
+#include "io.h"
+#include "system.h"
 #define ORIG_X		(*(unsigned char *)0x90000)
 #define ORIG_Y		(*(unsigned char *)0x90001)
 #define ORIG_VIDEO_PAGE	(*(unsigned short *)0x90004)
@@ -63,7 +65,6 @@ void con_init(void)
 		}else{
 			video_type = VIDEO_TYPE_MDA;
 			video_mem_end = 0xb2000;
-			//display_desc = "*MDA";	
 			display_desc[0] = '*';
 			display_desc[1] = 'M';
 			display_desc[2] = 'D';
@@ -76,7 +77,6 @@ void con_init(void)
 		if ((ORIG_VIDEO_EGA_BX & 0xff) != 0x10){
 			video_type = VIDEO_TYPE_EGAC;
 			video_mem_end = 0xbc000;
-			//display_desc = "EGAc";	
 			display_desc[0] = 'E';
 			display_desc[1] = 'G';
 			display_desc[2] = 'A';
@@ -84,7 +84,6 @@ void con_init(void)
 		}else{
 			video_type = VIDEO_TYPE_CGA;
 			video_mem_end = 0xba000;
-			//display_desc = "*CGA";	
 			display_desc[0] = '*';
 			display_desc[1] = 'C';
 			display_desc[2] = 'G';
@@ -97,16 +96,10 @@ void con_init(void)
 	display_desc[2] = 'D';
 	display_desc[3] = 'A';
 
-//	while (*display_desc){
 	display_ptr = (char *)video_mem_start;
-//	display_ptr = ((char *)video_mem_start) + video_size_row - 8;
 	int i;
 	for(i=0;i<4;i++){
 		*display_ptr++ = display_desc[i];
-		*display_ptr++ = 0x04;
-	}
-	for(i=12;i<16;i++){
-		*display_ptr++ = '1' + i -12;
 		*display_ptr++ = 0x04;
 	}
 }
@@ -128,4 +121,17 @@ void printk(){
 		ptr++;
 		s+=1;
 	}	
+	ptr=(char *)video_mem_start;
+	*(ptr++) = *px;
+	*(ptr++) = 0x04;
+	*(ptr++) = *py;
+	*ptr = 0x04;
+}
+void set_cursor(void){
+	cli();
+	outb_p(14,video_port_reg);
+	outb_p(0xff&((pos-video_mem_start)>>9),video_port_val);
+	outb_p(15,video_port_reg);
+	outb_p(0xff&((pos-video_mem_start)>>1),video_port_val);
+	sti();
 }

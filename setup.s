@@ -21,19 +21,39 @@ show_text:
 	mov $msg,%bp
 	int $0x10
 	
-	mov $0,%bx
-	mov $10,%cx
-	mov $0x41,%dl
-	mov $0x02,%dh
-show:
-	mov $VGASEG,%ax
-	mov %ax,%ds
-	mov %dl,%ds:(%bx)
-	inc %dl
-	inc %bx	
-	mov %dh,%ds:(%bx)
-	inc %bx
-	loop show 
+#	mov $0,%bx
+#	mov $10,%cx
+#	mov $0x41,%dl
+#	mov $0x02,%dh
+#show:
+#	mov $VGASEG,%ax
+#	mov %ax,%ds
+#	mov %dl,%ds:(%bx)
+#	inc %dl
+#	inc %bx	
+#	mov %dh,%ds:(%bx)
+#	inc %bx
+#	loop show 
+
+	mov $0x3d4,%dx
+	mov $0x0e,%al
+	out %al,%dx
+	mov $0x3d5,%dx
+#	in %dx,%al
+#	mov %al,%ah
+	mov $0,%al
+	out %al,%dx
+	
+	mov $0x3d4,%dx
+	mov $0xef,%al
+	out %al,%dx
+	mov $0x3d5,%dx
+#	in %dx,%al
+#	mov %ax,%bx
+	mov $8,%al
+	out %al,%dx
+
+
 
 	#use bios to read system data,and save in 0x90000 ~ 0x901fd
 	mov $INITSEG,%ax
