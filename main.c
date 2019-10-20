@@ -9,7 +9,8 @@ int main(void){
 //	trap_init();
 //	con_init();	
 	printk();
-	set_cursor();
+//	set_cursor();
+//	set_cursor(0x02,0x04);
 	//blk_dev_init();
 	//chr_dev_init();
 	//tty_init();

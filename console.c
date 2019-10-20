@@ -127,11 +127,12 @@ void printk(){
 	*(ptr++) = *py;
 	*ptr = 0x04;
 }
-void set_cursor(void){
-	cli();
-	outb_p(14,video_port_reg);
-	outb_p(0xff&((pos-video_mem_start)>>9),video_port_val);
-	outb_p(15,video_port_reg);
-	outb_p(0xff&((pos-video_mem_start)>>1),video_port_val);
-	sti();
-}
+//void set_cursor(void){
+//	cli();
+//	outb_p(14,video_port_reg);
+//	outb_p(0xff&((pos-video_mem_start)>>9),video_port_val);
+//	outb_p(15,video_port_reg);
+//	outb_p(0xff&((pos-video_mem_start)>>1),video_port_val);
+//	sti();
+//}
+

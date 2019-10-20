@@ -38,22 +38,18 @@ show_text:
 	mov $0x3d4,%dx
 	mov $0x0e,%al
 	out %al,%dx
+
 	mov $0x3d5,%dx
-#	in %dx,%al
-#	mov %al,%ah
 	mov $0,%al
 	out %al,%dx
-	
+
 	mov $0x3d4,%dx
-	mov $0xef,%al
+	mov $0x0f,%al
 	out %al,%dx
+
 	mov $0x3d5,%dx
-#	in %dx,%al
-#	mov %ax,%bx
-	mov $8,%al
+	mov $0,%al
 	out %al,%dx
-
-
 
 	#use bios to read system data,and save in 0x90000 ~ 0x901fd
 	mov $INITSEG,%ax
