@@ -104,35 +104,36 @@ void con_init(void)
 	}
 }
 
-void printk(){
+void printk(char *str,int length){
 	char * ptr;
+	char c[40];
+	int i;
+	for(i=0;i<length;i++){
+		c[i]=*str++;
+	}
 	unsigned long video_mem_start = 0xb8000;
 	ptr=(char *)video_mem_start;
-	char *px,*py;
-	px = ORIG_X;
-	py = ORIG_Y;
-	int p = 160 * (*px) + 2 * (*py);
-	char s = 'A';
-       	int i;
-	for(i=0;i<26;i++){
-		*(ptr+p)=s;
-		ptr++;
-		*(ptr+p)=0x04;
-		ptr++;
-		s+=1;
+	char px = 0;
+	char py = 0;
+	int p = 160 * px + 2 * py;
+	ptr += p;
+	for(i=0;i<length;i++){
+		*(ptr++)=*(str+i);
+		*(ptr++)=0x04;
 	}	
-	ptr=(char *)video_mem_start;
-	*(ptr++) = *px;
-	*(ptr++) = 0x04;
-	*(ptr++) = *py;
-	*ptr = 0x04;
 }
-//void set_cursor(void){
-//	cli();
-//	outb_p(14,video_port_reg);
-//	outb_p(0xff&((pos-video_mem_start)>>9),video_port_val);
-//	outb_p(15,video_port_reg);
-//	outb_p(0xff&((pos-video_mem_start)>>1),video_port_val);
-//	sti();
-//}
-
+void set_cursor(unsigned char x,unsigned char y){
+	unsigned int p;
+	p = x + y * 80;
+	if(p >= 25*80){
+		p = 0;
+	}
+	y = p & 0x00ff;
+	x = (p & 0xff00) >> 8;
+	cli();
+	outb(0x3d4,0x0e);
+	outb(0x3d5,x);
+	outb(0x3d4,0x0f);
+	outb(0x3d5,y);
+	sti();
+}

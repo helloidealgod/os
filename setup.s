@@ -35,21 +35,21 @@ show_text:
 #	inc %bx
 #	loop show 
 
-	mov $0x3d4,%dx
-	mov $0x0e,%al
-	out %al,%dx
-
-	mov $0x3d5,%dx
-	mov $0,%al
-	out %al,%dx
-
-	mov $0x3d4,%dx
-	mov $0x0f,%al
-	out %al,%dx
-
-	mov $0x3d5,%dx
-	mov $0,%al
-	out %al,%dx
+#	mov $0x3d4,%dx
+#	mov $0x0e,%al
+#	out %al,%dx
+#
+#	mov $0x3d5,%dx
+#	mov $0,%al
+#	out %al,%dx
+#
+#	mov $0x3d4,%dx
+#	mov $0x0f,%al
+#	out %al,%dx
+#
+#	mov $0x3d5,%dx
+#	mov $0,%al
+#	out %al,%dx
 
 	#use bios to read system data,and save in 0x90000 ~ 0x901fd
 	mov $INITSEG,%ax
