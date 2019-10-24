@@ -10,7 +10,7 @@ int main(void){
 //	con_init();	
 	char a[5]={'a','b','c','d','e'};
 	printk(a,40);
-	set_cursor(0x02,0x04);
+//	set_cursor(0x02,0x04);
 	//blk_dev_init();
 	//chr_dev_init();
 	//tty_init();

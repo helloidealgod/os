@@ -120,6 +120,8 @@ void printk(char *str,int length){
 	for(i=0;i<length;i++){
 		*(ptr++)=*(str+i);
 		*(ptr++)=0x04;
+		*(ptr++)='A';
+		*(ptr++)=0x05;
 	}	
 }
 void set_cursor(unsigned char x,unsigned char y){
