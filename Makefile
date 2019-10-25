@@ -36,8 +36,8 @@ setup: setup.o ld-bootsect.ld
 head.o: head.s
 	@as --32 head.s -o head.o
 
-head: head.o main.o console.o ld-bootsect.ld
-	@ld -T ld-bootsect.ld head.o main.o console.o -o head
+head: head.o main.o printk.o ld-bootsect.ld
+	@ld -T ld-bootsect.ld head.o main.o printk.o -o head
 	@objcopy -O binary -j .text head
 main.o: main.c
 	@gcc -m32 -c main.c -o main.o
@@ -46,6 +46,8 @@ main.o: main.c
 #	@gcc -m32 -S console.c -o console.s
 console.o: console.c
 	@gcc -m32 -c console.c -o console.o
+printk.o: printk.c
+	@gcc -m32 -c printk.c -o printk.o
 #	@as --32 -c console.c -o console.o
 #kernel.o: console.o
 #	@ld -T ld-bootsect.ld console.o -o kernel.o
