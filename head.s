@@ -15,7 +15,7 @@ starup_32:
 	mov %ax,%gs
 #	lss _stack_start,%esp
 	mov %ax,%ss
-	mov $0x9000,%ebp
+	mov $0x1e25c,%ebp
 	mov %ebp,%esp
 
 	call setup_idt
@@ -28,7 +28,7 @@ starup_32:
 	mov %ax,%gs
 #	lss _stack_start,%esp
 	mov %ax,%ss
-	mov $0x9000,%ebp
+	mov $0x1e25c,%ebp
 	mov %ebp,%esp
 
 	#check is A20 open
