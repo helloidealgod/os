@@ -104,24 +104,14 @@ void con_init(void)
 	}
 }
 
-void printk(char *str,int length){
+void printk(char c[],int length){
 	char * ptr;
-	char c[40];
+	unsigned long video_mem_start = 0xb8000;
+	ptr=(unsigned char *)video_mem_start;
 	int i;
 	for(i=0;i<length;i++){
-		c[i]=*str++;
-	}
-	unsigned long video_mem_start = 0xb8000;
-	ptr=(char *)video_mem_start;
-	char px = 0;
-	char py = 0;
-	int p = 160 * px + 2 * py;
-	ptr += p;
-	for(i=0;i<length;i++){
-		*(ptr++)=*(str+i);
-		*(ptr++)=0x04;
-		*(ptr++)='A';
-		*(ptr++)=0x05;
+		*ptr++ = c[i];
+		*ptr++ = 0x07;
 	}	
 }
 void set_cursor(unsigned char x,unsigned char y){
