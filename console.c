@@ -42,7 +42,7 @@ static unsigned char attr=0x07;
 void con_init(void)
 {
 	register unsigned char a;
-	char display_desc[4] = {'?'};	
+	char *display_desc = "????";	
 
 	char *display_ptr;
 
@@ -58,17 +58,11 @@ void con_init(void)
 		if ((ORIG_VIDEO_EGA_BX & 0xff) != 0x10){
 			video_type = VIDEO_TYPE_EGAM;
 			video_mem_end = 0xb8000;
-			display_desc[0] = 'E';
-			display_desc[1] = 'G';
-			display_desc[2] = 'A';
-			display_desc[3] = 'm';
+			display_desc = "EGAm";
 		}else{
 			video_type = VIDEO_TYPE_MDA;
 			video_mem_end = 0xb2000;
-			display_desc[0] = '*';
-			display_desc[1] = 'M';
-			display_desc[2] = 'D';
-			display_desc[3] = 'A';
+			display_desc = "*MDA";
 		}
 	}else{
 		video_mem_start = 0xb8000;
@@ -77,26 +71,15 @@ void con_init(void)
 		if ((ORIG_VIDEO_EGA_BX & 0xff) != 0x10){
 			video_type = VIDEO_TYPE_EGAC;
 			video_mem_end = 0xbc000;
-			display_desc[0] = 'E';
-			display_desc[1] = 'G';
-			display_desc[2] = 'A';
-			display_desc[3] = 'c';
+			display_desc = "EGAc";
 		}else{
 			video_type = VIDEO_TYPE_CGA;
 			video_mem_end = 0xba000;
-			display_desc[0] = '*';
-			display_desc[1] = 'C';
-			display_desc[2] = 'G';
-			display_desc[3] = 'A';
-
+			display_desc = "*CGA";
 		}
 	}
-	display_desc[0] = '*';
-	display_desc[1] = 'M';
-	display_desc[2] = 'D';
-	display_desc[3] = 'A';
 
-	display_ptr = (char *)video_mem_start;
+	display_ptr = (char *)video_mem_start + 76 * 2;
 	int i;
 	for(i=0;i<4;i++){
 		*display_ptr++ = display_desc[i];
@@ -113,9 +96,15 @@ void printk(char *c){
 	for(i=0;i<length;i++){
 		*ptr++ = *(c+i);
 		*ptr++ = 0x07;
-	}	
+/*		x++;
+		if(80 <= x){
+			y+=1;
+			x-=80;
+		}
+*/	}	
+//	set_cursor(x,y);
 }
-void set_cursor(unsigned char x,unsigned char y){
+void set_cursor(unsigned char x, unsigned char y){
 	unsigned int p;
 	p = x + y * 80;
 	if(p >= 25*80){
