@@ -38,7 +38,7 @@ head.o: head.s
 
 head: head.o main.o console.o ld-bootsect.ld
 	@ld -T ld-bootsect.ld head.o main.o console.o -o head
-	@objcopy -O binary -j .text head
+	@objcopy -O binary -R .note -R .comment head
 main.o: main.c
 	@gcc -m32 -c main.c -o main.o
 

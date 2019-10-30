@@ -104,13 +104,13 @@ void con_init(void)
 	}
 }
 
-void printk(char c[],int length){
+void printk(char *c,int length){
 	char * ptr;
 	unsigned long video_mem_start = 0xb8000;
 	ptr=(unsigned char *)video_mem_start;
 	int i;
 	for(i=0;i<length;i++){
-		*ptr++ = c[i];
+		*ptr++ = *(c+i);
 		*ptr++ = 0x07;
 	}	
 }
