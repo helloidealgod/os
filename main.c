@@ -13,7 +13,7 @@ int main(void){
 	char d[10]={'0','1','2','3','4','5','6','7','8','9'};
 */
 	char *a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	printk("hello world!",52);
+	printk("hello world!");
 /*	_printk(a,26,0x04);
 	_printk(a,26,0x02);
 	_printk(a,26,0x01);

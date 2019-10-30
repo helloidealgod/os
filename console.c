@@ -104,8 +104,9 @@ void con_init(void)
 	}
 }
 
-void printk(char *c,int length){
+void printk(char *c){
 	char * ptr;
+	int length = strlen(c);
 	unsigned long video_mem_start = 0xb8000;
 	ptr=(unsigned char *)video_mem_start;
 	int i;
@@ -128,4 +129,11 @@ void set_cursor(unsigned char x,unsigned char y){
 	outb(0x3d4,0x0f);
 	outb(0x3d5,y);
 	sti();
+}
+int strlen(char *s){
+	int length = 0;
+	while(*s++ != '\0'){
+		length++;
+	}
+	return length;
 }
