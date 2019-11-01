@@ -1,5 +1,6 @@
 #include "io.h"
 #include "system.h"
+/*
 #define ORIG_X		(*(unsigned char *)0x90000)
 #define ORIG_Y		(*(unsigned char *)0x90001)
 #define ORIG_VIDEO_PAGE	(*(unsigned short *)0x90004)
@@ -31,7 +32,11 @@ static unsigned short video_erase_char;
 static unsigned long origin;
 static unsigned long scr_end;
 static unsigned long pos;
-static unsigned long x,y;
+*/
+//static unsigned long x,y;
+static unsigned long x = 0;
+static unsigned long y = 0;
+/*
 static unsigned long top,bottom;
 static unsigned long state=0;
 static unsigned long npar,par[NPAR];
@@ -85,24 +90,26 @@ void con_init(void)
 		*display_ptr++ = display_desc[i];
 		*display_ptr++ = 0x04;
 	}
+	x = 0;
+	y = 0;
 }
-
-void printk(char *c){
+*/
+void printk(char c[]){
 	char * ptr;
 	int length = strlen(c);
 	unsigned long video_mem_start = 0xb8000;
-	ptr=(unsigned char *)video_mem_start;
+	ptr=(unsigned char *)0xb8000 + 2*x + 160*y;
 	int i;
 	for(i=0;i<length;i++){
-		*ptr++ = *(c+i);
+		*ptr++ = c[i];
 		*ptr++ = 0x07;
-/*		x++;
+		x++;
 		if(80 <= x){
 			y+=1;
 			x-=80;
 		}
-*/	}	
-//	set_cursor(x,y);
+	}	
+	set_cursor(x,y);
 }
 void set_cursor(unsigned char x, unsigned char y){
 	unsigned int p;

@@ -1,4 +1,6 @@
 //#include "traps.c"
+//#include "printk.c"
+#include "console.c"
 int main(void){
 	/*||内核||高速缓存||虚拟盘||主内存区*/
 	//高速缓存结束4M 主内存区开始4.5M  物理内存 16M
@@ -6,8 +8,10 @@ int main(void){
 //	int main_memory_start = 4.5 * 1024 * 1024;
 	//mem_init(main_memory_start,memory_end);
 //	trap_init();
-	con_init();	
+//	con_init();	
 	char *a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+//	_printk("hello world!",0x04);
+//	_printk(a,0x02);
 	printk("hello world!");
 	printk(a);
 	//blk_dev_init();

@@ -36,28 +36,16 @@ setup: setup.o ld-bootsect.ld
 head.o: head.s
 	@as --32 head.s -o head.o
 
-head: head.o main.o console.o ld-bootsect.ld
-	@ld -T ld-bootsect.ld head.o main.o console.o -o head
+head: head.o main.o ld-bootsect.ld
+	@ld -T ld-bootsect.ld head.o main.o -o head
 	@objcopy -O binary -R .note -R .comment head
+
 main.o: main.c
 	@gcc -m32 -c main.c -o main.o
 
-#console.s:console.c
-#	@gcc -m32 -S console.c -o console.s
-console.o: console.c
-	@gcc -m32 -c console.c -o console.o
-printk.o: printk.c
-	@gcc -m32 -c printk.c -o printk.o
-#	@as --32 -c console.c -o console.o
-#kernel.o: console.o
-#	@ld -T ld-bootsect.ld console.o -o kernel.o
-#	@sync
-#kernel:	kernel.o
-#	@echo "hello kernel.o"
 System: bootsect setup head 
 	@dd if=bootsect of=System bs=512 count=1
 	@dd if=setup of=System bs=512 count=4 seek=1
 	@dd if=head of=System bs=512 seek=5
 	@echo "System Image built done"
 	@rm -f *.0 
-
