@@ -107,6 +107,9 @@ void printk(char c[]){
 		if(80 <= x){
 			y+=1;
 			x-=80;
+			if(25 <= y){
+				y-=25;
+			}
 		}
 	}	
 	set_cursor(x,y);
