@@ -22,6 +22,8 @@ int main(void){
 *///	_printk("hello world!",0x04);
 //	_printk(a,0x02);
 	printk("hello world! \r\n");
+	printk("say hi,I'm Jiang! \r\n");
+	printk("test\r\n");
 //	printk(a);
 /*	char c = 'a';
 	int i = 123;

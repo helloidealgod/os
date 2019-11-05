@@ -99,12 +99,14 @@ void printk(char c[]){
 	int length = strlen(c);
 	unsigned long video_mem_start = 0xb8000;
 	ptr=(unsigned char *)0xb8000 + 2*x + 160*y;
+	clear_line();
 	int i;
 	for(i=0;i<length;i++){
 		if(13 == c[i]){// '/r'
 			x = 0;
 		}else if(10 == c[i]){// '/n'
 			y ++;
+			clear_line();
 		}else{
 			*ptr++ = c[i];
 			*ptr++ = 0x07;
@@ -141,4 +143,20 @@ int strlen(char *s){
 		length++;
 	}
 	return length;
+}
+void clear_line(){
+	char * ptr;
+	unsigned long video_mem_start = 0xb8000;
+	ptr=(unsigned char *)0xb8000 + 2*x + 160*y;
+	int i;
+	for(i=0;i<80-x;i++){
+		*ptr++ = 32;
+		*ptr++ = 0x07;
+	}	
+}
+void clearLine(){
+	x = 0;
+	char c[81] = {' '};
+	c[80] = '\r';
+	printk(c);
 }
