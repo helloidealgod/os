@@ -43,6 +43,9 @@ head: head.o main.o ld-bootsect.ld
 main.o: main.c
 	@gcc -m32 -c main.c -o main.o
 
+traps.o: traps.c
+	@gcc -m32 -c traps.c -o traps.o
+
 System: bootsect setup head 
 	@dd if=bootsect of=System bs=512 count=1
 	@dd if=setup of=System bs=512 count=4 seek=1

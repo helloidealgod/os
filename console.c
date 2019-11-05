@@ -101,15 +101,21 @@ void printk(char c[]){
 	ptr=(unsigned char *)0xb8000 + 2*x + 160*y;
 	int i;
 	for(i=0;i<length;i++){
-		*ptr++ = c[i];
-		*ptr++ = 0x07;
-		x++;
-		if(80 <= x){
-			y+=1;
-			x-=80;
-			if(25 <= y){
-				y-=25;
+		if(13 == c[i]){// '/r'
+			x = 0;
+		}else if(10 == c[i]){// '/n'
+			y ++;
+		}else{
+			*ptr++ = c[i];
+			*ptr++ = 0x07;
+			x++;
+			if(80 <= x){
+				y++;
+				x-=80;
 			}
+		}
+		if(25 <= y){
+			y -= 25;
 		}
 	}	
 	set_cursor(x,y);

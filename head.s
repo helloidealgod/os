@@ -4,7 +4,7 @@
 
 .equ SYSSEG,0x1000
 .equ LEN,54
-.global _pg_dir
+.global _idt, _pg_dir
 
 _pg_dir:
 starup_32:
@@ -111,8 +111,8 @@ ignore_int:
 	mov %ax,%ds
 	mov %ax,%es
 	mov %ax,%fs
-#	push $int_msg
-#	call _printk
+	push $int_msg
+	call printk
 
 	popl %eax
 	pop %fs

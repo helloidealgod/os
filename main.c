@@ -10,7 +10,7 @@ int main(void){
 	//mem_init(main_memory_start,memory_end);
 //	trap_init();
 //	con_init();	
-	char *a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+/*	char *a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	char *d = "0123456789";
 	int h = 0;
 	int l = 0;
@@ -19,10 +19,10 @@ int main(void){
 			printk(d);
 		}
 	}
-//	_printk("hello world!",0x04);
+*///	_printk("hello world!",0x04);
 //	_printk(a,0x02);
-	printk("hello world!");
-	printk(a);
+	printk("hello world! \r\n");
+//	printk(a);
 /*	char c = 'a';
 	int i = 123;
 	long l = 456;
