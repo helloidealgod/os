@@ -1,4 +1,4 @@
-//#include "traps.c"
+#include "traps.c"
 //#include "printk.c"
 #include "console.c"
 //void test(const char* format,...);
@@ -8,7 +8,7 @@ int main(void){
 //	int buffer_memory_end = 4 * 1024 * 1024;
 //	int main_memory_start = 4.5 * 1024 * 1024;
 	//mem_init(main_memory_start,memory_end);
-//	trap_init();
+	trap_init();
 //	con_init();	
 /*	char *a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	char *d = "0123456789";

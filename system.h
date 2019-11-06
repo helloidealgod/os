@@ -9,7 +9,8 @@
 			"movl %%eax, %1\n\t"\
 			"movl %%edx, %2"\
 			:\
-			:"i" ((short)(0x8000+((dp1)<<13)+((type)<<8))),"o" (*((char *) (gate_addr))),\
+			:"i" ((short)(0x8000+((dp1)<<13)+((type)<<8))),\
+			"o" (*((char *) (gate_addr))),\
 			"o" (*(4+(char *) (gate_addr))),\
 			"d" ((char *)(addr)),"a"(0x00080000))
 
