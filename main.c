@@ -1,10 +1,13 @@
+#include "system.h"
+extern char * int_msg;
+#include "itoa.c"
 int main(void){
 	/*||内核||高速缓存||虚拟盘||主内存区*/
 	//高速缓存结束4M 主内存区开始4.5M  物理内存 16M
 //	int buffer_memory_end = 4 * 1024 * 1024;
 //	int main_memory_start = 4.5 * 1024 * 1024;
 	//mem_init(main_memory_start,memory_end);
-	trap_init();
+//	trap_init();
 //	__asm__("int3"::);
 //	con_init();	
 /*	char *a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -18,9 +21,15 @@ int main(void){
 	}
 *///	_printk("hello world!",0x04);
 //	_printk(a,0x02);
+	sti();
 	printk("hello world! ");
 	printk("say hi,I'm Jiang! ");
 	printk("test\r\n");
+	int d = 2019;
+	char s[5];
+	itoa(d,s);
+	printk(s);
+//	printk(int_msg);
 //	printk(a);
 /*	char c = 'a';
 	int i = 123;
