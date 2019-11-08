@@ -1,13 +1,13 @@
 #include "system.h"
 #include "io.h"
-//#include "head.h"
-
+/*
 typedef struct desc_struct{
 	unsigned long a,b;
 }desc_table[256];
 
 desc_table idt,gdt;
-
+*/
+/*
 int do_exit(long code);
 void page_exception(void);
 void divide_error(void);
@@ -37,73 +37,88 @@ void page_exception(void){
 
 }
 void divide_error(void){
-
+	printk("divide error");
 }
 void debug(void){
-
+	printk("debug ");
 }
 void nmi(void){
-
+	printk("nmi ");
 }
 void int3(void){
+	printk("int3 ");
 
 }
 void overflow(void){
+	printk("overflow ");
 
 }
 void bounds(void){
+	printk("bounds ");
 
 }
 void invalid_op(void){
+	printk("invalid op ");
 
 }
 void device_not_available(void){
+	printk("device not available ");
 
 }
 void double_fault(void){
+	printk("double fault ");
 
 }
 void coprocessor_segment_overrun(void){
+	printk("coprocessor segment overrun ");
 
 }
 void invalid_TSS(void){
+	printk("invalid TSS ");
 
 }
 void segment_not_present(void){
+	printk("segment not present ");
 
 }
 void stack_segment(void){
+	printk("stack segment ");
 
 }
 void general_protection(void){
+	printk("general protection ");
 
 }
 void page_fault(void){
+	printk("page fault ");
 
 }
 void coprocessor_error(void){
+	printk("coprocessor error ");
 
 }
 void reserved(void){
+	printk("reserved ");
 
 }
 void parallel_interrupt(void){
+	printk("parallel interrupt ");
 
 }
 void irq13(void){
-
+	printk("irp13 ");
 }
 
 
 static void die(char * str, long esp_ptr, long nr){
 	long * esp = (long *)esp_ptr;
 	int i;
-}
+}*/
 void trap_init(void){
 	int i;
-
-	set_trap_gate(0,&divide_error);		
-/*	set_trap_gate(1,&debug);
+	printk("init traps\r\n");
+/*	set_trap_gate(0,&divide_error);		
+	set_trap_gate(1,&debug);
 	set_trap_gate(2,&nmi);
 	set_trap_gate(3,&int3);
 	set_trap_gate(4,&overflow);
@@ -126,5 +141,5 @@ void trap_init(void){
 	outb_p(inb_p(0x21)&0xfb,0x21);
 	outb(inb_p(0xa1)&0xdf,0xa1);
 	set_trap_gate(39,&parallel_interrupt);
-	*/
+*/	
 }

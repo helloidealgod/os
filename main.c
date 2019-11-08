@@ -1,7 +1,3 @@
-#include "traps.c"
-//#include "printk.c"
-#include "console.c"
-//void test(const char* format,...);
 int main(void){
 	/*||内核||高速缓存||虚拟盘||主内存区*/
 	//高速缓存结束4M 主内存区开始4.5M  物理内存 16M
@@ -9,6 +5,7 @@ int main(void){
 //	int main_memory_start = 4.5 * 1024 * 1024;
 	//mem_init(main_memory_start,memory_end);
 	trap_init();
+//	__asm__("int3"::);
 //	con_init();	
 /*	char *a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	char *d = "0123456789";
@@ -21,8 +18,8 @@ int main(void){
 	}
 *///	_printk("hello world!",0x04);
 //	_printk(a,0x02);
-	printk("hello world! \r\n");
-	printk("say hi,I'm Jiang! \r\n");
+	printk("hello world! ");
+	printk("say hi,I'm Jiang! ");
 	printk("test\r\n");
 //	printk(a);
 /*	char c = 'a';
