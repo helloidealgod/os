@@ -1,6 +1,6 @@
 #include "system.h"
 #include "io.h"
-
+/*
 typedef struct desc_struct{
 	unsigned long a,b;
 }desc_table[256];
@@ -9,7 +9,7 @@ extern desc_table _idt;
 
 desc_table * idt = (desc_table *)_idt;
 desc_table gdt;
-
+*/
 /*
 int do_exit(long code);
 void page_exception(void);
