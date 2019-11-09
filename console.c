@@ -1,9 +1,9 @@
 #include "io.h"
 #include "system.h"
-/*
+
 #define ORIG_VIDEO_MODE ((*(unsigned short *)0x90006) & 0xff)
-#define ORIG_VIDEO_EGA_BX (*(unsigned short *)0x9000a)
-*/
+//#define ORIG_VIDEO_EGA_BX (*(unsigned short *)0x9000a)
+
 static unsigned long video_mem_start;
 static unsigned long video_mem_end;
 static unsigned short video_port_reg;
@@ -12,32 +12,31 @@ static unsigned long x = 0;
 static unsigned long y = 0;
 
 void con_init(){
-	video_mem_start = 0xb8000;
 	char *display_desc = "????";
-/*	if(ORIG_VIDEO_MODE == 7){
+	if(ORIG_VIDEO_MODE == 7){
 		video_mem_start = 0xb0000;
 		video_port_reg = 0x3b4;
 		video_port_val = 0x3b5;
-		if((ORIG_VIDEO_EGA_BX & 0xff) != 0x10){
+/*		if((ORIG_VIDEO_EGA_BX & 0xff) != 0x10){
 			video_mem_end = 0xb8000;
 			display_desc = "EGAm";
 		}else{
-			video_mem_end = 0xb2000;
+*/			video_mem_end = 0xb2000;
 			display_desc = "*MDA";
-		}
+//		}
 	}else{
 		video_mem_start = 0xb8000;
 		video_port_reg = 0x3d4;
 		video_port_val = 0x3d5;
-		if((ORIG_VIDEO_EGA_BX & 0xff) != 0x10){
+/*		if((ORIG_VIDEO_EGA_BX & 0xff) != 0x10){
 			video_mem_end = 0xbc000;
 			display_desc = "EGAC";
 		}else{
-			video_mem_end = 0xba000;
+*/			video_mem_end = 0xba000;
 			display_desc = "*CGA";
-		}
+//		}
 	}
-	*/
+	
 	x = 76;y = 0;
 	printk(display_desc);
 }
