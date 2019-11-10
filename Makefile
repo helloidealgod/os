@@ -47,9 +47,13 @@ console.o: console.c
 	@gcc -m32 -c console.c -o console.o
 OBJS += console.o
 
+asm.o: asm.s
+	@as --32 -c asm.s -o asm.o
+#OBJS += asm.o
+
 traps.o: traps.c
 	@gcc -m32 -c traps.c -o traps.o
-OBJS += traps.o
+#OBJS += traps.o
 
 
 kernel: head.o $(OBJS) ld-bootsect.ld

@@ -4,7 +4,7 @@
 
 .equ SYSSEG,0x1000
 .equ LEN,54
-.global _idt, _pg_dir
+.global idt,gdt, _pg_dir
 
 _pg_dir:
 starup_32:
@@ -60,7 +60,7 @@ setup_idt:
 	movl $0x00080000,%eax
 	movw %dx,%ax
 	movw $0x8e00,%dx
-	lea _idt,%edi
+	lea idt,%edi
 	mov $256,%ecx
 rp_sidt:
 	movl %eax,(%edi)
@@ -97,7 +97,7 @@ after_page_tables:
 L6:
 	jmp L6
 int_msg:
-	.asciz "Unknown interrupt\n\t"
+	.asciz "Unknown interrupt\r\n"
 .align 2
 ignore_int:
 	pushl %eax
@@ -151,17 +151,17 @@ setup_paging:
 .word 0
 idt_descr:
 	.word 256*8-1
-	.long _idt
+	.long idt
 .align 2
 .word 0
 gdt_descr:
 	.word 256*8-1
-	.long _gdt
+	.long gdt
 
 #	.align 3
-_idt: 	.fill 256,8,0
+idt: 	.fill 256,8,0
 
-_gdt:	.quad 0x0000000000000000	#NULL
+gdt:	.quad 0x0000000000000000	#NULL
 	.quad 0x00c09a0000000fff	#16Mb 0x08 kernel code
 	.quad 0x00c0920000000fff	#16Mb 0x10 kernel data
 	.quad 0x0000000000000000	#temporary don't use
