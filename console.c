@@ -44,14 +44,14 @@ void printk(char c[]){
 	char * ptr;
 	int length = strlen(c);
 	ptr=(unsigned char *)video_mem_start + 2*x + 160*y;
-	clear_line();
+//	clear_line();
 	int i;
 	for(i=0;i<length;i++){
 		if('\r' == c[i]){
 			x = 0;
 		}else if('\n' == c[i]){
 			y ++;
-			clear_line();
+//			clear_line();
 		}else{
 			*ptr++ = c[i];
 			*ptr++ = 0x07;

@@ -1,4 +1,3 @@
-/*
 #include "system.h"
 #include "io.h"
 
@@ -138,4 +137,4 @@ void trap_init(void){
 	outb(inb_p(0xa1)&0xdf,0xa1);
 	set_trap_gate(39,&parallel_interrupt);
 	
-}*/
+}

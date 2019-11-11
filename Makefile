@@ -53,7 +53,7 @@ OBJS += asm.o
 
 traps.o: traps.c
 	@gcc -m32 -c traps.c -o traps.o
-#OBJS += traps.o
+OBJS += traps.o
 
 
 kernel: head.o $(OBJS) ld-bootsect.ld

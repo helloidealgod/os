@@ -1,6 +1,6 @@
 int main(void){
-//	con_init();
-//	trap_init();
+	con_init();
+	trap_init();
 //	con_init();	
 	printk("hello world! \r\n");
 	while(1);
