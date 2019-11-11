@@ -9,6 +9,7 @@ extern desc_table idt,gdt;
 
 //int do_exit(long code);
 void divide_error(void);
+/*
 void debug(void);
 void nmi(void);
 void int3(void);
@@ -40,11 +41,11 @@ void do_double_fault(long esp,long error_code){
 void do_general_protection(long esp,long error_code){
 	printk("do general protection\r\n");
 }
-
+*/
 void do_divide_error(long esp,long error_code){
 	printk("do devide error\r\n");
 }
-
+/*
 void do_int3(long *esp,long error_code,
 		long fs,long es,long ds,
 		long ebp,long esi,long edi,
@@ -107,13 +108,13 @@ void do_parallel_interrupt(long esp,long error_code){
 void do_page_exception(long esp,long error_code){
 	printk("do page exception\r\n");
 }
-
+*/
 
 void trap_init(void){
-	int i;
-	printk("init traps\r\n");
+//	int i;
+//	printk("init traps\r\n");
 	set_trap_gate(0,&divide_error);		
-	set_trap_gate(1,&debug);
+/*	set_trap_gate(1,&debug);
 	set_trap_gate(2,&nmi);
 	set_trap_gate(3,&int3);
 	set_trap_gate(4,&overflow);
@@ -136,5 +137,5 @@ void trap_init(void){
 	outb_p(inb_p(0x21)&0xfb,0x21);
 	outb(inb_p(0xa1)&0xdf,0xa1);
 	set_trap_gate(39,&parallel_interrupt);
-	
+*/	
 }

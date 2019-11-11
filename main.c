@@ -2,7 +2,7 @@ int main(void){
 	con_init();
 	trap_init();
 //	con_init();	
-	printk("hello world! \r\n");
+//	printk("hello world! \r\n");
 	while(1);
 	return 0;
 }
