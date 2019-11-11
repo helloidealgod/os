@@ -7,6 +7,12 @@
 .globl interrupt9,interrupt10,interrupt11,interrupt12
 .globl interrupt13,interrupt14,interrupt15,interrupt16
 
+.globl int0_msg,int1_msg,int2_msg,int3_msg,int4_msg
+.globl int5_msg,int6_msg,int7_msg,int8_msg
+.globl int9_msg,int10_msg,int11_msg,int12_msg
+.globl int13_msg,int14_msg,int15_msg,int16_msg
+
+
 int0_msg:
 	.asciz "interrupt0\r\n"
 int1_msg:
