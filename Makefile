@@ -49,7 +49,7 @@ OBJS += console.o
 
 asm.o: asm.s
 	@as --32 -c asm.s -o asm.o
-#OBJS += asm.o
+OBJS += asm.o
 
 traps.o: traps.c
 	@gcc -m32 -c traps.c -o traps.o
