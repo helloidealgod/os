@@ -1,5 +1,5 @@
-#include "./include/system.h"
-#include "./include/io.h"
+#include "../include/system.h"
+#include "../include/io.h"
 
 typedef struct desc_struct{
 	unsigned long a,b;

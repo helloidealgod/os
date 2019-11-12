@@ -1,5 +1,5 @@
-#include "./include/io.h"
-#include "./include/system.h"
+#include "../include/io.h"
+#include "../include/system.h"
 
 #define ORIG_VIDEO_MODE ((*(unsigned short *)0x90006) & 0xff)
 #define ORIG_VIDEO_EGA_BX (*(unsigned short *)0x9000a)

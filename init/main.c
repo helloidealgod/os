@@ -6,6 +6,7 @@ int main(void){
 	char s[10];
 	itoa(i,s);
 	printk(s);
+	i = 2019 / 0;
 	while(1);
 	return 0;
 }
