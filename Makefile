@@ -63,6 +63,14 @@ itoa.o: itoa.c
 	@gcc -m32 -c ./kernel/itoa.c -o itoa.o
 OBJS += itoa.o
 
+#system_call.o: system_call.s
+#	@as --32 ./kernel/system_call.s -o system_call.o
+#OBJS += system_call.o
+
+#sched.o: sched.c
+#	@gcc -m32 ./kernel/sched.c -o sched.o
+#OBJS += sched.o
+
 kernel.o: $(OBJS) ld-bootsect.ld
 	@ld -T ld-bootsect.ld $(OBJS) -o kernel.o
 	@objcopy -O binary -R .note -R .comment kernel.o

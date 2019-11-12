@@ -8,6 +8,7 @@ int main(void){
 	printk(s);
 //	i = 2019 / 0;
 	__asm__("int3"::);
+//	sched_init();
 	while(1);
 	return 0;
 }
