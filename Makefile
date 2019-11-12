@@ -21,8 +21,8 @@ System: bootsect setup kernel.o
 	@dd if=setup of=System bs=512 count=4 seek=1
 	@dd if=kernel.o of=System bs=512 seek=5
 	@echo "System Image built done"
-	@rm -f *.o 
-	@rm -f bootsect setup 
+#	@rm -f *.o 
+#	@rm -f bootsect setup 
 
 
 bootsect.o: bootsect.s
