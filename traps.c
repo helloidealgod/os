@@ -1,5 +1,5 @@
-#include "system.h"
-#include "io.h"
+#include "./include/system.h"
+#include "./include/io.h"
 
 typedef struct desc_struct{
 	unsigned long a,b;
@@ -112,7 +112,6 @@ void do_page_exception(long esp,long error_code){
 
 void trap_init(void){
 //	int i;
-//	printk("init traps\r\n");
 	set_trap_gate(0,&divide_error);		
 /*	set_trap_gate(1,&debug);
 	set_trap_gate(2,&nmi);

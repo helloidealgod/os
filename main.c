@@ -1,8 +1,11 @@
 int main(void){
-	con_init();
 	trap_init();
-//	con_init();	
-//	printk("hello world! \r\n");
+	con_init();	
+	printk("hello world! \r\n");
+	int i = 20190;
+	char s[10];
+	itoa(i,s);
+	printk(s);
 	while(1);
 	return 0;
 }

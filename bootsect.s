@@ -6,6 +6,7 @@
 .equ INITSEG,0x9000
 .equ SETUPSEG,0x9020
 .equ SYSSEG,0x1000
+.equ SECTORS,60
 
 .text
 
@@ -67,7 +68,7 @@ _load_system:
 	mov %ax,%es
 	mov $0x0000,%bx  # load data to %es:%bx
 	mov $0x02,%ah     
-	mov $52,%al       # number of sectors to read
+	mov $SECTORS,%al       # number of sectors to read
 	int $0x13
 
 	jnc _system_load_ok

@@ -1,8 +1,8 @@
-#include "io.h"
-#include "system.h"
+#include "./include/io.h"
+#include "./include/system.h"
 
 #define ORIG_VIDEO_MODE ((*(unsigned short *)0x90006) & 0xff)
-//#define ORIG_VIDEO_EGA_BX (*(unsigned short *)0x9000a)
+#define ORIG_VIDEO_EGA_BX (*(unsigned short *)0x9000a)
 
 static unsigned long video_mem_start;
 static unsigned long video_mem_end;
@@ -17,24 +17,24 @@ void con_init(){
 		video_mem_start = 0xb0000;
 		video_port_reg = 0x3b4;
 		video_port_val = 0x3b5;
-/*		if((ORIG_VIDEO_EGA_BX & 0xff) != 0x10){
+		if((ORIG_VIDEO_EGA_BX & 0xff) != 0x10){
 			video_mem_end = 0xb8000;
 			display_desc = "EGAm";
 		}else{
-*/			video_mem_end = 0xb2000;
+			video_mem_end = 0xb2000;
 			display_desc = "*MDA";
-//		}
+		}
 	}else{
 		video_mem_start = 0xb8000;
 		video_port_reg = 0x3d4;
 		video_port_val = 0x3d5;
-/*		if((ORIG_VIDEO_EGA_BX & 0xff) != 0x10){
+		if((ORIG_VIDEO_EGA_BX & 0xff) != 0x10){
 			video_mem_end = 0xbc000;
 			display_desc = "EGAC";
 		}else{
-*/			video_mem_end = 0xba000;
+			video_mem_end = 0xba000;
 			display_desc = "*CGA";
-//		}
+		}
 	}
 	
 	x = 76;y = 0;
@@ -76,11 +76,11 @@ void set_cursor(unsigned char x, unsigned char y){
 	y = p & 0x00ff;
 	x = (p & 0xff00) >> 8;
 	cli();
-	outb_p(0x3d4,0x0e);
-	outb_p(0x3d5,x);
-	outb_p(0x3d4,0x0f);
-	outb_p(0x3d5,y);
-//	sti(); // 设置好IDT后取消注释，现在未设置中断，不能打开中断屏蔽
+	outb_p(video_port_reg,0x0e);
+	outb_p(video_port_val,x);
+	outb_p(video_port_reg,0x0f);
+	outb_p(video_port_val,y);
+	sti(); // 设置好IDT后取消注释，现在未设置中断，不能打开中断屏蔽
 }
 int strlen(char *s){
 	int length = 0;

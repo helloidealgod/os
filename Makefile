@@ -55,6 +55,9 @@ traps.o: traps.c
 	@gcc -m32 -c traps.c -o traps.o
 OBJS += traps.o
 
+itoa.o: itoa.c
+	@gcc -m32 -c itoa.c -o itoa.o
+OBJS += itoa.o
 
 kernel: head.o $(OBJS) ld-bootsect.ld
 	@ld -T ld-bootsect.ld $(OBJS) -o kernel

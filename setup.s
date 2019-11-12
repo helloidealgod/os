@@ -7,8 +7,10 @@
 .equ SYSSEG,0x1000
 .equ VGASEG,0xb800
 .equ LEN,47
+.equ SECTORS,60
 
-show_text:
+setup_start:
+	#show text
 	mov $SETUPSEG,%ax
 	mov %ax,%es
 	mov $0x03,%ah
@@ -21,36 +23,6 @@ show_text:
 	mov $msg,%bp
 	int $0x10
 	
-#	mov $0,%bx
-#	mov $10,%cx
-#	mov $0x41,%dl
-#	mov $0x02,%dh
-#show:
-#	mov $VGASEG,%ax
-#	mov %ax,%ds
-#	mov %dl,%ds:(%bx)
-#	inc %dl
-#	inc %bx	
-#	mov %dh,%ds:(%bx)
-#	inc %bx
-#	loop show 
-
-#	mov $0x3d4,%dx
-#	mov $0x0e,%al
-#	out %al,%dx
-#
-#	mov $0x3d5,%dx
-#	mov $0,%al
-#	out %al,%dx
-#
-#	mov $0x3d4,%dx
-#	mov $0x0f,%al
-#	out %al,%dx
-#
-#	mov $0x3d5,%dx
-#	mov $0,%al
-#	out %al,%dx
-
 	#use bios to read system data,and save in 0x90000 ~ 0x901fd
 	mov $INITSEG,%ax
 	mov %ax,%ds
@@ -117,8 +89,10 @@ is_disk1:
 	cli #disable interrupt
 	#copy system
 	mov $0,%bx
-	mov $512*52,%cx
-#	mov $512*38+256+128+64+32+16-8-4-2,%cx
+	mov $SECTORS,%ax
+	mov $512,%cx
+	mul %cx
+	mov %ax,%cx
 _mov_system:
 	mov $SYSSEG,%ax
 	mov %ax,%ds

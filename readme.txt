@@ -1,3 +1,4 @@
+#新增内核代码时，注意修改bootsect.s和setup.s中读取磁盘扇区数量的修改
 1 bootsect.s
 2 makefile
 3 as --32 bootsect.s
