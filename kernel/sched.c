@@ -16,4 +16,5 @@ void sched_init(void){
 
 void do_timer(){
 	printk("timer\r\n");
+	outb_p(0x21,inb_p(0x21) & ~0x01);
 }

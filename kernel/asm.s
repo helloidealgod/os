@@ -7,7 +7,7 @@
 .globl general_potection,coprocessor_error,irq13,reserved
 .globl device_not_available,general_protection,page_exception,parallel_interrupt
 
-.globl timer_interrupt
+#.globl timer_interrupt
 
 timer_interrupt:
 	pushl $do_timer
