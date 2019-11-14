@@ -1,6 +1,6 @@
 .code32
 
-//.globl timer_interrupt
+#.globl timer_interrupt
 
 timer_interrupt:
 	push %ds

@@ -11,7 +11,7 @@
 
 timer_interrupt:
 	pushl $do_timer
-	iret
+	jmp no_error_code
 
 divide_error:
 	pushl $do_divide_error #调用的函数地址

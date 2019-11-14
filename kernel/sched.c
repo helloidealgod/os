@@ -7,16 +7,11 @@
 extern void timer_interrupt(void);
 
 void sched_init(void){
-	printk("sched_init_start\n");
-	outb_p(0x36,0x43);
-	outb_p(LATCH & 0xff,0x40);
-	outb_p(LATCH >> 8,0x40);
+	outb_p(0x43,0x36);
+	outb_p(0x40,LATCH & 0xff);
+	outb_p(0x40,LATCH >> 8);
 	set_intr_gate(0x20,&timer_interrupt);
-	outb_p(inb_p(0x21) & ~0x01,0x21);
-	printk("sched_init_end\n");
-	char s[10];
-	itoa(&timer_interrupt,s);
-	printk(s);
+	outb_p(0x21,inb_p(0x21) & ~0x01);
 }
 
 void do_timer(){
