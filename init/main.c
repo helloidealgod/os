@@ -6,9 +6,10 @@ int main(void){
 	char s[10];
 	itoa(i,s);
 	printk(s);
+	printk("\n");
 //	i = 2019 / 0;
 	__asm__("int3"::);
-//	sched_init();
+	sched_init();
 	while(1);
 	return 0;
 }

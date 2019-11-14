@@ -1,12 +1,13 @@
 #include "../include/system.h"
 #include "../include/io.h"
-
+#include "../include/head.h"
+/*
 typedef struct desc_struct{
 	unsigned long a,b;
 }desc_table[256];
 
 extern desc_table idt,gdt;
-
+*/
 //int do_exit(long code);
 void divide_error(void);
 void debug(void);

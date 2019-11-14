@@ -1,8 +1,8 @@
 .code32
 
-.globl time_interrupt
+//.globl timer_interrupt
 
-time_interrupt:
+timer_interrupt:
 	push %ds
 	push %es
 	push %fs

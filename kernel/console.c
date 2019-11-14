@@ -50,6 +50,7 @@ void printk(char c[]){
 		if('\r' == c[i]){
 			x = 0;
 		}else if('\n' == c[i]){
+			x = 0;
 			y ++;
 //			clear_line();
 		}else{
