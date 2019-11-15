@@ -25,6 +25,7 @@ timer_interrupt:
 	pop %ds
 	popl %ebp
 	popl %esi
+	popl %edi
 	popl %edx
 	popl %ecx
 	popl %ebx
