@@ -4,6 +4,8 @@ static long memory_end = 0;
 static long buffer_memory_end = 0;
 static long main_memory_start = 0;
 
+//int fork(void);
+//static inline _syscall0(int,fork)
 int main(void){
 	memory_end = (1<<20) + (EXT_MEM_K << 10);
 	memory_end &= 0xfffff000;
