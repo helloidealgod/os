@@ -3,7 +3,7 @@ all: System
 .PHONY=all clean run-qemu bochs
 
 run-qemu: System 
-	@qemu-system-i386 -boot a -fda System 
+	@qemu-system-i386 -m 16M -boot a -fda System 
 
 bochs:
 	bochs -q
@@ -14,7 +14,7 @@ clean:
 
 OBJS =
 
-VPATH = ./boot:./kernel:init
+VPATH = boot:kernel:init:mm
 
 System: bootsect setup kernel.o 
 	@dd if=bootsect of=System bs=512 count=1
@@ -70,6 +70,10 @@ OBJS += system_call.o
 sched.o: sched.c
 	@gcc -m32 -c ./kernel/sched.c -o sched.o
 OBJS += sched.o
+
+memory.o: memory.c
+	@gcc -m32 -c ./mm/memory.c -o memory.o
+OBJS += memory.o
 
 
 kernel.o: $(OBJS) ld-bootsect.ld
