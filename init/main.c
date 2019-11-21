@@ -1,11 +1,11 @@
+#include "../include/unistd.h"
 #define EXT_MEM_K (*(unsigned short *)0x90002)
 
 static long memory_end = 0;
 static long buffer_memory_end = 0;
 static long main_memory_start = 0;
 
-//int fork(void);
-//static inline _syscall0(int,fork)
+static inline _syscall0(int,fork)
 int main(void){
 	memory_end = (1<<20) + (EXT_MEM_K << 10);
 	memory_end &= 0xfffff000;
@@ -37,35 +37,3 @@ int main(void){
 	while(1);
 	return 0;
 }
-/*
-void test(const char* format,...){
-	char *c = *(&format);
-	printk(c);
-	char c1 = *((char *)(&format + 1));
-	if(c1 == 'a'){
-		printk("success");
-	}else{
-		printk("failed");
-	}
-	int c2 = *((int *)(&format + 2));
-	if(123 == c2){
-		printk(" success");
-	}else{
-		printk(" failed");
-	}
-	long c3 = *((long *)(&format + 3));
-	if(456 == c3){
-		printk(" success");
-	}else{
-		printk(" failed");
-	}
-	double c4 = *((double *)(&format + 4));
-	if(9876 == c4){
-		printk(" success");
-	}else{
-		printk(" failed");
-	}else{
-		printk(" failed");
-	}
-
-}*/
