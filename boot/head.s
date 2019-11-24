@@ -57,149 +57,11 @@ check_x87:
 	ret
 setup_idt:
 	lea ignore_int,%edx
-//	lea interrupt0,%edx
 	movl $0x00080000,%eax
 	movw %dx,%ax
 	movw $0x8e00,%dx
 	lea idt,%edi
-//	mov $256,%ecx
-//rp_sidt:
-//	movl %eax,(%edi)
-//	movl %edx,4(%edi)
-//	addl $8,%edi
-
-#	lea interrupt1,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#
-#	lea interrupt2,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#
-#	lea interrupt3,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#
-#	lea interrupt4,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#
-#	lea interrupt5,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#
-#	lea interrupt6,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#
-#	lea interrupt7,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#	
-#	lea interrupt8,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#
-#	lea interrupt9,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#	
-#	lea interrupt10,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#	
-#	lea interrupt11,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#	
-#	lea interrupt12,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#	
-#	lea interrupt13,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#	
-#	lea interrupt14,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#	
-#	lea interrupt15,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#	
-#	lea interrupt16,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
-#	movl %eax,(%edi)
-#	movl %edx,4(%edi)
-#	addl $8,%edi
-#
-#	lea ignore_int,%edx
-#	movl $0x00080000,%eax
-#	movw %dx,%ax
-#	movw $0x8e00,%dx
+	movw $0x8e00,%dx
 	mov $256,%ecx
 rp_sidt:
 	movl %eax,(%edi)
@@ -297,7 +159,6 @@ gdt_descr:
 	.word 256*8-1
 	.long gdt
 
-#	.align 3
 idt: 	.fill 256,8,0
 
 gdt:	.quad 0x0000000000000000	#NULL
