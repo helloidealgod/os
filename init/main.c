@@ -1,6 +1,21 @@
 #include "../include/unistd.h"
 #define EXT_MEM_K (*(unsigned short *)0x90002)
 
+#define move_to_user_mode() \
+	__asm__ ("movl %%esp,%%eax\n\t" \
+		"pushl $0x17\n\t" \
+		"pushl %%eax\n\t" \
+		"pushfl\n\t" \
+		"pushl $0x0f\n\t" \
+		"pushl $1f\n\t" \
+		"iret\n" \
+		"1:\t movl $0x17,%%eax\n\t" \
+		"movw %%ax,%%ds\n\t" \
+		"movw %%ax,%%es\n\t" \
+		"movw %%ax,%%fs\n\t" \
+		"movw %%ax,%%gs"\
+		:::"ax");
+
 static long memory_end = 0;
 static long buffer_memory_end = 0;
 static long main_memory_start = 0;

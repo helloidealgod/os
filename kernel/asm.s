@@ -7,12 +7,6 @@
 .globl general_potection,coprocessor_error,irq13,reserved
 .globl device_not_available,general_protection,page_exception,parallel_interrupt
 
-#.globl timer_interrupt
-
-timer_interrupt:
-	pushl $do_timer
-	jmp no_error_code
-
 divide_error:
 	pushl $do_divide_error #调用的函数地址
 no_error_code:			#这里是无出错号处理入口
