@@ -11,7 +11,7 @@ bochs:
 clean:
 	@- rm -f *.o bootsect setup System
 	@- rm -f console.s
-
+CFLAGS=-fomit-frame-pointer
 OBJS =
 
 VPATH = boot:kernel:init:mm
@@ -68,7 +68,8 @@ system_call.o: system_call.s
 OBJS += system_call.o
 
 sched.o: sched.c
-	@gcc -m32 -c ./kernel/sched.c -o sched.o
+	@gcc -m32 -fomit-frame-pointer -c ./kernel/sched.c -o sched.o
+#-fomit-frame-pointer 不加这个参数 则set_tssldt_desc 这个宏编译不通过 asm operand has imposible constraints
 OBJS += sched.o
 
 memory.o: memory.c
