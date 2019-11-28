@@ -48,7 +48,7 @@ int main(void){
 	printk("total memory: ");
 	printk(s);
 	printk("M \n");
-//	sched_init();
+	sched_init();
 	while(1);
 	return 0;
 }

@@ -10,7 +10,47 @@
 #define ltr(n) __asm__("ltr %%ax"::"a"(_TSS(n)))
 #define lldt(n) __asm__("lldt %%ax"::"a"(_LDT(n)))
 #define NR_TASKS 64
+#define NULL ((void *)0)
 
+#define _set_tssldt_desc(n,addr,type) \
+__asm__ ("movw $104,%1\n\t"\
+	"movw %%ax,%2\n\t"\
+	"rorl $16,%%eax\n\t"\
+	"movb %%al,%3\n\t"\
+	"movb $"type ",%4\n\t"\
+	"movb $0,%5\n\t"\
+	"movb %%ah,%5\n\t"\
+	"rorl $16,%%eax\n\t"\
+	::"a" (addr),\
+	"m" (*(n)),\
+	"m" (*(n+2)),\
+	"m" (*(n+4)),\
+	"m" (*(n+5)),\
+	"m" (*(n+6))\
+	)
+/*
+#define _set_tssldt_desc(n,addr,type) \
+__asm__ ("movw $104,%1\n\t"\
+	"movw %%ax,%2\n\t"\
+	"rorl $16,%%eax\n\t"\
+	"movb %%al,%3\n\t"\
+	"movb $"type",%4\n\t"\
+	"movb $0x00,%5\n\t"\
+	"movb %%ah,%6\n\t"\
+	"rorl $16,%%eax\n\t"\
+	:\
+	:"a" (addr),\
+	"m" (*(n)),\
+	"m" (*(n+2)),\
+	"m" (*(n+4)),\
+	"m" (*(n+5)),\
+	"m" (*(n+6)),\
+	"m" (*(n+7))\
+	)
+*/
+#define set_tss_desc(n,addr) _set_tssldt_desc(((char *)(n)),((int)(addr)),"0x89")
+
+#define set_ldt_desc(n,addr) _set_tssldt_desc(((char *)(n)),((int)(addr)),"0x82")
 struct tss_struct {
 	long back_link;
 	long esp0;
@@ -45,7 +85,15 @@ struct task_struct{
 	struct desc_struct ldt[3];
 	struct tss_struct tss;
 };
-#define INIT_TASK 
+#define INIT_TASK \
+	{0,15,15,0,-1, \
+	{ \
+		{0,0},\
+		{0x9f,0xc0fa00},\
+		{0x9f,0xc0f200}\
+	},\
+	{0} \
+	}
 
 union task_union{
 	struct task_struct task;
@@ -53,26 +101,46 @@ union task_union{
 };
 
 extern void timer_interrupt(void);
-static union task_union init_task = {INIT_TASK,};
-static struct task_struct * task[NR_TASKS]={&(init_task.task),};
+//static union task_union init_task = {INIT_TASK,};
+//static struct task_struct * task[NR_TASKS]={&(init_task.task),};
+static union task_union init_task;
+static struct task_struct * task[NR_TASKS];
+
 void sched_init(void){
 	int i;
 	struct desc_struct *p;
-	
+	init_task.task.state = 0;
+	init_task.task.counter = 15;
+	init_task.task.ldt[0].a = 0;
+	init_task.task.ldt[0].b = 0;
+	//task0 代码段640k大小 3级权限 0～640K
+	init_task.task.ldt[1].a = 0x0000009f;
+	init_task.task.ldt[1].b = 0x00c0fa00;
+	//task0 数据段0～640K 3级权限
+	init_task.task.ldt[2].a = 0x0000009f;
+	init_task.task.ldt[2].b = 0x00c0f200;
+
 	set_tss_desc(gdt+FIRST_TSS_ENTRY,&(init_task.task.tss));
 	set_ldt_desc(gdt+FIRST_LDT_ENTRY,&(init_task.task.ldt));
-
+//	p = gdt;
+	//TSS0
+//	(p+4)->a = 0x00000fff;
+//	(p+4)->b = 0x00c09a00;
+	//LDT0
+//	(p+5)->a = 0x00c09200;
+//	(p+5)->b = 0x00000fff;
 	p = gdt + 2 + FIRST_TSS_ENTRY;
+	task[0] = &(init_task.task);
 	for(i =1;i<NR_TASKS;i++){
 		task[i] = NULL;
-		P->a = p->b = 0;
+		p->a = p->b = 0;
 		p++;
 		p->a = p->b = 0;
 		p++;
 	}
 
-	ltr(0);
-	lldt(0);
+//	ltr(0);
+//	lldt(0);
 
 /*	outb_p(0x43,0x36);
 	outb_p(0x40,LATCH & 0xff);
