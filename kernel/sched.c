@@ -107,13 +107,13 @@ void sched_init(void){
 	init_task.task.ldt[2].b = 0x00c0f200;
 	//TSS
 	init_task.task.tss.back_link = 0;							
-	init_task.task.tss.esp0 = 0;
+//	init_task.task.tss.esp0 = PAGE_SIZE + (long)&init_task;
 	init_task.task.tss.ss0 = 0x10;
 	init_task.task.tss.esp1 = 0;
 	init_task.task.tss.ss1 = 0;
 	init_task.task.tss.esp2 = 0;
 	init_task.task.tss.ss2 = 0;
-	init_task.task.tss.cr3 = 0;
+//	init_task.task.tss.cr3 = (long)&pg_dir;
 	init_task.task.tss.eip = 0;
 	init_task.task.tss.eflags = 0;
 	init_task.task.tss.eax = 0;
