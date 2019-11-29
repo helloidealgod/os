@@ -49,6 +49,7 @@ int main(void){
 	printk(s);
 	printk("M \n");
 	sched_init();
+	move_to_user_mode();
 	while(1);
 	return 0;
 }

@@ -93,6 +93,10 @@ void sched_init(void){
 	struct desc_struct *p;
 	init_task.task.state = 0;
 	init_task.task.counter = 15;
+	init_task.task.priority = 15;
+	init_task.task.pid = 0;
+	init_task.task.father = -1;
+
 	init_task.task.ldt[0].a = 0;
 	init_task.task.ldt[0].b = 0;
 	//task0 代码段640k大小 3级权限 0～640K
@@ -101,16 +105,36 @@ void sched_init(void){
 	//task0 数据段0～640K 3级权限
 	init_task.task.ldt[2].a = 0x0000009f;
 	init_task.task.ldt[2].b = 0x00c0f200;
+	//TSS
+	init_task.task.tss.back_link = 0;							
+	init_task.task.tss.esp0 = 0;
+	init_task.task.tss.ss0 = 0x10;
+	init_task.task.tss.esp1 = 0;
+	init_task.task.tss.ss1 = 0;
+	init_task.task.tss.esp2 = 0;
+	init_task.task.tss.ss2 = 0;
+	init_task.task.tss.cr3 = 0;
+	init_task.task.tss.eip = 0;
+	init_task.task.tss.eflags = 0;
+	init_task.task.tss.eax = 0;
+	init_task.task.tss.ecx = 0;
+	init_task.task.tss.edx = 0;
+	init_task.task.tss.ebx = 0;
+	init_task.task.tss.esp = 0;
+	init_task.task.tss.ebp = 0;
+	init_task.task.tss.esi = 0;
+	init_task.task.tss.edi = 0;
+	init_task.task.tss.es = 0x17;//段选择符0x10 1(LDT) 11(3级权限)
+	init_task.task.tss.cs = 0x17;
+	init_task.task.tss.ss = 0x17;
+	init_task.task.tss.ds = 0x17;
+	init_task.task.tss.fs = 0x17;
+	init_task.task.tss.gs = 0x17;
+	init_task.task.tss.ldt = _LDT(0);
+	init_task.task.tss.trace_bitmap = 0x80000000;
 
 	set_tss_desc(gdt+FIRST_TSS_ENTRY,&(init_task.task.tss));
 	set_ldt_desc(gdt+FIRST_LDT_ENTRY,&(init_task.task.ldt));
-//	p = gdt;
-	//TSS0
-//	(p+4)->a = 0x00000fff;
-//	(p+4)->b = 0x00c09a00;
-	//LDT0
-//	(p+5)->a = 0x00c09200;
-//	(p+5)->b = 0x00000fff;
 	p = gdt + 2 + FIRST_TSS_ENTRY;
 	task[0] = &(init_task.task);
 	for(i =1;i<NR_TASKS;i++){
@@ -121,8 +145,8 @@ void sched_init(void){
 		p++;
 	}
 
-//	ltr(0);
-//	lldt(0);
+	ltr(0);
+	lldt(0);
 
 /*	outb_p(0x43,0x36);
 	outb_p(0x40,LATCH & 0xff);
