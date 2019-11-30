@@ -35,6 +35,9 @@ __asm__ ("movw $104,%1\n\t"\
 
 #define set_ldt_desc(n,addr) _set_tssldt_desc(((char *)(n)),addr,"0x82")
 struct tss_struct {
+// 前一任务链接（TSS Back Link）：前一个任务的TSS描述符的选择子。 
+// 当Call指令、中断或者异常造成任务切换，处理器会把旧任务的TSS选择子复制到新任务的TSS的Back Link字段中，并且设置新任务的NT（EFLAGS的bit14）为1，以表明新任务嵌套于旧任务中。
+// SS0，SS1，SS2和ESP0，ESP1，ESP2分别是0,1,2特权级堆栈的选择子和栈顶指针
 	long back_link;
 	long esp0;
 	long ss0;
