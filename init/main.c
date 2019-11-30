@@ -48,8 +48,11 @@ int main(void){
 	printk("total memory: ");
 	printk(s);
 	printk("M \n");
+//	int b = 1 / ;
 	sched_init();
+//	sti();
 	move_to_user_mode();
+//	int b = 1 / 0;
 	while(1);
 	return 0;
 }

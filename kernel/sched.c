@@ -2,6 +2,7 @@
 #include "../include/system.h"
 #include "../include/head.h"
 #define HZ 100
+#define PAGE_SIZE 4096
 #define LATCH (1193180/HZ)
 #define FIRST_TSS_ENTRY 4
 #define FIRST_LDT_ENTRY (FIRST_TSS_ENTRY + 1)
@@ -107,7 +108,7 @@ void sched_init(void){
 	init_task.task.ldt[2].b = 0x00c0f200;
 	//TSS
 	init_task.task.tss.back_link = 0;							
-//	init_task.task.tss.esp0 = PAGE_SIZE + (long)&init_task;
+	init_task.task.tss.esp0 = PAGE_SIZE + (long)&init_task;
 	init_task.task.tss.ss0 = 0x10;
 	init_task.task.tss.esp1 = 0;
 	init_task.task.tss.ss1 = 0;

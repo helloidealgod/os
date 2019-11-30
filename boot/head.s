@@ -4,9 +4,9 @@
 
 .equ SYSSEG,0x1000
 .equ LEN,54
-.global idt,gdt, _pg_dir
+.global idt,gdt, pg_dir
 
-_pg_dir:
+pg_dir:
 starup_32:
 	mov $0x10,%eax
 	mov %ax,%ds
@@ -52,7 +52,7 @@ check_x87:
 	movl %cr0,%eax
 	xorl $6,%eax
 	ret
-.align 2
+.align 4
 1:	.byte 0xdb,0xe4
 	ret
 setup_idt:
@@ -129,10 +129,10 @@ setup_paging:
 	xorl %eax,%eax
 	xorl %edi,%edi
 	cld;rep;stosl
-	movl $pg0+7,_pg_dir
-	movl $pg1+7,_pg_dir+4
-	movl $pg2+7,_pg_dir+8
-	movl $pg3+7,_pg_dir+12
+	movl $pg0+7,pg_dir
+	movl $pg1+7,pg_dir+4
+	movl $pg2+7,pg_dir+8
+	movl $pg3+7,pg_dir+12
 	
 	movl $pg3+4096,%edi
 	movl $0xfff007,%eax
