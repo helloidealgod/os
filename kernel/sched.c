@@ -91,7 +91,7 @@ extern void timer_interrupt(void);
 //static struct task_struct * task[NR_TASKS]={&(init_task.task),};
 static union task_union init_task;
 static struct task_struct * task[NR_TASKS];
-
+extern unsigned long pg_dir[1024];
 void sched_init(void){
 	int i;
 	struct desc_struct *p;
@@ -117,7 +117,7 @@ void sched_init(void){
 	init_task.task.tss.ss1 = 0;
 	init_task.task.tss.esp2 = 0;
 	init_task.task.tss.ss2 = 0;
-//	init_task.task.tss.cr3 = (long)&pg_dir;
+	init_task.task.tss.cr3 = (long)&pg_dir;
 	init_task.task.tss.eip = 0;
 	init_task.task.tss.eflags = 0;
 	init_task.task.tss.eax = 0;

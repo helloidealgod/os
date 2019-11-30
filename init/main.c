@@ -49,10 +49,13 @@ int main(void){
 	printk(s);
 	printk("M \n");
 //	int b = 1 / ;
+	printk("before move to user mode,test call core code\n");
 	sched_init();
 //	sti();
 	move_to_user_mode();
 //	int b = 1 / 0;
+	int c = 1 + 2 + 3+ 4 + 5 + 6 + 7 + 8 + 9;
+	printk("after move to user mode,test call core code\n");
 	while(1);
 	return 0;
 }
