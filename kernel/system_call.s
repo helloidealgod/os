@@ -1,6 +1,6 @@
 .code32
 
-.globl timer_interrupt
+.globl timer_interrupt,system_call
 
 timer_interrupt:
 	pushl %eax
@@ -54,3 +54,31 @@ timer_interrupt:
 #//	addl $4,%esp
 #//	jmp ret_from_sys_call
 #	iret
+
+system_call:
+//	cmpl $nr_system_calls-1,%eax
+	push %ds
+	push %es
+	push %fs
+	pushl %edx
+	pushl %ecx
+	pushl %ebx
+	movl $0x10,%edx
+	mov %dx,%ds
+	mov %dx,%es
+	mov $0x17,%edx
+	mov %dx,%fs
+//	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
+	push $msg
+	call printk
+	popl %ebx
+	popl %ecx
+	popl %edx
+	pop %fs
+	pop %es 	
+	pop %ds
+	movl $0,%eax
+	iret
+
+msg:
+	.asciz "hello int 80 \n"

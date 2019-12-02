@@ -87,6 +87,7 @@ union task_union{
 };
 
 extern void timer_interrupt(void);
+extern void system_call();
 //static union task_union init_task = {INIT_TASK,};
 //static struct task_struct * task[NR_TASKS]={&(init_task.task),};
 static union task_union init_task;
@@ -158,7 +159,7 @@ void sched_init(void){
 	set_intr_gate(0x20,&timer_interrupt);
 	outb_p(0x21,inb_p(0x21) & ~0x01);
 	*/
-//	set_system_gate(0x80,&system_call);
+	set_system_gate(0x80,&system_call);
 }
 
 void do_timer(){
