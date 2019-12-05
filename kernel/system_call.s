@@ -71,6 +71,7 @@ system_call:
 //	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
 	push $msg
 	call printk
+	popl %eax
 	popl %ebx
 	popl %ecx
 	popl %edx
