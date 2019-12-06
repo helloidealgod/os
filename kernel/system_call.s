@@ -94,6 +94,14 @@ msg:
 
 sys_fork:
 	call find_empty_process
+	testl %eax,%eax
+	js 1f
+	push %gs
+	pushl %esi
+	pushl %edi
+	pushl %ebp
+	pushl %eax
 	call copy_process
-	ret
+	addl $20,%esp
+1:	ret
 	
