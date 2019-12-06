@@ -3,7 +3,7 @@
 
 #define _NR_setup 0
 #define _NR_exit 1
-#define _NR_fork 2
+#define _NR_fork 0
 #define _NR_read 3
 #define _NR_write 4
 #define _NR_open 5

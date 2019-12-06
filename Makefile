@@ -76,6 +76,9 @@ memory.o: memory.c
 	@gcc -m32 -c ./mm/memory.c -o memory.o
 OBJS += memory.o
 
+fork.o: fork.c
+	@gcc -m32 -c ./kernel/fork.c -o fork.o
+OBJS += fork.o
 
 kernel.o: $(OBJS) ld-bootsect.ld
 	@ld -T ld-bootsect.ld $(OBJS) -o kernel.o

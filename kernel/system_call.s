@@ -1,6 +1,11 @@
 .code32
 
 .globl timer_interrupt,system_call
+nr_system_calls = 72
+
+bad_system_call:
+	movl $-1,%eax
+	iret
 
 timer_interrupt:
 	pushl %eax
@@ -56,7 +61,8 @@ timer_interrupt:
 #	iret
 
 system_call:
-//	cmpl $nr_system_calls-1,%eax
+	cmpl $nr_system_calls-1,%eax
+	ja bad_system_call
 	push %ds
 	push %es
 	push %fs
@@ -69,9 +75,10 @@ system_call:
 	mov $0x17,%edx
 	mov %dx,%fs
 //	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
+//	call sys_fork
 	push $msg
 	call printk
-	popl %eax
+	addl $4,%esp
 	popl %ebx
 	popl %ecx
 	popl %edx
@@ -82,4 +89,11 @@ system_call:
 	iret
 
 msg:
-	.asciz "hello int 80 \n"
+	.asciz "hello int 0x80\n"
+.align 2
+
+sys_fork:
+	call find_empty_process
+	call copy_process
+	iret
+	

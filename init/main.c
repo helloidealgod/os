@@ -48,20 +48,13 @@ int main(void){
 	printk("total memory: ");
 	printk(s);
 	printk("M \n");
-//	int b = 1 / ;
-	printk("before move to user mode,test call core code\n");
 	sched_init();
 //	sti();
 	move_to_user_mode();
-//	int b = 1 / 0;
 	int c = 1 + 2 + 3+ 4 + 5 + 6 + 7 + 8 + 9;
 	itoa(12,s);
-//	printk("after move to user mode,test call core code\n");
 	if(!fork()){
-		int d = 1 + 1;
-//		printk("init");		
 	}
-	int b = 1 / 0;
 	while(1);
 	return 0;
 }
