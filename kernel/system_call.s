@@ -75,10 +75,10 @@ system_call:
 	mov $0x17,%edx
 	mov %dx,%fs
 //	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
-//	call sys_fork
 	push $msg
 	call printk
 	addl $4,%esp
+	call sys_fork
 	popl %ebx
 	popl %ecx
 	popl %edx
@@ -95,5 +95,5 @@ msg:
 sys_fork:
 	call find_empty_process
 	call copy_process
-	iret
+	ret
 	
