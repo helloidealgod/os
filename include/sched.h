@@ -1,5 +1,6 @@
 #ifndef _SCHED_H
 #define _SCHED_H
+#include "head.h"
 struct i387_struct {
 	long cwd;
 	long swd;
@@ -53,3 +54,4 @@ union task_union{
 	struct task_struct task;
 	char stack[4096];
 };
+#endif
