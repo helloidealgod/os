@@ -54,4 +54,6 @@ union task_union{
 	struct task_struct task;
 	char stack[4096];
 };
+
+extern struct task_struct * task[64];
 #endif
