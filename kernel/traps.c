@@ -1,13 +1,7 @@
 #include "../include/system.h"
 #include "../include/io.h"
 #include "../include/head.h"
-/*
-typedef struct desc_struct{
-	unsigned long a,b;
-}desc_table[256];
 
-extern desc_table idt,gdt;
-*/
 //int do_exit(long code);
 void divide_error(void);
 void debug(void);
@@ -111,7 +105,7 @@ void do_page_exception(long esp,long error_code){
 
 void trap_init(void){
 	int i;
-	set_trap_gate(0,&divide_error);		
+	set_trap_gate(0,&divide_error);
 	set_trap_gate(1,&debug);
 	set_trap_gate(2,&nmi);
 	set_trap_gate(3,&int3);
@@ -135,5 +129,5 @@ void trap_init(void){
 	outb_p(inb_p(0x21)&0xfb,0x21);
 	outb(inb_p(0xa1)&0xdf,0xa1);
 	set_trap_gate(39,&parallel_interrupt);
-	
+
 }

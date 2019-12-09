@@ -1,6 +1,7 @@
 #include "../include/io.h"
 #include "../include/system.h"
 #include "../include/head.h"
+#include "../include/sched.h"
 #define HZ 100
 #define PAGE_SIZE 4096
 #define LATCH (1193180/HZ)
@@ -12,79 +13,6 @@
 #define lldt(n) __asm__("lldt %%ax"::"a"(_LDT(n)))
 #define NR_TASKS 64
 #define NULL ((void *)0)
-
-#define _set_tssldt_desc(n,addr,type) \
-__asm__ ("movw $104,%1\n\t"\
-	"movw %%ax,%2\n\t"\
-	"rorl $16,%%eax\n\t"\
-	"movb %%al,%3\n\t"\
-	"movb $"type ",%4\n\t"\
-	"movb $0,%5\n\t"\
-	"movb %%ah,%6\n\t"\
-	"rorl $16,%%eax\n\t"\
-	::"a" (addr),\
-	"m" (*(n)),\
-	"m" (*(n+2)),\
-	"m" (*(n+4)),\
-	"m" (*(n+5)),\
-	"m" (*(n+6)),\
-	"m" (*(n+7))\
-	)
-
-#define set_tss_desc(n,addr) _set_tssldt_desc(((char *)(n)),addr,"0x89")
-
-#define set_ldt_desc(n,addr) _set_tssldt_desc(((char *)(n)),addr,"0x82")
-struct tss_struct {
-// 前一任务链接（TSS Back Link）：前一个任务的TSS描述符的选择子。 
-// 当Call指令、中断或者异常造成任务切换，处理器会把旧任务的TSS选择子复制到新任务的TSS的Back Link字段中，并且设置新任务的NT（EFLAGS的bit14）为1，以表明新任务嵌套于旧任务中。
-// SS0，SS1，SS2和ESP0，ESP1，ESP2分别是0,1,2特权级堆栈的选择子和栈顶指针
-	long back_link;
-	long esp0;
-	long ss0;
-	long esp1;
-	long ss1;
-	long esp2;
-	long ss2;
-	long cr3;
-	long eip;
-	long eflags;
-	long eax,ecx,edx,ebx;
-	long esp;
-	long ebp;
-	long esi;
-	long edi;
-	long es;
-	long cs;
-	long ss;
-	long ds;
-	long fs;
-	long gs;
-	long ldt;
-	long trace_bitmap;
-};
-
-struct task_struct{
-	long state;
-	long counter;
-	long priority;
-	long pid,father;
-	struct desc_struct ldt[3];
-	struct tss_struct tss;
-};
-#define INIT_TASK \
-	{0,15,15,0,-1, \
-	{ \
-		{0,0},\
-		{0x9f,0xc0fa00},\
-		{0x9f,0xc0f200}\
-	},\
-	{0} \
-	}
-
-union task_union{
-	struct task_struct task;
-	char stack[4096];
-};
 
 extern void timer_interrupt(void);
 extern void system_call();
@@ -111,7 +39,7 @@ void sched_init(void){
 	init_task.task.ldt[2].a = 0x0000009f;
 	init_task.task.ldt[2].b = 0x00c0f200;
 	//TSS
-	init_task.task.tss.back_link = 0;							
+	init_task.task.tss.back_link = 0;
 	init_task.task.tss.esp0 = PAGE_SIZE + (long)&init_task;
 	init_task.task.tss.ss0 = 0x10;
 	init_task.task.tss.esp1 = 0;

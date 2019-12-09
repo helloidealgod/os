@@ -1,20 +1,6 @@
 #include "../include/unistd.h"
+#include "../include/system.h"
 #define EXT_MEM_K (*(unsigned short *)0x90002)
-
-#define move_to_user_mode() \
-	__asm__ ("movl %%esp,%%eax\n\t" \
-		"pushl $0x17\n\t" \
-		"pushl %%eax\n\t" \
-		"pushfl\n\t" \
-		"pushl $0x0f\n\t" \
-		"pushl $1f\n\t" \
-		"iret\n" \
-		"1:\t movl $0x17,%%eax\n\t" \
-		"movw %%ax,%%ds\n\t" \
-		"movw %%ax,%%es\n\t" \
-		"movw %%ax,%%fs\n\t" \
-		"movw %%ax,%%gs"\
-		:::"ax");
 
 static long memory_end = 0;
 static long buffer_memory_end = 0;
@@ -36,7 +22,7 @@ int main(void){
 	mem_init(main_memory_start,memory_end);
 
 	trap_init();
-	con_init();	
+	con_init();
 	printk("hello world! \r\n");
 	int i = (int)(EXT_MEM_K & 0x0000ffff);
 	char s[10];
@@ -49,7 +35,7 @@ int main(void){
 	printk(s);
 	printk("M \n");
 	sched_init();
-//	sti();
+	sti();
 	move_to_user_mode();
 	int c = 1 + 2 + 3+ 4 + 5 + 6 + 7 + 8 + 9;
 	itoa(12,s);

@@ -1,3 +1,4 @@
+#include "../include/sched.h"
 #define NR_TASKS 64
 #define EAGAIN 11
 #define NULL ((void *)0)
