@@ -1,6 +1,6 @@
 .code32
 
-.globl timer_interrupt,system_call
+.globl timer_interrupt,system_call,sys_fork
 nr_system_calls = 72
 
 bad_system_call:
@@ -74,11 +74,12 @@ system_call:
 	mov %dx,%es
 	mov $0x17,%edx
 	mov %dx,%fs
-//	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
 	push $msg
 	call printk
 	addl $4,%esp
-	call sys_fork
+//	call sys_fork
+	movl $0,%eax 		#??
+	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
 	popl %ebx
 	popl %ecx
 	popl %edx

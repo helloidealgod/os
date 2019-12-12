@@ -2,6 +2,10 @@
 #include "../include/system.h"
 #define EXT_MEM_K (*(unsigned short *)0x90002)
 
+typedef int (*fn_ptr)();
+extern int sys_fork();
+fn_ptr sys_call_table[]={sys_fork};
+
 static long memory_end = 0;
 static long buffer_memory_end = 0;
 static long main_memory_start = 0;
