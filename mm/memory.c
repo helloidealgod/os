@@ -18,3 +18,23 @@ void mem_init(long start_mem,long end_mem){
 	while(end_mem-- > 0)
 		mem_map[i++]=0;
 }
+/*
+unsigned long get_free_page(void){
+	register unsigned long _res asm("ax");
+	__asm__ ("std ; repne ; scasb\n\t"
+		"jne 1f\n\t"
+		"movb $1,1(%%edi)\n\t"
+		"sall $12,%%ecx\n\t"
+		"addl %2,%%ecx\n\t"
+		"movl %%ecx,%%edx\n\t"
+		"movl $1024,%%ecx\n\t"
+		"leal 4096(%%edx),%%edi\n\t"
+		"rep ; stosl\n\t"
+		"movl %%edx,%%eax\n"
+		"1:"
+		:"=a" (_res)
+		:""(0),"i"(LOW_MEM),"c"(PAGING_PAGES),
+		“D”(mem_map+PAGING_PAGES-1)
+		:"di","cx","dx");
+	return _res;
+}*/
