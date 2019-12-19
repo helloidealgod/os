@@ -2,11 +2,8 @@
 #define NR_TASKS 64
 #define EAGAIN 11
 #define NULL ((void *)0)
-#define PAGING_PAGES 4096
-#define LOW_MEM 0x100000
 
 long last_pid = 0;
-extern unsigned char mem_map[PAGING_PAGES];
 unsigned long get_free_page(void);
 int find_empty_process(){
 	printk("find empty process\n");
@@ -44,7 +41,7 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	p->pid = last_pid;
 //	p->father = current->pid;
 	p->counter = p->priority;
-	
+
 	p->tss.back_link = 0;
 	p->tss.esp0 = 4096 + (long)p;
 	p->tss.ss0 = 0x10;
@@ -67,22 +64,4 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 //	p->tss.ldt = _LDT(nr);
 	p->tss.trace_bitmap = 0x80000000;
 	printk("copy process\n");
-}
-
-unsigned long get_free_page(void){
-	register unsigned long _res asm("ax");
-	__asm__ volatile ("std; repne; scasb\n\t"
-		"jne 1f\n\t"
-		"movb $1, 1(%%edi)\n\t"
-		"sall $12, %%ecx\n\t"
-		"addl %2, %%ecx\n\t"
-		"movl %%ecx, %%edx\n\t"
-		"movl $1024, %%ecx\n\t"
-		"leal 4096(%%edx), %%edi\n\t"
-		"rep; stosl;\n\t"
-		"movl %%edx, %%eax\n"
-		"1: cld"
-		:"=a" (_res)
-		:"0" (0),"i" (LOW_MEM),"c" (PAGING_PAGES),
-		"D" (mem_map + PAGING_PAGES - 1));
 }
