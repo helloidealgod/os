@@ -28,7 +28,7 @@ unsigned long get_free_page(void){
 		"addl %2, %%ecx\n\t"
 		"movl %%ecx, %%edx\n\t"
 		"movl $1024, %%ecx\n\t"
-		"leal 4096(%%edx), %%edi\n\t"
+		"leal 4092(%%edx), %%edi\n\t"
 		"rep; stosl;\n\t"
 		"movl %%edx, %%eax\n"
 		"1: cld"
