@@ -2,8 +2,12 @@
 #define NR_TASKS 64
 #define EAGAIN 11
 #define NULL ((void *)0)
+#define FIRST_TSS_ENTRY 4
+#define FIRST_LDT_ENTRY (FIRST_TSS_ENTRY + 1)
+#define _LDT(n) ((((unsigned long)n)<<4)+(FIRST_LDT_ENTRY<<3))
 
 long last_pid = 0;
+extern struct task_struct * current;
 unsigned long get_free_page(void);
 int find_empty_process(){
 	printk("find empty process\n");
@@ -37,11 +41,11 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	       	return -11;
 	}
 	task[nr] = p;
-//	*p = *current;
+	*p = *current;
 
 	p->state = 0;
 	p->pid = last_pid;
-//	p->father = current->pid;
+	p->father = current->pid;
 	p->counter = p->priority;
 
 	p->tss.back_link = 0;
@@ -63,7 +67,7 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	p->tss.ds = ds & 0xffff;
 	p->tss.fs = fs & 0xffff;
 	p->tss.gs = gs & 0xffff;
-//	p->tss.ldt = _LDT(nr);
+	p->tss.ldt = _LDT(nr);
 	p->tss.trace_bitmap = 0x80000000;
 	printk("copy process\n");
 }

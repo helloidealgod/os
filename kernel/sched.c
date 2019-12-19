@@ -19,6 +19,7 @@ extern void system_call();
 //static union task_union init_task = {INIT_TASK,};
 //static struct task_struct * task[NR_TASKS]={&(init_task.task),};
 static union task_union init_task;
+struct task_struct * current = &(init_task.task);
 struct task_struct * task[NR_TASKS];
 extern unsigned long pg_dir[1024];
 void sched_init(void){
