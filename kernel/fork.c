@@ -33,7 +33,9 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	int i;
 	p = (struct task_struct *)get_free_page();
 	p = (void *)0;
-	if(!p) return -11;
+	if(NULL != p){
+	       	return -11;
+	}
 	task[nr] = p;
 //	*p = *current;
 
