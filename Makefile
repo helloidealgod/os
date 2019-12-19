@@ -77,7 +77,7 @@ memory.o: memory.c
 OBJS += memory.o
 
 fork.o: fork.c
-	@gcc -m32 -c ./kernel/fork.c -o fork.o
+	@gcc -m32 -fomit-frame-pointer -c ./kernel/fork.c -o fork.o
 OBJS += fork.o
 
 kernel.o: $(OBJS) ld-bootsect.ld
