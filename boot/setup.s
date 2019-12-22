@@ -88,22 +88,15 @@ is_disk1:
 	#disable interrupt and copy system to 0x00000
 	cli #disable interrupt
 	#copy system
-	mov $0,%bx
-	mov $SECTORS,%ax
-	mov $512,%cx
-	mul %cx
-	mov %ax,%cx
-_mov_system:
+	cld
 	mov $SYSSEG,%ax
 	mov %ax,%ds
-	mov %ds:(%bx),%dl
-
 	mov $0,%ax
-	mov %ax,%ds
-	mov %dl,%ds:(%bx)
-
-	inc %bx
-	loop _mov_system
+	mov %ax,%si
+	mov %ax,%es
+	mov %ax,%di
+	mov $SECTORS*512,%cx
+	rep movsb
 
 #	sti #enable interrupt	
 	#set GDT & IDT

@@ -1,6 +1,6 @@
 .code16
 
-.global _bootstart
+.global bootstart
 
 .equ BOOTSEG,0x07c0
 .equ INITSEG,0x9000
@@ -10,43 +10,40 @@
 
 .text
 
-ljmp $BOOTSEG,$_bootstart
+ljmp $BOOTSEG,$bootstart
 
-_bootstart:
+bootstart:
 	mov $0x03,%ah
 	int $0x10	#get cursor position
 	
 	mov $BOOTSEG,%ax
 	mov %ax,%es
-	mov $_string,%bp
+	mov $string,%bp
 	mov $0x1301,%ax
 	mov $0x000a,%bx
 	mov $19,%cx
 	int $0x10	#printf string
 
 	# copy bootsect from 0x7c00:0x0000 to 0x9000:0x0000 total 512 bytes 
-	mov $0,%bx
-	mov $512,%cx
-_copy_bootsect:
+	cld
 	mov $BOOTSEG,%ax
 	mov %ax,%ds
-	mov %ds:(%bx),%dl
-	
 	mov $INITSEG,%ax
-	mov %ax,%ds
-	mov %dl,%ds:(%bx)
-	
-	inc %bx
-	loop _copy_bootsect
+	mov %ax,%es
+	mov $0,%ax
+	mov %ax,%si
+	mov %ax,%di
+	mov $512,%cx
+	rep movsb
 
-	ljmp $INITSEG,$_set_reg
-_set_reg:
+	ljmp $INITSEG,$set_reg
+set_reg:
 	mov %cs,%ax
 	mov %ax,%ds
 	mov %ax,%es
 	mov %ax,%ss
 	mov $0xFF00,%sp
-_load_setup:
+load_setup:
 	mov $0x0000,%dx
 	mov $0x0002,%cx
 	mov $SETUPSEG,%ax
@@ -56,10 +53,10 @@ _load_setup:
 	mov $4,%al
 	int $0x13	
 
-	jnc _load_system #load setup ok then load system
-	jmp _load_setup
+	jnc load_system #load setup ok then load system
+	jmp load_setup
 
-_load_system:
+load_system:
 	mov $0x0000,%dx  #DL driver number(0=a),
 			 #DH head number(0 - 15)
 	mov $0x0006,%cx  #CH track/cylinder number (0 - 1023)
@@ -71,14 +68,14 @@ _load_system:
 	mov $SECTORS,%al       # number of sectors to read
 	int $0x13
 
-	jnc _system_load_ok
-	jmp _load_system
+	jnc system_load_ok
+	jmp load_system
 
-_system_load_ok:
+system_load_ok:
 	mov $SETUPSEG,%ax
 	mov %ax,%ds
 	ljmp $0x9020,$0	
-_string:
+string:
 	.ascii "hello bootloader!"
 	.byte 13,10
 .=510
