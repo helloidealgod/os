@@ -8,6 +8,7 @@
 #define _NR_write 4
 #define _NR_open 5
 #define _NR_close 6
+#define _NR_sprintk 1
 
 #define _syscall0(type,name) \
 type name(void){ \
@@ -19,4 +20,38 @@ if (_res >= 0) \
 	return (type)_res; \
 return -1;\
 }
+
+#define _syscall1(type,name,atype,a)\
+type name(atype a){\
+long _res;\
+__asm__ volatile ("int $0x80"\
+	:"=a" (_res)\
+	:"0" (_NR_##name),"b" ((long)(a)));\
+if (_res >= 0)\
+	return (type) _res;\
+return -1;\
+}
+
+#define _syscall2(type,name,atype,a,btype,b)\
+type name(atype a,btype b){\
+long _res;\
+__asm__ volatile ("int $0x80"\
+	:"=a" (_res)\
+	:"0" (_NR_##name),"b" ((long)(a)),"c" ((long)(b)));\
+if (_res >= 0)\
+	return (type) _res;\
+return -1;\
+}
+
+#define _syscall3(type,name,atype,a,btype,b,ctype,c)\
+type name(atype a,btype b,ctype c){\
+long _res;\
+__asm__ volatile ("int $0x80"\
+	:"=a" (_res)\
+	:"0" (_NR_##name),"b" ((long)(a)),"c"((long)(b)),"d"((long)(c)));\
+if (_res >= 0)\
+	return (type) _res;\
+return -1;\
+}
+
 #endif

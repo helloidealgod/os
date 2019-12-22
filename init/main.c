@@ -11,8 +11,10 @@ static long buffer_memory_end = 0;
 static long main_memory_start = 0;
 
 static inline _syscall0(int,fork)
+static inline _syscall1(int,sprintk,char *,p)
+
 int main(void){
-	memory_end = (1<<20) + (EXT_MEM_K << 10);
+/*	memory_end = (1<<20) + (EXT_MEM_K << 10);
 	memory_end &= 0xfffff000;
 	if (memory_end > 16*1024*1024)
 		memory_end = 16*1024*1024;
@@ -24,27 +26,27 @@ int main(void){
 		buffer_memory_end = 1*1024*1024;
 	main_memory_start = buffer_memory_end;
 	mem_init(main_memory_start,memory_end);
-
+*/
 	trap_init();
 	con_init();
 	printk("hello world! \r\n");
-	int i = (int)(EXT_MEM_K & 0x0000ffff);
-	char s[10];
-	itoa(i,s);
-	printk(s);
-	printk("\n");
-	i = (int)(memory_end >> 20);
-	itoa(i,s);
-	printk("total memory: ");
-	printk(s);
-	printk("M \n");
+//	int i = (int)(EXT_MEM_K & 0x0000ffff);
+//	char s[10];
+//	itoa(i,s);
+//	printk(s);
+//	printk("\n");
+//	i = (int)(memory_end >> 20);
+//	itoa(i,s);
+//	printk("total memory: ");
+//	printk(s);
+//	printk("M \n");
 	sched_init();
 	sti();
 	move_to_user_mode();
-	int c = 1 + 2 + 3+ 4 + 5 + 6 + 7 + 8 + 9;
-	itoa(12,s);
-	if(!fork()){
-	}
+	sprintk("hello sprintk in main\n");
+//	if(!fork()){
+//	}
+//	sprintk("hello sprintk\n");
 	while(1);
 	return 0;
 }
