@@ -53,8 +53,8 @@ load_setup:
 	mov $4,%al
 	int $0x13	
 
-#	jnc load_system #load setup ok then load system
-	jnc start_read
+	jnc load_system #load setup ok then load system
+#	jnc start_read
 	jmp load_setup
 
 load_system:
@@ -92,19 +92,23 @@ start_read:
 read_sectors:
 	sub $1,%si
 	mov %si,%ax
-	mov $36,%bx
-	div %bx		# ax / bx = ax商，dx余数
+	mov $36,%bx	# ax / bl = al商,ah余
+	div %bx		# (dxax) / bx = ax商，dx余数
 	mov %ax,track	# ch=(相对扇区号-1)/36
 	
+	xor %dx,%dx
 	mov %si,%ax
 	mov $18,%bx
 	div %bx
 	inc %dx
 	mov %dx,sector	# cl=(相对扇区号-1)%18+1
 
+	xor %dx,%dx
 	mov %si,%ax
 	mov $18,%bx
 	div %bx
+
+	xor %dx,%dx
 	mov $2,%bx
 	div %bx
 	mov %dx,head	#dh=((相对扇区号-1)/18)%2
@@ -117,7 +121,7 @@ read_sectors:
 
 	add $2,%si
 	cmp $72,%si
-	jnc read_sectors
+	jne read_sectors
 	jmp system_load_ok
 #test_one:
 #	mov $0x0100,%dx  #DL driver number(0=a),
