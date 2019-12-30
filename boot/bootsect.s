@@ -53,11 +53,11 @@ load_setup:
 	mov $4,%al
 	int $0x13	
 
-	jnc load_system #load setup ok then load system
+#	jnc load_system #load setup ok then load system
+	jnc start_read
 	jmp load_setup
 
 load_system:
-#	call kill_motor
 	mov $0x0000,%dx  #DL driver number(0=a),
 			 #DH head number(0 - 15)
 	mov $0x0006,%cx  #CH track/cylinder number (0 - 1023)
@@ -65,13 +65,108 @@ load_system:
 	mov $SYSSEG,%ax
 	mov %ax,%es
 	mov $0x0000,%bx  # load data to %es:%bx
-	mov $0x02,%ah     
-	mov $SECTORS,%al       # number of sectors to read
+	mov $0x02,%ah   
+	mov $13,%al  
+#	mov $SECTORS,%al       # number of sectors to read
 	int $0x13
-
-	jnc system_load_ok
+	
+	jnc load_one
 	jmp load_system
+load_one:
+	mov $0x0000,%dx  #DL driver number(0=a),
+			 #DH head number(0 - 15)
+	mov $0x010C,%cx  #CH track/cylinder number (0 - 1023)
+			 #CL sector number(1 - 17)
+	mov $SYSSEG,%ax
+	mov %ax,%es
+	mov $0x5400,%bx  # load data to %es:%bx
+	mov $0x02,%ah     
+	mov $72,%al
+	int $0x13
+	
+	jnc system_load_ok
+	jmp load_one
+start_read:
+	mov $6,%ax
+	mov %ax,%si
+read_sectors:
+	sub $1,%si
+	mov %si,%ax
+	mov $36,%bx
+	div %bx		# ax / bx = ax商，dx余数
+	mov %ax,track	# ch=(相对扇区号-1)/36
+	
+	mov %si,%ax
+	mov $18,%bx
+	div %bx
+	inc %dx
+	mov %dx,sector	# cl=(相对扇区号-1)%18+1
 
+	mov %si,%ax
+	mov $18,%bx
+	div %bx
+	mov $2,%bx
+	div %bx
+	mov %dx,head	#dh=((相对扇区号-1)/18)%2
+
+	mov %si,%ax
+	sub $5,%ax
+	mov $512,%bx
+	mul %bx
+	mov %ax,%bx
+
+	add $2,%si
+	cmp $72,%si
+	jnc read_sectors
+	jmp system_load_ok
+#test_one:
+#	mov $0x0100,%dx  #DL driver number(0=a),
+#			 #DH head number(0 - 15)
+#	mov $0x0001,%cx  #CH track/cylinder number (0 - 1023)
+#			 #CL sector number(1 - 17)
+#	mov $SYSSEG,%ax
+#	mov %ax,%es
+#	mov $0x1a00,%bx  # load data to %es:%bx
+#	mov $0x02,%ah     
+#	mov $18,%al
+#	int $0x13
+#
+#	mov $0x0000,%dx  #DL driver number(0=a),
+#			 #DH head number(0 - 15)
+#	mov $0x0101,%cx  #CH track/cylinder number (0 - 1023)
+#			 #CL sector number(1 - 17)
+#	mov $SYSSEG,%ax
+#	mov %ax,%es
+#	mov $0x3e00,%bx  # load data to %es:%bx
+#	mov $0x02,%ah     
+#	mov $18,%al
+#	int $0x13
+#
+#	mov $0x0100,%dx  #DL driver number(0=a),
+#			 #DH head number(0 - 15)
+#	mov $0x0101,%cx  #CH track/cylinder number (0 - 1023)
+#			 #CL sector number(1 - 17)
+#	mov $SYSSEG,%ax
+#	mov %ax,%es
+#	mov $0x6200,%bx  # load data to %es:%bx
+#	mov $0x02,%ah     
+#	mov $18,%al
+#	int $0x13
+#
+#	mov $0x0000,%dx  #DL driver number(0=a),
+#			 #DH head number(0 - 15)
+#	mov $0x0201,%cx  #CH track/cylinder number (0 - 1023)
+#			 #CL sector number(1 - 17)
+#	mov $SYSSEG,%ax
+#	mov %ax,%es
+#	mov $0x8600,%bx  # load data to %es:%bx
+#	mov $0x02,%ah     
+#	mov $18,%al
+#	int $0x13
+#
+#	jnc system_load_ok
+#	jmp load_system
+#
 system_load_ok:
 	mov $SETUPSEG,%ax
 	mov %ax,%ds
@@ -80,69 +175,10 @@ string:
 	.ascii "hello bootloader!"
 	.byte 13,10
 
-#sread:	.word 2
-#head:	.word 0
-#track:	.word 0
-#
-#read_it:
-#	mov %es,%ax
-#	test $0x0fff,%ax
-#die:	jne die
-#	xor %bx,%bx
-#rp_read:
-#	mov %es,%ax
-#	cmp $ENDSEG,%ax
-#	jb ok1_read
-#	ret
-#ok1_read:
-#	seg %cs
-#	mov $secotors,%ax
-#	sub $sread,%ax
-#	mov %ax,%cx
-#	shl $9,%cx
-#	add %bx,%cx
-#	jnc ok2_read
-#	je ok2_read
-#	xor %ax,%ax
-#	sub %bx,%ax
-#read_track:
-#	push %ax
-#	push %bx
-#	push %cx
-#	push %dx
-#	mov $trace,%dx
-#	mov $sread,%cx
-#	inc cx
-#	mov %dl,%ch
-#	mov $head,%dx
-#	mov %dl,%dh
-#	mov $0,%dl
-#	and $0x0100,%dx
-#	mov $2,%ah
-#	int $13
-#	jc bad_rt
-#	pop %dx
-#	pop %cx
-#	pop %bx
-#	pop %ax
-#	ret
-#bad_rt:
-#	mov $0,%ax
-#	mov $0,%dx
-#	int $0x13
-#	pop %dx
-#	pop %cx
-#	pop %bx
-#	pop %ax
-#	jmp read_track
-#
-#kill_motor:
-#	push %dx
-#	mov $0x3f2,%dx
-#	mov $0,%al
-#	outb %al,%dx
-#	pop %dx
-#	ret
+track:	.word 0
+sector:	.word 0
+head:	.word 0
+
 .=510
 
 signature:
