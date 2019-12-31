@@ -7,7 +7,7 @@
 .equ SYSSEG,0x1000
 .equ VGASEG,0xb800
 .equ LEN,47
-.equ SECTORS,72
+.equ SECTORS,127
 
 setup_start:
 	#show text

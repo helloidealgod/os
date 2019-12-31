@@ -4,13 +4,15 @@
 
 typedef int (*fn_ptr)();
 extern int sys_fork();
-fn_ptr sys_call_table[]={sys_fork};
+extern int sys_printk(char *s);
+fn_ptr sys_call_table[]={sys_fork,sys_printk};
 
 static long memory_end = 0;
 static long buffer_memory_end = 0;
 static long main_memory_start = 0;
 
 static inline _syscall0(int,fork)
+static inline _syscall0(int,exit)
 static inline _syscall1(int,sprintk,char *,p)
 
 int main(void){
@@ -43,9 +45,11 @@ int main(void){
 	sched_init();
 	sti();
 	move_to_user_mode();
-	sprintk("hello sprintk in main\n");
 	if(!fork()){
+		sprintk("hello sprintk in task1\n");
 	}
+	exit();
+	sprintk("hello sprintk in main\n");
 	while(1);
 	return 0;
 }

@@ -74,15 +74,14 @@ system_call:
 	mov %dx,%es
 	mov $0x17,%edx
 	mov %dx,%fs
-//	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
-	call sys_printk
+	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
 	popl %ebx
 	popl %ecx
 	popl %edx
 	pop %fs
 	pop %es 	
 	pop %ds
-	movl $0,%eax
+#	movl $0,%eax
 	iret
 
 msg:
@@ -101,6 +100,8 @@ sys_fork:
 	call copy_process
 	addl $20,%esp
 1:	ret
+
+.align 2
 	
 sys_printk:
 	pushl %ebx

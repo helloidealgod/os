@@ -6,7 +6,7 @@
 .equ INITSEG,0x9000
 .equ SETUPSEG,0x9020
 .equ SYSSEG,0x1000
-.equ SECTORS,85		#最多128个扇区，否则bx溢出
+.equ SECTORS,127	#最多128个扇区，否则bx溢出
 
 .text
 
