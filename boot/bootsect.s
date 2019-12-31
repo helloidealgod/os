@@ -6,7 +6,7 @@
 .equ INITSEG,0x9000
 .equ SETUPSEG,0x9020
 .equ SYSSEG,0x1000
-.equ SECTORS,72
+.equ SECTORS,85		#最多128个扇区，否则bx溢出
 
 .text
 
@@ -54,123 +54,54 @@ load_setup:
 	int $0x13	
 
 	jnc load_system #load setup ok then load system
-#	jnc start_read
 	jmp load_setup
 
 load_system:
-	mov $0x0000,%dx  #DL driver number(0=a),
-			 #DH head number(0 - 15)
-	mov $0x0006,%cx  #CH track/cylinder number (0 - 1023)
-			 #CL sector number(1 - 17)
 	mov $SYSSEG,%ax
 	mov %ax,%es
-	mov $0x0000,%bx  # load data to %es:%bx
-	mov $0x02,%ah   
-	mov $13,%al  
-#	mov $SECTORS,%al       # number of sectors to read
-	int $0x13
-	
-	jnc load_one
-	jmp load_system
-load_one:
-	mov $0x0000,%dx  #DL driver number(0=a),
-			 #DH head number(0 - 15)
-	mov $0x010C,%cx  #CH track/cylinder number (0 - 1023)
-			 #CL sector number(1 - 17)
-	mov $SYSSEG,%ax
-	mov %ax,%es
-	mov $0x5400,%bx  # load data to %es:%bx
-	mov $0x02,%ah     
-	mov $72,%al
-	int $0x13
-	
-	jnc system_load_ok
-	jmp load_one
-start_read:
-	mov $6,%ax
+	mov $5,%ax	#相对扇区号-1
 	mov %ax,%si
 read_sectors:
-	sub $1,%si
 	mov %si,%ax
-	mov $36,%bx	# ax / bl = al商,ah余
-	div %bx		# (dxax) / bx = ax商，dx余数
-	mov %ax,track	# ch=(相对扇区号-1)/36
+	mov $36,%bl	# ax / bl = al商,ah余
+	div %bl		# (dxax) / bx = ax商，dx余数
+	mov %al,track	# ch=(相对扇区号-1)/36
 	
-	xor %dx,%dx
 	mov %si,%ax
-	mov $18,%bx
-	div %bx
-	inc %dx
-	mov %dx,sector	# cl=(相对扇区号-1)%18+1
+	mov $18,%bl
+	div %bl
+	inc %ah
+	mov %ah,sector	# cl=(相对扇区号-1)%18+1
 
-	xor %dx,%dx
 	mov %si,%ax
-	mov $18,%bx
-	div %bx
-
-	xor %dx,%dx
-	mov $2,%bx
-	div %bx
-	mov %dx,head	#dh=((相对扇区号-1)/18)%2
+	mov $18,%bl
+	div %bl
+	xor %ah,%ah
+	mov $2,%bl
+	div %bl
+	mov %ah,head	#dh=((相对扇区号-1)/18)%2
 
 	mov %si,%ax
 	sub $5,%ax
 	mov $512,%bx
-	mul %bx
-	mov %ax,%bx
+	mul %bx		#8位*8位=ax,16位*16位=dxax
+	mov %ax,%bx	#实时模式，bx=16位
+	mov track,%ah
+	mov sector,%al
+	mov %ax,%cx
+	mov head,%ah
+	mov $0,%al
+	mov %ax,%dx
+	mov $0x0201,%ax
+	int $0x13
 
-	add $2,%si
-	cmp $72,%si
+	add $1,%si
+	mov %si,%ax
+	sub $5,%ax
+	cmp $SECTORS,%ax
 	jne read_sectors
 	jmp system_load_ok
-#test_one:
-#	mov $0x0100,%dx  #DL driver number(0=a),
-#			 #DH head number(0 - 15)
-#	mov $0x0001,%cx  #CH track/cylinder number (0 - 1023)
-#			 #CL sector number(1 - 17)
-#	mov $SYSSEG,%ax
-#	mov %ax,%es
-#	mov $0x1a00,%bx  # load data to %es:%bx
-#	mov $0x02,%ah     
-#	mov $18,%al
-#	int $0x13
-#
-#	mov $0x0000,%dx  #DL driver number(0=a),
-#			 #DH head number(0 - 15)
-#	mov $0x0101,%cx  #CH track/cylinder number (0 - 1023)
-#			 #CL sector number(1 - 17)
-#	mov $SYSSEG,%ax
-#	mov %ax,%es
-#	mov $0x3e00,%bx  # load data to %es:%bx
-#	mov $0x02,%ah     
-#	mov $18,%al
-#	int $0x13
-#
-#	mov $0x0100,%dx  #DL driver number(0=a),
-#			 #DH head number(0 - 15)
-#	mov $0x0101,%cx  #CH track/cylinder number (0 - 1023)
-#			 #CL sector number(1 - 17)
-#	mov $SYSSEG,%ax
-#	mov %ax,%es
-#	mov $0x6200,%bx  # load data to %es:%bx
-#	mov $0x02,%ah     
-#	mov $18,%al
-#	int $0x13
-#
-#	mov $0x0000,%dx  #DL driver number(0=a),
-#			 #DH head number(0 - 15)
-#	mov $0x0201,%cx  #CH track/cylinder number (0 - 1023)
-#			 #CL sector number(1 - 17)
-#	mov $SYSSEG,%ax
-#	mov %ax,%es
-#	mov $0x8600,%bx  # load data to %es:%bx
-#	mov $0x02,%ah     
-#	mov $18,%al
-#	int $0x13
-#
-#	jnc system_load_ok
-#	jmp load_system
-#
+
 system_load_ok:
 	mov $SETUPSEG,%ax
 	mov %ax,%ds
@@ -179,9 +110,9 @@ string:
 	.ascii "hello bootloader!"
 	.byte 13,10
 
-track:	.word 0
-sector:	.word 0
-head:	.word 0
+track:	.byte 0
+sector:	.byte 0
+head:	.byte 0
 
 .=510
 
