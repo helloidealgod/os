@@ -93,4 +93,16 @@ void sched_init(void){
 
 void do_timer(){
 	printk("timer");
+//	switch_to(1);
+}
+
+void schedule(void){
+	switch_to(0);
+}
+
+int sys_pause(void){
+	current->state = 0;
+	printk("hello pause\n");
+	schedule();
+	return 0;
 }

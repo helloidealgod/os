@@ -1,6 +1,8 @@
 #ifndef _SCHED_H
 #define _SCHED_H
 #include "head.h"
+#define FIRST_TSS_ENTRY 4
+#define _TSS(n) ((((unsigned long)n)<<4)+(FIRST_TSS_ENTRY<<3))
 struct i387_struct {
 	long cwd;
 	long swd;
@@ -57,28 +59,14 @@ union task_union{
 
 #define switch_to(n) {\
 struct {long a,b;} _tmp;\
-__asm__ ("cmpl %%ecx,_current\n\t"\
+__asm__ ("cmpl %%ecx,current\n\t"\
          "je 1f\n\t"\
          "movw %%dx,%1\n\t"\
-         "xchgl %%ecx,_current\n\t"\
+         "xchgl %%ecx,current\n\t"\
          "ljmp %0\n\t"\
          "1:"\
          ::"m"(*&_tmp.a),"m"(*&_tmp.b),\
          "d"(_TSS(n)),"c" ((long)task[n]));\
 }
-/*#define switch_to(n) {\
-struct {long a,b;} _tmp;\
-__asm__ ("cmpl %%ecx,_current\n\t"\
-         "je 1f\n\t"\
-         "movw %%dx,%1\n\t"\
-         "xchgl %%ecx,_current\n\t"\
-         "ljmp %0\n\t"\
-         "cmpl %%ecx,_last_task_used_math\n\t"\
-         "jne 1f\n\t"\
-         "clts\n"\
-         "1:"\
-         ::"m"(*&_tmp.a),"m"(*&_tmp.b),\
-         "d"(_TSS(n)),"c" ((long)task[n]));\
-}*/
 extern struct task_struct * task[64];
 #endif
