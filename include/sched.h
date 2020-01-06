@@ -63,10 +63,10 @@ __asm__ ("cmpl %%ecx,current\n\t"\
          "je 1f\n\t"\
          "movw %%dx,%1\n\t"\
          "xchgl %%ecx,current\n\t"\
-         "ljmp %0\n\t"\
+         "ljmp *%0\n\t"\
          "1:"\
          ::"m"(*&_tmp.a),"m"(*&_tmp.b),\
          "d"(_TSS(n)),"c" ((long)task[n]));\
 }
-extern struct task_struct * task[64];
+//extern struct task_struct * task[64];
 #endif

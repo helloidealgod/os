@@ -97,12 +97,28 @@ void do_timer(){
 }
 
 void schedule(void){
-	switch_to(0);
+	printk("in schedule\n");
+	int i = NR_TASKS;
+	char s[10];
+	for(i;i>=0;--i){
+		itoa(i,s);
+		printk(s);
+		if(NULL != task[i]){
+			printk(" is not null ");
+			switch_to(i);
+			break;
+		} else{
+			printk(" is null ");
+		}
+	}
+
+//	switch_to(0);
 }
 
 int sys_pause(void){
 	current->state = 0;
 	printk("hello pause\n");
-	schedule();
+	switch_to(1);
+//	schedule();
 	return 0;
 }

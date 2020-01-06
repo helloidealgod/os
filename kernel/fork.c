@@ -8,6 +8,7 @@
 
 long last_pid = 0;
 extern struct task_struct * current;
+extern struct task_struct * task[NR_TASKS];
 unsigned long get_free_page(void);
 int find_empty_process(){
 	printk("find empty process\n");
@@ -36,12 +37,15 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	struct task_struct *p;
 	int i;
 	p = (struct task_struct *)get_free_page();
-	p = (void *)0;
-	if(NULL != p){
+	if(NULL == p){
 	       	return -11;
 	}
 	task[nr] = p;
-	*p = *current;
+/*	char s[10];
+	itoa(nr,s);
+	printk(s);
+	printk("\n");
+*/	*p = *current;
 
 	p->state = 0;
 	p->pid = last_pid;
