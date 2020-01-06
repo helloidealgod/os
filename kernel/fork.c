@@ -1,4 +1,6 @@
 #include "../include/sched.h"
+#include "../include/head.h"
+#include "../include/system.h"
 #define NR_TASKS 64
 #define EAGAIN 11
 #define NULL ((void *)0)
@@ -73,5 +75,7 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	p->tss.gs = gs & 0xffff;
 	p->tss.ldt = _LDT(nr);
 	p->tss.trace_bitmap = 0x80000000;
+	set_tss_desc(gdt + (nr<<1) + FIRST_TSS_ENTRY,&(p->tss));
+	set_ldt_desc(gdt + (nr<<1) + FIRST_LDT_ENTRY,&(p->ldt));
 	printk("copy process\n");
 }
