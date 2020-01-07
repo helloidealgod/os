@@ -12,6 +12,8 @@ static long memory_end = 0;
 static long buffer_memory_end = 0;
 static long main_memory_start = 0;
 
+static inline int fork(void) __attribute__((always_inline));
+static inline int pause(void) __attribute__((always_inline));
 static inline _syscall0(int,fork)
 static inline _syscall0(int,exit)
 static inline _syscall0(int,pause)
@@ -49,6 +51,7 @@ int main(void){
 	move_to_user_mode();
 	if(!fork()){
 		sprintk("hello sprintk in task1\n");
+		while(1);
 	}
 //	exit();
 	sprintk("hello sprintk in main\n");
