@@ -1,5 +1,6 @@
 #include "../include/io.h"
 #include "../include/system.h"
+#include "../include/head.h"
 
 #define ORIG_VIDEO_MODE ((*(unsigned short *)0x90006) & 0xff)
 #define ORIG_VIDEO_EGA_BX (*(unsigned short *)0x9000a)
@@ -11,7 +12,10 @@ static unsigned short video_port_val;
 static unsigned long x = 0;
 static unsigned long y = 0;
 
+extern void keyboard_interrupt(void);
+
 void con_init(){
+	register unsigned char a;
 	char *display_desc = "????";
 	if(ORIG_VIDEO_MODE == 7){
 		video_mem_start = 0xb0000;
@@ -39,6 +43,16 @@ void con_init(){
 	
 	x = 76;y = 0;
 	printk(display_desc);
+	set_trap_gate(0x21,&keyboard_interrupt);
+	outb_p(0x21,inb_p(0x21)&0xfd);
+	a=inb_p(0x61);
+	outb_p(0x61,a|0x80);
+	outb_p(0x61,a);
+/*	outb_p(inb_p(0x21)&0xfd,0x21);
+	a=inb_p(0x61);
+	outb_p(a|0x80,0x61);
+	outb_p(a,0x61);
+*/
 }
 void printk(char c[]){
 	char * ptr;
