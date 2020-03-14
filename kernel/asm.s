@@ -161,8 +161,26 @@ keyboard_interrupt:
 	movl $0x10,%eax
 	mov %ax,%ds
 	mov %ax,%es
+	xor %al,%al
+	inb $0x60,%al
+
 	push $keyboard_msg
 	call printk
+
+	inb $0x61,%al
+	jmp 1f
+1:	jmp 1f
+1:	orb $0x80,%al
+	jmp 1f
+1:	jmp 1f
+1:	outb %al,$0x61
+	jmp 1f
+1:	jmp 1f
+1:	andb $0x7f,%al
+	outb %al,$0x61
+	movb $0x20,%al
+	outb %al,$0x20
+
 	popl %eax
 	pop %es
 	pop %ds
