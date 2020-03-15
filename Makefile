@@ -14,7 +14,7 @@ clean:
 CFLAGS=-fomit-frame-pointer
 OBJS =
 
-VPATH = boot:kernel:init:mm
+VPATH = boot:kernel:init:mm:kernel/chr_drv
 
 System: bootsect setup kernel.o 
 	@dd if=bootsect of=System bs=512 count=1
@@ -79,6 +79,10 @@ OBJS += memory.o
 fork.o: fork.c
 	@gcc -m32 -fomit-frame-pointer -c ./kernel/fork.c -o fork.o
 OBJS += fork.o
+
+keyboard.o: keyboard.s
+	@as --32 ./kernel/chr_drv/keyboard.s -o keyboard.o
+OBJS += keyboard.o
 
 kernel.o: $(OBJS) ld-bootsect.ld
 	@ld -T ld-bootsect.ld $(OBJS) -o kernel.o
