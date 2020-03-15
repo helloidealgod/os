@@ -84,6 +84,10 @@ keyboard.o: keyboard.s
 	@as --32 ./kernel/chr_drv/keyboard.s -o keyboard.o
 OBJS += keyboard.o
 
+tty_io.o: tty_io.c
+	@gcc -m32 -c ./kernel/chr_drv/tty_io.c -o tty_io.o
+OBJS += tty_io.o
+
 kernel.o: $(OBJS) ld-bootsect.ld
 	@ld -T ld-bootsect.ld $(OBJS) -o kernel.o
 	@objcopy -O binary -R .note -R .comment kernel.o
