@@ -27,11 +27,12 @@ keyboard_interrupt:
 	je set_e0
 	cmpb $0xe1,%al
 	je set_e1
-#	call key_table(,%eax,4)
-#	movb $0,e0
+	call key_table(,%eax,4)
+	movb $0,e0
 
 	push $keyboard_msg
 	call printk
+	addl $4,%esp
 
 e0_e1:	inb $0x61,%al
 	jmp 1f
@@ -50,8 +51,6 @@ e0_e1:	inb $0x61,%al
 #	pushl $0
 #	call do_tty_interrupt
 #	addl $4,%esp
-	
-	popl %eax
 	
 	pop %es
 	pop %ds
