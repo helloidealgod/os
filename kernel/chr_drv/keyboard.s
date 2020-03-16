@@ -67,22 +67,6 @@ set_e1:	movb $2,e0
 keyboard_msg:
 	.asciz "hello keyboard\n"
 
-key_map:
-	.byte	0,27
-	.ascii	"1234567890-="
-	.byte	127,9
-	.ascii	"qwertyuiop[]"
-	.byte 	13,0
-	.ascii 	"asdfghjkl;'"
-	.byte 	'`,0
-	.ascii 	"\\zxcvbnm,./"
-	.byte 	0,'*,0,32
-	.fill 	16,1,0
-	.byte 	'-,0,0,0,'+
-	.byte 	0,0,0,0,0,0,0
-	.byte 	'<
-	.fill 	10,1,0
-
 put_queue: ret
 
 ctrl:	movb $0x04,%al
@@ -149,6 +133,22 @@ do_self:
 	xorl %ebx,%ebx
 	call put_queue
 none:	ret
+
+key_map:
+	.byte	0,27
+	.ascii	"1234567890-="
+	.byte	127,9
+	.ascii	"qwertyuiop[]"
+	.byte 	13,0
+	.ascii 	"asdfghjkl;'"
+	.byte 	'`,0
+	.ascii 	"\\zxcvbnm,./"
+	.byte 	0,'*,0,32
+	.fill 	16,1,0
+	.byte 	'-,0,0,0,'+
+	.byte 	0,0,0,0,0,0,0
+	.byte 	'<
+	.fill 	10,1,0
 
 shift_map:
 	.byte 	0,27
