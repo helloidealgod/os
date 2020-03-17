@@ -1,6 +1,7 @@
 #include "../include/io.h"
 #include "../include/system.h"
 #include "../include/head.h"
+#include "../include/tty.h"
 
 #define ORIG_VIDEO_MODE ((*(unsigned short *)0x90006) & 0xff)
 #define ORIG_VIDEO_EGA_BX (*(unsigned short *)0x9000a)
@@ -48,17 +49,36 @@ void con_init(){
 	a=inb_p(0x61);
 	outb_p(0x61,a|0x80);
 	outb_p(0x61,a);
-/*	outb_p(inb_p(0x21)&0xfd,0x21);
-	a=inb_p(0x61);
-	outb_p(a|0x80,0x61);
-	outb_p(a,0x61);
-*/
 }
+
+void con_write(struct tty_struct * tty){
+	int nr;
+	char c;
+	nr = CHARS(tty->write_q);
+	while (nr--){
+		GETCH(tty->write_q,c);
+		if (c>31 && c <127){
+		/*	if(x >= video_num_columns){
+				x -= video_num_columns;
+				pos -= video_size_row;
+				lf();
+			}
+			__asm__("movb _attr,%%ah\n\t"
+				“movw %%ax,%1\n\t”
+				::"a" (c),"m" (*(short *)pos)
+				:"ax");
+			pos += 2;
+			x++;*/
+			printk("con_write");
+		}
+	}
+}
+
 void printk(char c[]){
 	char * ptr;
 	int length = strlen(c);
 	ptr=(unsigned char *)video_mem_start + 2*x + 160*y;
-//	clear_line();
+	clear_line();
 	int i;
 	for(i=0;i<length;i++){
 		if('\r' == c[i]){
@@ -66,7 +86,7 @@ void printk(char c[]){
 		}else if('\n' == c[i]){
 			x = 0;
 			y ++;
-//			clear_line();
+			clear_line();
 		}else{
 			*ptr++ = c[i];
 			*ptr++ = 0x07;

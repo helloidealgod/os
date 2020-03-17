@@ -29,11 +29,6 @@ keyboard_interrupt:
 	je set_e1
 	call key_table(,%eax,4)
 	movb $0,e0
-
-	push $keyboard_msg
-	call printk
-	addl $4,%esp
-
 e0_e1:	inb $0x61,%al
 	jmp 1f
 1:	jmp 1f
@@ -64,10 +59,35 @@ set_e0:	movb $1,e0
 set_e1:	movb $2,e0
 	jmp e0_e1
 	
-keyboard_msg:
-	.asciz "hello keyboard\n"
-
-put_queue: ret
+put_queue_msg:
+	.asciz "put queue\n"
+put_queue: 
+	pushl %ecx
+	pushl %edx
+#	pushl $put_queue_msg
+#	call printk
+#	addl $4,%esp
+	
+	movl table_list,%edx
+	movl head(%edx),%ecx
+1:	movb %al,buf(%edx,%ecx)
+	incl %ecx
+	andl $size-1,%ecx
+	cmpl tail(%edx),%ecx
+	
+	je 3f
+	shrdl $8,%ebx,%eax
+	je 2f
+	shrl $8,%ebx
+	jmp 1b
+2:	movl %ecx,head(%edx)
+	movl proc_list(%edx),%ecx
+	test %ecx,%ecx
+	je 3f
+	movl $0,(%ecx)
+3:	popl %edx
+	popl %ecx
+	ret
 
 ctrl:	movb $0x04,%al
 	jmp 1f
@@ -190,7 +210,7 @@ key_table:
 	.long none,none,none,none
 	.long none,none,none,none
 	.long none,none,none,none
-	.long none,none,none,none
+	.long none,none,do_self,do_self
 	.long none,none,none,none
 	.long none,none,none,none
 	.long none,none,none,none
