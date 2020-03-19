@@ -102,6 +102,18 @@ void printk(char c[]){
 	}	
 	set_cursor(x,y);
 }
+
+void printkc(char c){
+	char s[2];
+	s[0] = c;
+	s[1] = '\0';
+	printk(s);
+}
+void printks(short s){
+	char c[6];
+	itoa(s,c);
+	printk(c);
+}
 void set_cursor(unsigned char x, unsigned char y){
 	unsigned int p;
 	p = x + y * 80;

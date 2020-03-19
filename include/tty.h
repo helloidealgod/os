@@ -13,6 +13,7 @@
 #define FULL(a) (!LEFT(a))
 #define CHARS(a) (((a).head-(a).tail)&(TTY_BUF_SIZE-1))
 #define GETCH(queue,c) (void)({c=(queue).buf[(queue).tail];INC((queue).tail);})
+#define GETCHAR(queue,c) (void)({c=(queue).buf[(queue).tail];})
 #define PUTCH(c,queue) (void)({(queue).buf[(queue).head]=(c);INC((queue).head);})
 
 struct tty_queue {

@@ -24,6 +24,11 @@ keyboard_interrupt:
 	xor %al,%al
 	inb $0x60,%al
 	cmpb $0xe0,%al
+	
+#	push %ax
+#	call printkc
+#	pop %ax
+
 	je set_e0
 	cmpb $0xe1,%al
 	je set_e1
@@ -64,17 +69,18 @@ put_queue_msg:
 put_queue: 
 	pushl %ecx
 	pushl %edx
-#	pushl $put_queue_msg
-#	call printk
-#	addl $4,%esp
-	
 	movl table_list,%edx
 	movl head(%edx),%ecx
 1:	movb %al,buf(%edx,%ecx)
+	
+#	movb buf(%edx,%ecx),%al
+#	push %ax
+#	call printks
+#	pop %ax
+
 	incl %ecx
 	andl $size-1,%ecx
 	cmpl tail(%edx),%ecx
-	
 	je 3f
 	shrdl $8,%ebx,%eax
 	je 2f

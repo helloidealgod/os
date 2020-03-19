@@ -53,8 +53,8 @@ load_setup:
 	mov $4,%al
 	int $0x13	
 
-#	jnc load_system #load setup ok then load system
-	jnc load_system_old
+	jnc load_system #load setup ok then load system
+#	jnc load_system_old
 	jmp load_setup
 
 load_system_old:
