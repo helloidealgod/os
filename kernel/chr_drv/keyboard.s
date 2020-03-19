@@ -23,6 +23,11 @@ keyboard_interrupt:
 	mov %ax,%es
 	xor %al,%al
 	inb $0x60,%al
+
+#	push %ax
+#	call printks
+#	pop %ax
+
 	cmpb $0xe0,%al
 	je set_e0
 	cmpb $0xe1,%al
@@ -109,7 +114,7 @@ rshift:
 	orb $0x02,mode
 	ret
 unrshift:
-	addb $0xfd,mode
+	andb $0xfd,mode
 	ret
 
 do_self:
@@ -194,20 +199,21 @@ alt_map:
 	.fill 	10,1,0
 
 key_table:
-	.long none,none,do_self,do_self
-	.long do_self,do_self,do_self,do_self
-	.long do_self,do_self,do_self,do_self
-	.long do_self,do_self,none,none
-	.long do_self,do_self,do_self,do_self
-	.long do_self,do_self,do_self,do_self
-	.long do_self,do_self,do_self,do_self
-	.long none,none,do_self,do_self
-	.long do_self,do_self,do_self,do_self
-	.long do_self,do_self,do_self,do_self
-	.long do_self,do_self,none,do_self
-	.long do_self,do_self,do_self,do_self
-	.long do_self,do_self,do_self,do_self
-	.long do_self,do_self,none,none
+	.long none,none,do_self,do_self		/* 12*/
+	.long do_self,do_self,do_self,do_self	/*3456*/
+	.long do_self,do_self,do_self,do_self	/*7890*/
+	.long do_self,do_self,none,none		/*+'*/
+	.long do_self,do_self,do_self,do_self	/*qwer*/
+	.long do_self,do_self,do_self,do_self	/*tyui*/
+	.long do_self,do_self,do_self,do_self	/*op}*/
+	.long none,none,do_self,do_self		/*as*/
+	.long do_self,do_self,do_self,do_self	/*dfgh*/
+	.long do_self,do_self,do_self,do_self	/*jkl|*/
+	.long do_self,do_self,lshift,do_self	/*{*/
+	.long do_self,do_self,do_self,do_self	/*zxcv*/
+	.long do_self,do_self,do_self,do_self	/*bnm,*/
+	.long do_self,do_self,rshift,do_self	/*.-*/
+	.long none,do_self,none,none
 	.long none,none,none,none
 	.long none,none,none,none
 	.long none,none,none,none
@@ -235,11 +241,10 @@ key_table:
 	.long none,none,none,none
 	.long none,none,none,none
 	.long none,none,none,none
+	.long none,none,unlshift,none
 	.long none,none,none,none
 	.long none,none,none,none
-	.long none,none,none,none
-	.long none,none,none,none
-	.long none,none,none,none
+	.long none,none,unrshift,none
 	.long none,none,none,none
 	.long none,none,none,none
 	.long none,none,none,none

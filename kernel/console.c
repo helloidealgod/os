@@ -54,6 +54,10 @@ void con_init(){
 void con_write(struct tty_struct * tty){
 	int nr;
 	char c;
+
+	char * ptr;
+	ptr=(unsigned char *)video_mem_start + 2*x + 160*y;
+
 	nr = CHARS(tty->write_q);
 	while (nr--){
 		GETCH(tty->write_q,c);
@@ -69,7 +73,24 @@ void con_write(struct tty_struct * tty){
 				:"ax");
 			pos += 2;
 			x++;*/
-			printk("con_write");
+			if('\r' == c){
+				x = 0;
+			}else if('\n' == c){
+				x = 0;
+				y ++;
+			}else{
+				*ptr++ = c;
+				*ptr++ = 0x07;
+				x++;
+				if(80 <= x){
+					y++;
+					x-=80;
+				}
+			}
+			if(25 <= y){
+				y -= 25;
+			}
+			set_cursor(x,y);
 		}
 	}
 }
