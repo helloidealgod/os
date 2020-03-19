@@ -24,11 +24,6 @@ keyboard_interrupt:
 	xor %al,%al
 	inb $0x60,%al
 	cmpb $0xe0,%al
-	
-#	push %ax
-#	call printkc
-#	pop %ax
-
 	je set_e0
 	cmpb $0xe1,%al
 	je set_e1
@@ -47,11 +42,9 @@ e0_e1:	inb $0x61,%al
 	outb %al,$0x61
 	movb $0x20,%al
 	outb %al,$0x20
-
 	pushl $0
 	call do_tty_interrupt
 	addl $4,%esp
-	
 	pop %es
 	pop %ds
 	popl %edx
@@ -64,20 +57,12 @@ set_e0:	movb $1,e0
 set_e1:	movb $2,e0
 	jmp e0_e1
 	
-put_queue_msg:
-	.asciz "put queue\n"
 put_queue: 
 	pushl %ecx
 	pushl %edx
 	movl table_list,%edx
 	movl head(%edx),%ecx
 1:	movb %al,buf(%edx,%ecx)
-	
-#	movb buf(%edx,%ecx),%al
-#	push %ax
-#	call printks
-#	pop %ax
-
 	incl %ecx
 	andl $size-1,%ecx
 	cmpl tail(%edx),%ecx
@@ -209,20 +194,20 @@ alt_map:
 	.fill 	10,1,0
 
 key_table:
-	.long none,none,none,none
-	.long none,none,none,none
-	.long none,none,none,none
-	.long none,none,none,none
-	.long none,none,none,none
-	.long none,none,none,none
-	.long none,none,none,none
 	.long none,none,do_self,do_self
-	.long none,none,none,none
-	.long none,none,none,none
-	.long none,none,none,none
-	.long none,none,none,none
-	.long none,none,none,none
-	.long none,none,none,none
+	.long do_self,do_self,do_self,do_self
+	.long do_self,do_self,do_self,do_self
+	.long do_self,do_self,none,none
+	.long do_self,do_self,do_self,do_self
+	.long do_self,do_self,do_self,do_self
+	.long do_self,do_self,do_self,do_self
+	.long none,none,do_self,do_self
+	.long do_self,do_self,do_self,do_self
+	.long do_self,do_self,do_self,do_self
+	.long do_self,do_self,none,do_self
+	.long do_self,do_self,do_self,do_self
+	.long do_self,do_self,do_self,do_self
+	.long do_self,do_self,none,none
 	.long none,none,none,none
 	.long none,none,none,none
 	.long none,none,none,none
