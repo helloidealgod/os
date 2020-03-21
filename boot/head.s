@@ -94,7 +94,7 @@ after_page_tables:
 	pushl $0
 	pushl $L6
 	pushl $main
-	ret
+	jmp setup_paging
 L6:
 	jmp L6
 int_msg:
@@ -134,7 +134,7 @@ setup_paging:
 	movl $pg2+7,pg_dir+8
 	movl $pg3+7,pg_dir+12
 	
-	movl $pg3+4096,%edi
+	movl $pg3+4092,%edi
 	movl $0xfff007,%eax
 
 	std
