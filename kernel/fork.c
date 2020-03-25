@@ -40,7 +40,7 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	int i;
 	p = (struct task_struct *)get_free_page();
 	if(NULL == p){
-	       	return -11;
+	       	return -EAGAIN;
 	}
 	task[nr] = p;
 /*	char s[10];
@@ -78,4 +78,36 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	set_tss_desc(gdt + (nr<<1) + FIRST_TSS_ENTRY,&(p->tss));
 	set_ldt_desc(gdt + (nr<<1) + FIRST_LDT_ENTRY,&(p->ldt));
 	printk("copy process\n");
+	if (copy_mem(nr,p)){
+		task[nr] = NULL;
+		return -11;
+	}
+}
+
+int copy_mem(int nr,struct task_struct * p){
+	unsigned long old_data_base,new_data_base,data_limit;
+	unsigned long old_code_base,new_code_base,code_limit;
+	
+	code_limit = get_limit(0x0f);
+	data_limit = get_limit(0x17);
+	
+	old_code_base = get_base(current->ldt[1]);
+	old_data_base = get_base(current->ldt[2]);
+	
+	if (old_code_base != old_data_base){
+		printk("Wo don't support separate I&D\n");
+	}
+	if (data_limit < code_limit){
+		printk("Bad data_limit\n");
+	}
+	
+	new_data_base = new_code_base = nr * 0x4000000;
+	
+	set_base(p->ldt[1],new_code_base);
+	set_base(p->ldt[2],new_data_base);
+	if(copy_page_tables(old_data_base,new_data_base,data_limit)){
+		free_page_tables(new_data_base,data_limit);
+		return -EAGAIN;
+	}
+	return 0;
 }

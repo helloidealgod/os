@@ -3,6 +3,7 @@
 #define PAGING_PAGES (PAGING_MEMORY>>12)
 #define MAP_NR(addr) (((addr)-LOW_MEM)>>12)
 #define USED 100
+#define invalidata() __asm__("movl %%eax,%%cr3"::"a" (0))
 
 static long HIGH_MEMORY = 0;
 static unsigned char mem_map[PAGING_PAGES] = {0,};
@@ -35,4 +36,92 @@ unsigned long get_free_page(void){
 		:"=a" (_res)
 		:"0" (0),"i" (LOW_MEM),"c" (PAGING_PAGES),
 		"D" (mem_map + PAGING_PAGES - 1));
+}
+int copy_page_tables(unsigned long from,unsigned long to,long size){
+	unsigned long * from_page_table;
+	unsigned long * to_page_table;
+	unsigned long this_page;
+	unsigned long * from_dir, * to_dir;
+	unsigned long nr;
+	
+	if ((from & 0x3fffff) || (to & 0x3fffff)){
+		return -1;
+	}
+	
+	from_dir = (unsigned long *) ((from >> 20) & 0xffc);
+	to_dir = (unsigned long *) ((to >> 20) & 0xffc);
+	size = ((unsigned) (size + 0x3fffff)) >> 22;
+	for (;size-->0;from_dir++,to_dir++){
+		if (1 & *to_dir){
+			return -1;
+		}
+		if (!(1 & *from_dir)){
+			continue;
+		}
+		
+		from_page_table = (unsigned long *)(0xfffff00 & *from_dir);
+		if (!(to_page_table = (unsigned long *)get_free_page())){
+			return -1;
+		}
+		
+		*to_dir = ((unsigned long) to_page_table) | 7;
+		nr = (from == 0 ? 0xa0 : 1024;
+		for (;nr-- > 0;from_page_table++,to_page_table++){
+			this_page = *from_page_table;
+			if (!(1 & this_page)){
+				continue;
+			}
+			this_page &= ~2;
+			*to_page_table = this_page;
+			if (this_page > LOW_MEM){
+				*from_page_table = this_page;
+				this_page -= LOW_MEM;
+				this_page >>= 12;
+				mem_map[this_page]++;
+			}
+		}
+	}
+	invalidata();
+	return 0;
+}
+
+void free_page(unsigned long addr){
+	if (addr < LOW_MEM) return;
+	if (addr >= HIGH_MEMORY) return;
+//		panic("trying to free noneexistern");
+	addr -= LOW_MEM;
+	addr >>= 12;
+	if (mem_map[addr]--) return;
+	mem_map[addr] = 0;
+//	panic("trying to free page");
+}
+int free_page_tables(unsigned long from,unsigned long size){
+	unsigned long * pg_table;
+	unsigned long * dir,nr;
+	
+	if (from & 0x3fffff){
+		
+	}
+	if(!from){
+		
+	}
+	size = (size + 0x3fffff) >> 22;
+	dir = (unsigned long *)((from >> 20) & 0xffc);
+	for (;size-- >0; dir++){
+		if (!(1 & *dir)){
+			continue;
+		}
+		pg_table = (unsigned long *)(0xfffff000 & *dir);
+		for (nr = 0; nr < 1024; nr++){
+			if (1 & *pg_table){
+				free_page(0xfffff000 & *pg_table);
+			}
+			*pg_table = 0;
+			pg_table++;
+		}
+		free_page(0xfffff000 & *dir);
+		*dir = 0;
+	}
+	invalidata();
+	return 0;
 }
