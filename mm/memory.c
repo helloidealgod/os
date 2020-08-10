@@ -65,7 +65,7 @@ int copy_page_tables(unsigned long from,unsigned long to,long size){
 		}
 		
 		*to_dir = ((unsigned long) to_page_table) | 7;
-		nr = (from == 0 ? 0xa0 : 1024;
+		nr = (from == 0) ? 0xa0 : 1024;
 		for (;nr-- > 0;from_page_table++,to_page_table++){
 			this_page = *from_page_table;
 			if (!(1 & this_page)){
