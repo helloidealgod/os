@@ -125,3 +125,11 @@ int free_page_tables(unsigned long from,unsigned long size){
 	invalidata();
 	return 0;
 }
+
+void do_no_page(unsigned long error_code,unsigned long address){
+	printk("do_no_page");
+}
+
+void do_wp_page(unsigned long error_code,unsigned long address){
+	printk("do_wp_page");
+}

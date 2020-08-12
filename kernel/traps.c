@@ -21,7 +21,7 @@ void general_protection(void);
 void coprocessor_error(void);
 void device_not_available(void);
 void parallel_interrupt(void);
-void page_exception(void);
+void page_fault(void);
 
 static void die(char * str, long esp_ptr, long nr){
 	long * esp = (long *)esp_ptr;
@@ -99,10 +99,6 @@ void do_parallel_interrupt(long esp,long error_code){
 	printk("do parallel interrupt\r\n");
 }
 
-void do_page_exception(long esp,long error_code){
-	printk("do page exception\r\n");
-}
-
 void trap_init(void){
 	int i;
 	set_trap_gate(0,&divide_error);
@@ -119,7 +115,7 @@ void trap_init(void){
 	set_trap_gate(11,&segment_not_present);
 	set_trap_gate(12,&stack_segment);
 	set_trap_gate(13,&general_protection);
-	set_trap_gate(14,&page_exception);
+	set_trap_gate(14,&page_fault);
 	set_trap_gate(15,&reserved);
 	set_trap_gate(16,&coprocessor_error);
 	for(i=17;i<48;i++){

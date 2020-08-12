@@ -22,6 +22,7 @@ static union task_union init_task;
 struct task_struct * current = &(init_task.task);
 struct task_struct * task[NR_TASKS];
 extern unsigned long pg_dir[1024];
+static int task_index = 0;
 void sched_init(void){
 	int i;
 	struct desc_struct *p;
@@ -82,18 +83,21 @@ void sched_init(void){
 	ltr(0);
 	lldt(0);
 
-/*	outb_p(0x43,0x36);
+	outb_p(0x43,0x36);
 	outb_p(0x40,LATCH & 0xff);
 	outb_p(0x40,LATCH >> 8);
 	set_intr_gate(0x20,&timer_interrupt);
 	outb_p(0x21,inb_p(0x21) & ~0x01);
-*/	
+	
 	set_system_gate(0x80,&system_call);
 }
 
 void do_timer(){
-	printk("timer");
-//	switch_to(1);
+//	printk("timer");
+	task_index ++;
+//	switch_to(task_index % 4);
+//	switch_to(0);
+//	schedule();
 }
 
 void schedule(void){
@@ -104,11 +108,11 @@ void schedule(void){
 		itoa(i,s);
 		printk(s);
 		if(NULL != task[i]){
-			printk(" is not null ");
+		//	printk(" is not null ");
 			switch_to(i);
 			break;
 		} else{
-			printk(" is null ");
+		//	printk(" is null ");
 		}
 	}
 

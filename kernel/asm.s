@@ -5,7 +5,7 @@
 .globl double_fault,coprocessor_segment_overrun
 .globl invalid_TSS,segment_not_present,stack_segment
 .globl general_potection,coprocessor_error,irq13,reserved
-.globl device_not_available,general_protection,page_exception,parallel_interrupt
+.globl device_not_available,general_protection,parallel_interrupt
 #.globl keyboard_interrupt
 divide_error:
 	pushl $do_divide_error #调用的函数地址
@@ -146,9 +146,6 @@ device_not_available:
 
 parallel_interrupt:
 	pushl $do_parallel_interrupt
-	jmp error_code
-page_exception:
-	pushl $do_page_exception
 	jmp error_code
 
 keyboard_interrupt:

@@ -76,6 +76,10 @@ memory.o: memory.c
 	@gcc -m32 -c ./mm/memory.c -o memory.o
 OBJS += memory.o
 
+page.o: page.s
+	@as --32 ./mm/page.s -o page.o
+OBJS += page.o
+
 fork.o: fork.c
 	@gcc -m32 -fomit-frame-pointer -c ./kernel/fork.c -o fork.o
 OBJS += fork.o
