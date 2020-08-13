@@ -3,7 +3,10 @@
 #define PAGING_PAGES (PAGING_MEMORY>>12)
 #define MAP_NR(addr) (((addr)-LOW_MEM)>>12)
 #define USED 100
-#define invalidata() __asm__("movl %%eax,%%cr3"::"a" (0))
+#define invalidate() __asm__("movl %%eax,%%cr3"::"a" (0))
+#define copy_page(from,to) \
+__asm__("cld;rep;movsl"\
+		::"S" (from),"D" (to),"c" (1024))
 
 static long HIGH_MEMORY = 0;
 static unsigned char mem_map[PAGING_PAGES] = {0,};
@@ -81,7 +84,7 @@ int copy_page_tables(unsigned long from,unsigned long to,long size){
 			}
 		}
 	}
-	invalidata();
+	invalidate();
 	return 0;
 }
 
@@ -122,7 +125,7 @@ int free_page_tables(unsigned long from,unsigned long size){
 		free_page(0xfffff000 & *dir);
 		*dir = 0;
 	}
-	invalidata();
+	invalidate();
 	return 0;
 }
 
@@ -130,6 +133,26 @@ void do_no_page(unsigned long error_code,unsigned long address){
 	printk("do_no_page");
 }
 
+void un_wp_page(unsigned long * table_entry){
+	unsigned long old_page,new_page;
+	old_page = 0xfffff000 & *table_entry;
+	if (old_page >= LOW_MEM && mem_map[MAP_NR(old_page)] == 1){
+		*table_entry |= 2;
+		invalidate();
+		return;
+	}
+	if (!(new_page=get_free_page()))
+		return;
+	if (old_page >= LOW_MEM)
+		mem_map[MAP_NR(old_page)]--;
+	*table_entry = new_page | 7;
+	invalidate();
+	copy_page(old_page,new_page);
+}
+
 void do_wp_page(unsigned long error_code,unsigned long address){
 //	printk("do_wp_page");
+	un_wp_page((unsigned long *)
+		(((address>>10) & 0xffc) + (0xfffff000 &
+		*((unsigned long *)((address>>20) & 0xffc)))));
 }

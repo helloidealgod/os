@@ -51,18 +51,22 @@ int main(void){
 	move_to_user_mode();
 	if(!fork()){
 		sprintk("hello sprintk in task1\n");
-		if(2 == fork()){
-			while(1) sprintk("A");
-		}
-		if(3 == fork()){
+	//	if(2 == fork()){
+	//		while(1) sprintk("A");
+	//	}
+	//	if(3 == fork()){
 			while(1) sprintk("B");
-		}
-		while(1);
+	//	}
+	//	while(1);
 	}
 //	exit();
 	sprintk("hello sprintk in main\n");
 //	for(;;) 
-		pause();
+//		pause();
+	while(1) sprintk("A");
+	outb_p(inb_p(0x21)&0xfb,0x21);
+	outb(inb_p(0xa1)&0xdf,0xa1);
+
 	while(1);
 	return 0;
 }
