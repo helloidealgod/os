@@ -94,7 +94,7 @@ void sched_init(void){
 
 void do_timer(){
 //	printk("timer");
-	task_index ++;
+//	task_index ++;
 //	switch_to(task_index % 4);
 //	switch_to(0);
 //	schedule();

@@ -82,6 +82,12 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 		task[nr] = NULL;
 		return -11;
 	}
+	char s[10];
+	itoa(last_pid,s);
+	printk(s);
+	printk("\n");
+
+	return last_pid;
 }
 
 int copy_mem(int nr,struct task_struct * p){

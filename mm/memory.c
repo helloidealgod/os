@@ -131,5 +131,5 @@ void do_no_page(unsigned long error_code,unsigned long address){
 }
 
 void do_wp_page(unsigned long error_code,unsigned long address){
-	printk("do_wp_page");
+//	printk("do_wp_page");
 }
