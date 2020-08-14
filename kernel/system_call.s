@@ -1,13 +1,70 @@
 .code32
 
-.globl timer_interrupt,system_call,sys_fork,sys_printk
-nr_system_calls = 72
-CS	= 0x20
+SIG_CHLD = 17
+EAX = 0x00
+EBX = 0x04
+ECX = 0x08
+EDX = 0x0C
+FS  = 0x10
+ES  = 0x14
+DS  = 0x18
+EIP = 0x1C
+CS  = 0x20
+EFLAGS = 0x24
+OLDESP = 0x28
+OLDSS  = 0x2C
 
+state = 0
+counter = 4
+priority = 8
+signal = 12
+sigaction = 16
+blocked = (33*16)
+
+sa_handler = 0
+sa_mask = 4
+sa_flags = 8
+sa_restorer = 12
+
+nr_system_calls = 72
+
+.globl timer_interrupt,system_call,sys_fork,sys_printk
+
+.align 2
 bad_system_call:
 	movl $-1,%eax
 	iret
 
+.align 2
+reschedule:
+	pushl $ret_from_sys_call
+	jmp schedule
+	
+.align 2
+system_call:
+	cmpl $nr_system_calls-1,%eax
+	ja bad_system_call
+	push %ds
+	push %es
+	push %fs
+	pushl %edx
+	pushl %ecx
+	pushl %ebx
+	movl $0x10,%edx
+	mov %dx,%ds
+	mov %dx,%es
+	mov $0x17,%edx
+	mov %dx,%fs
+	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
+	popl %ebx
+	popl %ecx
+	popl %edx
+	pop %fs
+	pop %es 	
+	pop %ds
+	iret
+
+.align 2
 timer_interrupt:
 	pushl %eax
 	pushl %ebx
@@ -29,17 +86,20 @@ timer_interrupt:
 	movl CS(%esp),%eax
 	andl $3,%eax		#eax is CPL (3:USER,0:supervisor)
 	call do_timer
-	pop %fs
-	pop %es
-	pop %ds
-	popl %ebp
-	popl %esi
-	popl %edi
-	popl %edx
-	popl %ecx
-	popl %ebx
-	popl %eax
-	iret
+	addl $4,%esp
+	jmp ret_from_sys_call
+	
+#	pop %fs
+#	pop %es
+#	pop %ds
+#	popl %ebp
+#	popl %esi
+#	popl %edi
+#	popl %edx
+#	popl %ecx
+#	popl %ebx
+#	popl %eax
+#	iret
 
 #timer_interrupt:
 #	push %ds
@@ -64,29 +124,6 @@ timer_interrupt:
 #//	jmp ret_from_sys_call
 #	iret
 
-system_call:
-	cmpl $nr_system_calls-1,%eax
-	ja bad_system_call
-	push %ds
-	push %es
-	push %fs
-	pushl %edx
-	pushl %ecx
-	pushl %ebx
-	movl $0x10,%edx
-	mov %dx,%ds
-	mov %dx,%es
-	mov $0x17,%edx
-	mov %dx,%fs
-	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
-	popl %ebx
-	popl %ecx
-	popl %edx
-	pop %fs
-	pop %es 	
-	pop %ds
-#	movl $0,%eax
-	iret
 
 msg:
 	.asciz "hello int 0x80\n"
