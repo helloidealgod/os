@@ -92,6 +92,10 @@ tty_io.o: tty_io.c
 	@gcc -m32 -c ./kernel/chr_drv/tty_io.c -o tty_io.o
 OBJS += tty_io.o
 
+signal.o: signal.c
+	@gcc -m32 -c ./kernel/signal.c -o signal.o
+OBJS += signal.o
+
 kernel.o: $(OBJS) ld-bootsect.ld
 	@ld -T ld-bootsect.ld $(OBJS) -o kernel.o
 	@objcopy -O binary -R .note -R .comment kernel.o

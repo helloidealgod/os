@@ -95,15 +95,16 @@ void sched_init(void){
 
 void do_timer(long cpl){
 	char s[10];
-	itoa(cpl,s);
-	printk(s);
-	printk(" ");
+//	itoa(cpl,s);
+//	printk(s);
+//	printk(" ");
 //	printk("timer");
 	if(0 == cpl ){
-		printk("timer0");
+//		printk("timer0");
+		return;
 	}
 	if(3 == cpl ){
-		printk("timer1");
+//		printk("timer3");
 	}
 	if(0 == task_index){
 		task_index++;

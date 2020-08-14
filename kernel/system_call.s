@@ -84,9 +84,9 @@ ret_from_sys_call:
 	pushl %ecx
 	call do_signal
 	popl %eax
-	popl %eax
+3:	popl %eax
 	popl %ebx
-	popl %bcx
+	popl %ecx
 	popl %edx
 	pop %fs
 	pop %es
@@ -114,45 +114,22 @@ timer_interrupt:
 	outb %al,$0x20
 	movl CS(%esp),%eax
 	andl $3,%eax		#eax is CPL (3:USER,0:supervisor)
+	pushl %eax
 	call do_timer
 	addl $4,%esp
-	jmp ret_from_sys_call
+#	jmp ret_from_sys_call
 	
-#	pop %fs
-#	pop %es
-#	pop %ds
-#	popl %ebp
-#	popl %esi
-#	popl %edi
-#	popl %edx
-#	popl %ecx
-#	popl %ebx
-#	popl %eax
-#	iret
-
-#timer_interrupt:
-#	push %ds
-#	push %es
-#	push %fs
-#	pushl %edx
-#	pushl %ecx
-#	pushl %ebx
-#	pushl %eax
-#	movl $0x10,%eax
-#	mov %ax,%ds
-#	mov %ax,%es
-##	movl $0x17,%eax
-##	mov %ax,%fs
-#//	incl _jiffies
-#	movb $0x20,%al
-#	outb %al,$0x20
-#//	movl CS(%esp),%eax
-#//	andl $3,%eax
-#	call do_timer
-#//	addl $4,%esp
-#//	jmp ret_from_sys_call
-#	iret
-
+	pop %fs
+	pop %es
+	pop %ds
+	popl %ebp
+	popl %esi
+	popl %edi
+	popl %edx
+	popl %ecx
+	popl %ebx
+	popl %eax
+	iret
 
 msg:
 	.asciz "hello int 0x80\n"
@@ -168,7 +145,7 @@ sys_fork:
 	pushl %ebp
 	pushl %eax
 	call copy_process
-	addl $20,%esp
+	addl $20,%esp	#相当于 popl eax ebp edi esi gs (all 32bit)
 1:	ret
 
 .align 2
