@@ -14,6 +14,7 @@
 #define NR_TASKS 64
 #define NULL ((void *)0)
 
+long volatile jiffies = 0;
 extern void timer_interrupt(void);
 extern void system_call();
 //static union task_union init_task = {INIT_TASK,};
@@ -93,6 +94,11 @@ void sched_init(void){
 }
 
 void do_timer(long cpl){
+	char s[10];
+	itoa(cpl,s);
+	printk(s);
+	printk(" ");
+//	printk("timer");
 	if(0 == cpl ){
 		printk("timer0");
 	}

@@ -2,6 +2,7 @@
 
 .globl timer_interrupt,system_call,sys_fork,sys_printk
 nr_system_calls = 72
+CS	= 0x20
 
 bad_system_call:
 	movl $-1,%eax
@@ -22,7 +23,7 @@ timer_interrupt:
 	mov %dx,%ds
 	mov %dx,%es
 	mov %dx,%fs
-	incl _jiffies
+	incl jiffies
 	movb $0x20,%al
 	outb %al,$0x20
 	movl CS(%esp),%eax
