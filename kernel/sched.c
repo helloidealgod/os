@@ -92,8 +92,13 @@ void sched_init(void){
 	set_system_gate(0x80,&system_call);
 }
 
-void do_timer(){
-//	printk("timer");
+void do_timer(long cpl){
+	if(0 == cpl ){
+		printk("timer0");
+	}
+	if(3 == cpl ){
+		printk("timer1");
+	}
 	if(0 == task_index){
 		task_index++;
 //	switch_to(task_index % 4);

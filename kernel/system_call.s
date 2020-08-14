@@ -22,8 +22,11 @@ timer_interrupt:
 	mov %dx,%ds
 	mov %dx,%es
 	mov %dx,%fs
+	incl _jiffies
 	movb $0x20,%al
 	outb %al,$0x20
+	movl CS(%esp),%eax
+	andl $3,%eax		#eax is CPL (3:USER,0:supervisor)
 	call do_timer
 	pop %fs
 	pop %es
