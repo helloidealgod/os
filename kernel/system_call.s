@@ -56,11 +56,40 @@ system_call:
 	mov $0x17,%edx
 	mov %dx,%fs
 	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
+	pushl %eax
+	movl current,%eax
+	cmpl $0,state(%eax)
+	jne reschedule
+	cmpl $0,counter(%eax)
+	je reschedule
+	
+ret_from_sys_call:
+	movl current,%eax
+	cmpl task,%eax
+	je 3f
+	cmpw $0x0f,CS(%esp)
+	jne 3f
+	cmpw $0x17,OLDSS(%esp)
+	jne 3f
+	movl signal(%eax),%ebx
+	movl blocked(%eax),%ecx
+	notl %ecx
+	andl %ebx,%ecx
+	bsfl %ecx,%ecx
+	
+	je 3f
+	btrl %ecx,%ebx
+	movl %ebx,signal(%eax)
+	incl %ecx
+	pushl %ecx
+	call do_signal
+	popl %eax
+	popl %eax
 	popl %ebx
-	popl %ecx
+	popl %bcx
 	popl %edx
 	pop %fs
-	pop %es 	
+	pop %es
 	pop %ds
 	iret
 
