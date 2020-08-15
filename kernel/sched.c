@@ -2,7 +2,8 @@
 #include "../include/system.h"
 #include "../include/head.h"
 #include "../include/sched.h"
-#define HZ 100
+
+
 #define PAGE_SIZE 4096
 #define LATCH (1193180/HZ)
 #define FIRST_TSS_ENTRY 4
@@ -11,7 +12,7 @@
 #define _LDT(n) ((((unsigned long)n)<<4)+(FIRST_LDT_ENTRY<<3))
 #define ltr(n) __asm__("ltr %%ax"::"a"(_TSS(n)))
 #define lldt(n) __asm__("lldt %%ax"::"a"(_LDT(n)))
-#define NR_TASKS 64
+
 #define NULL ((void *)0)
 
 long volatile jiffies = 0;
@@ -94,52 +95,48 @@ void sched_init(void){
 }
 
 void do_timer(long cpl){
-	char s[10];
-//	itoa(cpl,s);
-//	printk(s);
-//	printk(" ");
-//	printk("timer");
-	if(0 == cpl ){
-//		printk("timer0");
-		return;
-	}
-	if(3 == cpl ){
-//		printk("timer3");
-	}
-	if(0 == task_index){
-		task_index++;
-//	switch_to(task_index % 4);
-		switch_to(1);
+	if(cpl){
+		current->utime++; 
 	}else{
-		task_index--;
-		switch_to(0);
+		current->stime++;
 	}
-//	schedule();
+	
+	if((--current->counter) > 0) return;
+	current->counter = 0;
+	if(!cpl) return;
+	
+	schedule();
 }
 
 void schedule(void){
-	printk("in schedule\n");
-	int i = NR_TASKS;
-	char s[10];
-	for(i;i>=0;--i){
-		itoa(i,s);
-		printk(s);
-		if(NULL != task[i]){
-		//	printk(" is not null ");
-			switch_to(i);
-			break;
-		} else{
-		//	printk(" is null ");
+	int i,next,c;
+	struct task_struct ** p;
+	
+	while(1){
+		c = -1;
+		next = 0;
+		i = NR_TASKS;
+		p = &task[NR_TASKS];
+		
+		while(--i){
+			if (!*--p)
+				continue;
+			if((*p)->state == TASK_RUNNING && (*)->counter > c)
+				c = (*p)->counter,next = i;
 		}
+		
+		if(c) break;
+		for (p = &LAST_TASK; p > &FIRST_TASK; --p)
+			if (*p)
+				(*p)->counter = ((*p)->counter >> 1) + (*p)->priority;
+		
 	}
 
-//	switch_to(0);
+	switch_to(next);
 }
 
 int sys_pause(void){
-	current->state = 0;
-	printk("hello pause\n");
-	switch_to(1);
-//	schedule();
+	current->state = TASK_INTERRUPTIBLE;
+	schedule();
 	return 0;
 }

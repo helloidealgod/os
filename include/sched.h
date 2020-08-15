@@ -1,8 +1,27 @@
 #ifndef _SCHED_H
 #define _SCHED_H
-#include "head.h"
+
+#define NR_TASKS 64
+#define HZ 100
+
+#define FIRST_TASK task[0]
+#define LAST_TASK task[NR_TASKS-1]
+
+#define TASK_RUNNING 0
+#define TASK_INTERRUPTIBLE 1
+#define TASK_UNINTERRUPTIBLE 2
+#define TASK_ZOMBIE 3
+#define TASK_STOPPED 4
+
+#ifndef NULL
+#define NULL ((void *) 0)
+#endif
+
 #define FIRST_TSS_ENTRY 4
 #define _TSS(n) ((((unsigned long)n)<<4)+(FIRST_TSS_ENTRY<<3))
+
+#include "head.h"
+
 struct i387_struct {
 	long cwd;
 	long swd;
@@ -47,7 +66,20 @@ struct task_struct{
 	long state;
 	long counter;
 	long priority;
-	long pid,father;
+	long signal;
+	struct sigaction sigaction[32];
+	long blocked;
+	int exit_code;
+	unsigned long start_code,end_code,end_data,brk,start_stack;
+	long pid,father,pgrp,session,leader;
+	unsigned short uid,euid,suid;
+	unsigned short gid,egid,sgid;
+	long alarm;
+	long utime,stime,cutime,cstime,start_time;
+	unsigned short used_math;
+	int tty;
+	unsigned short umask;
+	unsigned long close_on_exec;
 	struct desc_struct ldt[3];
 	struct tss_struct tss;
 };
