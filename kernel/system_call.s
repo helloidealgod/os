@@ -56,6 +56,14 @@ system_call:
 	mov $0x17,%edx
 	mov %dx,%fs
 	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
+	popl %ebx
+	popl %ecx
+	popl %edx
+	pop %fs
+	pop %es
+	pop %ds
+	iret
+
 	pushl %eax
 	movl current,%eax
 	cmpl $0,state(%eax)

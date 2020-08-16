@@ -50,21 +50,16 @@ int main(void){
 	sti();
 	move_to_user_mode();
 	if(!fork()){
-		sprintk("hello sprintk in task1\n");
-	//	if(2 == fork()){
-	//		while(1) sprintk("A");
-	//	}
-	//	if(3 == fork()){
-			while(1) sprintk("B");
-//	}
-		while(1);
+		if(2 == fork()){
+			while(1) sprintk("C");
+		}
+	/*	if(3 == fork()){
+			while(1) sprintk("D");
+		}
+	*/	while(1);
 	}
-//	exit();
-	sprintk("hello sprintk in main\n");
-//	for(;;) 
-//		pause();
-	while(1) sprintk("A");
-
 	while(1);
+	for(;;) 
+		pause();
 	return 0;
 }

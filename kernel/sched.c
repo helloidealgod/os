@@ -25,6 +25,9 @@ struct task_struct * current = &(init_task.task);
 struct task_struct * task[NR_TASKS];
 extern unsigned long pg_dir[1024];
 static int task_index = 0;
+
+void schedule(void);
+
 void sched_init(void){
 	int i;
 	struct desc_struct *p;
@@ -105,7 +108,8 @@ void do_timer(long cpl){
 	current->counter = 0;
 	if(!cpl) return;
 	
-	schedule();
+//	switch_to(1);
+//	schedule();
 }
 
 void schedule(void){
@@ -121,17 +125,17 @@ void schedule(void){
 		while(--i){
 			if (!*--p)
 				continue;
-			if((*p)->state == TASK_RUNNING && (*)->counter > c)
-				c = (*p)->counter,next = i;
+			if((*p)->state == TASK_RUNNING && (*p)->counter > c){
+				c = (*p)->counter;
+				next = i;
+			}
 		}
-		
 		if(c) break;
 		for (p = &LAST_TASK; p > &FIRST_TASK; --p)
 			if (*p)
 				(*p)->counter = ((*p)->counter >> 1) + (*p)->priority;
 		
 	}
-
 	switch_to(next);
 }
 

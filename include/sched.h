@@ -67,7 +67,7 @@ struct task_struct{
 	long counter;
 	long priority;
 	long signal;
-	struct sigaction sigaction[32];
+//	struct sigaction sigaction[32];
 	long blocked;
 	int exit_code;
 	unsigned long start_code,end_code,end_data,brk,start_stack;
