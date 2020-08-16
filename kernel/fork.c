@@ -100,6 +100,16 @@ int copy_mem(int nr,struct task_struct * p){
 	printk(s);
 	printk("\n");
 
+	unsigned char * ldt_p;
+	ldt_p = &(current->ldt[1]);
+	int index[] = {7,4,3,2,15,12,11,10};
+	for(int i =0;i < 8;i++){
+		itoa(*(ldt_p+index[i]),s);
+		printk(s);
+		printk(" ");
+	}
+	printk("\n");
+
 	code_limit = get_limit(0x0f);
 	data_limit = get_limit(0x17);
 	
@@ -132,12 +142,41 @@ int copy_mem(int nr,struct task_struct * p){
 	printk(s);
 	printk("!\n");
 
+	ldt_p = &(p->ldt[1]);
+
+	printk("ldt address: ");
+	itoa(&(p->ldt[1]),s);
+	printk(s);
+	printk(" ");
+	itoa(&(p->ldt[2]),s);
+	printk(s);
+	printk("!\n");
+
+	for(int i =0;i < 8;i++){
+		itoa(*(ldt_p+index[i]),s);
+		printk(s);
+		printk(" ");
+	}
+	printk("\n");
 	set_base(p->ldt[1],new_code_base);
 	set_base(p->ldt[2],new_data_base);
 
 	old_code_base = get_base(p->ldt[1]);
 	old_data_base = get_base(p->ldt[2]);
 	
+	for(int i =0;i < 8;i++){
+		itoa(*(ldt_p+index[i]),s);
+		printk(s);
+		printk(" ");
+	}
+	printk("\n");
+	for(int i =0;i < 16;i++){
+		itoa(*(ldt_p+i),s);
+		printk(s);
+		printk(" ");
+	}
+	printk("\n");
+
 	printk("base: ");
 	itoa(old_code_base,s);
 	printk(s);

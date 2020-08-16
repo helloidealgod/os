@@ -120,7 +120,7 @@ unsigned long _base; \
 __asm__("movb %3,%%dh\n\t" \
 		"movb %2,%%dl\n\t" \
 		"shll $16,%%edx\n\t" \
-		"movw %1,%%dx" \
+		"movw %1,%%dx"\
 		:"=d" (_base) \
 		:"m" (*((addr) + 2)), \
 		"m" (*((addr) + 4)), \
