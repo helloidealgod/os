@@ -115,17 +115,18 @@ __asm__("movw %%dx,%0\n\t" \
 		
 #define set_base(ldt,base) _set_base(((char *)&(ldt)),base)
 
-#define _get_base(addr) ({\
-unsigned long _base; \
-__asm__("movb %3,%%dh\n\t" \
-		"movb %2,%%dl\n\t" \
-		"shll $16,%%edx\n\t" \
-		"movw %1,%%dx"\
-		:"=d" (_base) \
-		:"m" (*((addr) + 2)), \
-		"m" (*((addr) + 4)), \
-		"m" (*((addr) + 7))); \
-_base;})
+static inline unsigned long _get_base(char * addr){
+	unsigned long _base;
+	__asm__ volatile("movb %3,%%dh\n\t"
+			"movb %2,%%dl\n\t"
+			"shll $16,%%edx\n\t"
+			"movw %1,%%dx"
+			:"=&d" (_base)
+			:"m" (*((addr) + 2)),
+			"m" (*((addr) + 4)),
+			"m" (*((addr) + 7))); 
+	return _base;
+}
 
 #define get_base(ldt) _get_base( ((char *)&(ldt)) )
 
