@@ -122,8 +122,8 @@ void trap_init(void){
 		set_trap_gate(i,&reserved);
 	}
 	set_trap_gate(45,&irq13);
-	//outb_p(inb_p(0x21)&0xfb,0x21);
-	//outb(inb_p(0xa1)&0xdf,0xa1);
+	outb_p(inb_p(0x21)&0xfb,0x21);
+	outb(inb_p(0xa1)&0xdf,0xa1);
 	set_trap_gate(39,&parallel_interrupt);
 
 }

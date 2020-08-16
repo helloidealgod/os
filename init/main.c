@@ -50,13 +50,13 @@ int main(void){
 	sti();
 	move_to_user_mode();
 	if(!fork()){
-		if(2 == fork()){
+		if(!fork()){
 			while(1) sprintk("C");
 		}
-	/*	if(3 == fork()){
+		if(!fork()){
 			while(1) sprintk("D");
 		}
-	*/	while(1);
+		while(1);
 	}
 	while(1);
 	for(;;) 

@@ -49,7 +49,7 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	printk("\n");
 */	*p = *current;
 
-	p->state = 0;
+	p->state = 2;
 	p->pid = last_pid;
 	p->father = current->pid;
 	p->counter = p->priority;
@@ -82,10 +82,8 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 		task[nr] = NULL;
 		return -11;
 	}
-	char s[10];
-	itoa(last_pid,s);
-	printk(s);
-	printk("\n");
+
+	p->state = 0;
 
 	return last_pid;
 }
@@ -94,36 +92,12 @@ int copy_mem(int nr,struct task_struct * p){
 	unsigned long old_data_base,new_data_base,data_limit;
 	unsigned long old_code_base,new_code_base,code_limit;
 	
-	char s[10];
-	itoa(current->pid,s);
-	printk("current=");
-	printk(s);
-	printk("\n");
-
-	unsigned char * ldt_p;
-	ldt_p = &(current->ldt[1]);
-	int index[] = {7,4,3,2,15,12,11,10};
-	for(int i =0;i < 8;i++){
-		itoa(*(ldt_p+index[i]),s);
-		printk(s);
-		printk(" ");
-	}
-	printk("\n");
-
 	code_limit = get_limit(0x0f);
 	data_limit = get_limit(0x17);
 	
 	old_code_base = get_base(current->ldt[1]);
 	old_data_base = get_base(current->ldt[2]);
 	
-	printk("old: ");
-	itoa(old_code_base,s);
-	printk(s);
-	printk(" ");
-	itoa(old_data_base,s);
-	printk(s);
-	printk("!\n");
-
 	if (old_code_base != old_data_base){
 		printk("We don't support separate I&D\n");
 	}
@@ -134,62 +108,14 @@ int copy_mem(int nr,struct task_struct * p){
 	new_code_base = nr * 0x4000000;
 	new_data_base = nr * 0x4000000;
 	
-	printk("new: ");
-	itoa(new_code_base,s);
-	printk(s);
-	printk(" ");
-	itoa(new_data_base,s);
-	printk(s);
-	printk("!\n");
-
-	ldt_p = &(p->ldt[1]);
-
-	printk("ldt address: ");
-	itoa(&(p->ldt[1]),s);
-	printk(s);
-	printk(" ");
-	itoa(&(p->ldt[2]),s);
-	printk(s);
-	printk("!\n");
-
-	for(int i =0;i < 8;i++){
-		itoa(*(ldt_p+index[i]),s);
-		printk(s);
-		printk(" ");
-	}
-	printk("\n");
 	set_base(p->ldt[1],new_code_base);
 	set_base(p->ldt[2],new_data_base);
-
-	old_code_base = get_base(p->ldt[1]);
-	old_data_base = get_base(p->ldt[2]);
-	
-	for(int i =0;i < 8;i++){
-		itoa(*(ldt_p+index[i]),s);
-		printk(s);
-		printk(" ");
-	}
-	printk("\n");
-	for(int i =0;i < 16;i++){
-		itoa(*(ldt_p+i),s);
-		printk(s);
-		printk(" ");
-	}
-	printk("\n");
-
-	printk("base: ");
-	itoa(old_code_base,s);
-	printk(s);
-	printk(" ");
-	itoa(old_data_base,s);
-	printk(s);
-	printk("\n");
-
 
 	if(copy_page_tables(old_data_base,new_data_base,data_limit)){
 		free_page_tables(new_data_base,data_limit);
 		printk("free page tables\n");
 		return -EAGAIN;
 	}
+	printk("copy_page_tables success\n");
 	return 0;
 }

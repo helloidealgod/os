@@ -109,7 +109,7 @@ void do_timer(long cpl){
 	if(!cpl) return;
 	
 //	switch_to(1);
-//	schedule();
+	schedule();
 }
 
 void schedule(void){
@@ -136,7 +136,12 @@ void schedule(void){
 				(*p)->counter = ((*p)->counter >> 1) + (*p)->priority;
 		
 	}
-	switch_to(next);
+/*	char s[10];
+	itoa(next,s);
+	printk("next:");
+	printk(s);
+	printk(" ");
+*/	switch_to(next);
 }
 
 int sys_pause(void){
