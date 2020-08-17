@@ -31,25 +31,21 @@ int main(void){
 	else
 		buffer_memory_end = 1*1024*1024;
 	main_memory_start = buffer_memory_end;
+	
 	mem_init(main_memory_start,memory_end);
-
 	trap_init();
 	con_init();
-	printk("hello world! \r\n");
-	int i = (int)(EXT_MEM_K & 0x0000ffff);
-	char s[10];
-	itoa(i,s);
-	printk(s);
-	printk("\n");
-	i = (int)(memory_end >> 20);
-	itoa(i,s);
-	printk("total memory: ");
-	printk(s);
-	printk("M \n");
 	sched_init();
+	printk("init complete!\n");
 	sti();
 	move_to_user_mode();
 	if(!fork()){
+		if(!fork()){
+			while(1) sprintk("A");
+		}
+		if(!fork()){
+			while(1) sprintk("B");
+		}
 		if(!fork()){
 			while(1) sprintk("C");
 		}
@@ -58,7 +54,6 @@ int main(void){
 		}
 		while(1);
 	}
-	while(1);
 	for(;;) 
 		pause();
 	return 0;

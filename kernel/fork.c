@@ -1,6 +1,7 @@
 #include "../include/sched.h"
 #include "../include/head.h"
 #include "../include/system.h"
+
 #define NR_TASKS 64
 #define EAGAIN 11
 #define NULL ((void *)0)
@@ -12,8 +13,9 @@ long last_pid = 0;
 extern struct task_struct * current;
 extern struct task_struct * task[NR_TASKS];
 unsigned long get_free_page(void);
+
 int find_empty_process(){
-	printk("find empty process\n");
+//	printk("find empty process\n");
 	int i;
 	repeat:
 		if((++last_pid)<0) last_pid=1;
@@ -23,12 +25,12 @@ int find_empty_process(){
 	last_pid = 1;
 	for(i=1;i<NR_TASKS;i++)
 		if(!task[i]){
-			char s[10];
+/*			char s[10];
 			itoa(i,s);
 			printk("pid=");
 			printk(s);
 			printk("\n");
-			return i;
+*/			return i;
 		}
 	return -EAGAIN;
 }
@@ -77,7 +79,7 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	p->tss.trace_bitmap = 0x80000000;
 	set_tss_desc(gdt + (nr<<1) + FIRST_TSS_ENTRY,&(p->tss));
 	set_ldt_desc(gdt + (nr<<1) + FIRST_LDT_ENTRY,&(p->ldt));
-	printk("copy process\n");
+//	printk("copy process\n");
 	if (copy_mem(nr,p)){
 		task[nr] = NULL;
 		return -11;
@@ -113,9 +115,9 @@ int copy_mem(int nr,struct task_struct * p){
 
 	if(copy_page_tables(old_data_base,new_data_base,data_limit)){
 		free_page_tables(new_data_base,data_limit);
-		printk("free page tables\n");
+//		printk("free page tables\n");
 		return -EAGAIN;
 	}
-	printk("copy_page_tables success\n");
+//	printk("copy_page_tables success\n");
 	return 0;
 }

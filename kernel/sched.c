@@ -136,12 +136,7 @@ void schedule(void){
 				(*p)->counter = ((*p)->counter >> 1) + (*p)->priority;
 		
 	}
-/*	char s[10];
-	itoa(next,s);
-	printk("next:");
-	printk(s);
-	printk(" ");
-*/	switch_to(next);
+	switch_to(next);
 }
 
 int sys_pause(void){
