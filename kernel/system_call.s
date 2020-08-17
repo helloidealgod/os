@@ -39,8 +39,8 @@ bad_system_call:
 reschedule:
 	pushl $ret_from_sys_call
 	jmp schedule
-	
-.align 2
+
+.align 2	
 system_call:
 	cmpl $nr_system_calls-1,%eax
 	ja bad_system_call
@@ -56,43 +56,15 @@ system_call:
 	mov $0x17,%edx
 	mov %dx,%fs
 	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
-	popl %ebx
-	popl %ecx
-	popl %edx
-	pop %fs
-	pop %es
-	pop %ds
-	iret
-
 	pushl %eax
 	movl current,%eax
 	cmpl $0,state(%eax)
 	jne reschedule
 	cmpl $0,counter(%eax)
-	je reschedule
-	
+	je reschedule		
+
 ret_from_sys_call:
-	movl current,%eax
-	cmpl task,%eax
-	je 3f
-	cmpw $0x0f,CS(%esp)
-	jne 3f
-	cmpw $0x17,OLDSS(%esp)
-	jne 3f
-	movl signal(%eax),%ebx
-	movl blocked(%eax),%ecx
-	notl %ecx
-	andl %ebx,%ecx
-	bsfl %ecx,%ecx
-	
-	je 3f
-	btrl %ecx,%ebx
-	movl %ebx,signal(%eax)
-	incl %ecx
-	pushl %ecx
-	call do_signal
 	popl %eax
-3:	popl %eax
 	popl %ebx
 	popl %ecx
 	popl %edx
@@ -103,16 +75,13 @@ ret_from_sys_call:
 
 .align 2
 timer_interrupt:
-	pushl %eax
-	pushl %ebx
-	pushl %ecx
-	pushl %edx
-	pushl %edi
-	pushl %esi
-	pushl %ebp
-	push %ds
 	push %es
+	push %ds
 	push %fs
+	pushl %edx
+	pushl %ecx
+	pushl %ebx
+	pushl %eax
 	mov $0x10,%edx
 	mov %dx,%ds
 	mov %dx,%es
@@ -125,22 +94,8 @@ timer_interrupt:
 	pushl %eax
 	call do_timer
 	addl $4,%esp
-#	jmp ret_from_sys_call
-	
-	pop %fs
-	pop %es
-	pop %ds
-	popl %ebp
-	popl %esi
-	popl %edi
-	popl %edx
-	popl %ecx
-	popl %ebx
-	popl %eax
-	iret
+	jmp ret_from_sys_call
 
-msg:
-	.asciz "hello int 0x80\n"
 .align 2
 
 sys_fork:

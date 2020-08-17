@@ -40,19 +40,33 @@ int main(void){
 	sti();
 	move_to_user_mode();
 	if(!fork()){
+		int a,b,c,d;
 		if(!fork()){
-			while(1) sprintk("A");
+			while(1){
+				a++;    
+			//	sprintk("A");
+			}
 		}
 		if(!fork()){
-			while(1) sprintk("B");
+			while(1){
+			  	b++;
+			//	sprintk("B");
+			}
 		}
 		if(!fork()){
-			while(1) sprintk("C");
+			while(1){ 
+				c++;
+			//	sprintk("C");
+			}
 		}
 		if(!fork()){
-			while(1) sprintk("D");
+			while(1){ 
+				d++;
+			//	sprintk("D");
+			}
 		}
-		while(1);
+		for(;;)
+			pause();
 	}
 	for(;;) 
 		pause();
