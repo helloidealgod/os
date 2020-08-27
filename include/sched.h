@@ -67,7 +67,7 @@ struct task_struct{
 	long counter;
 	long priority;
 	long signal;
-//	struct sigaction sigaction[32];
+	struct sigaction sigaction[32];
 	long blocked;
 	int exit_code;
 	unsigned long start_code,end_code,end_data,brk,start_stack;
@@ -112,7 +112,7 @@ __asm__("movw %%dx,%0\n\t" \
 		"m" (*((addr) + 7)), \
 		"d" (base) \
 		:)
-		
+
 #define set_base(ldt,base) _set_base(((char *)&(ldt)),base)
 
 static inline unsigned long _get_base(char * addr){
@@ -124,7 +124,7 @@ static inline unsigned long _get_base(char * addr){
 			:"=&d" (_base)
 			:"m" (*((addr) + 2)),
 			"m" (*((addr) + 4)),
-			"m" (*((addr) + 7))); 
+			"m" (*((addr) + 7)));
 	return _base;
 }
 
