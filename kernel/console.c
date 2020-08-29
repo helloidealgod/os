@@ -161,13 +161,13 @@ void clear_line(){
 }
 
 
-
+/*
 static void cr(int currcons)
 {
 	pos -= x<<1;
 	x=0;
-}
-
+}*/
+/*
 static void lf(int currcons)
 {
 	if (y+1<bottom) {
@@ -177,10 +177,11 @@ static void lf(int currcons)
 	}
 	scrup(currcons);
 }
-
+*/
 void console_print(const char * b)
 {
-	int currcons = fg_console;
+	char * ptr;
+//	int currcons = fg_console;
 	char c;
 
     ptr=(unsigned char *)video_mem_start + 2*x + 160*y;
@@ -228,7 +229,8 @@ void console_print(const char * b)
 			y -= 25;
 		}
 	}
-	set_cursor(currcons);
+//	set_cursor(currcons);
+	set_cursor(x,y);
 }
 /*
 void console_print(const char * b)

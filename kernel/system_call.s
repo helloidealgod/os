@@ -111,12 +111,3 @@ sys_fork:
 	addl $20,%esp	#相当于 popl eax ebp edi esi gs (all 32bit)
 1:	ret
 
-.align 2
-	
-sys_printk:
-	pushl %ebx
-	call printk
-	popl %ebx
-	ret
-
-

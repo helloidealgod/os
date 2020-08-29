@@ -8,8 +8,7 @@
 #define _NR_write 4
 #define _NR_open 5
 #define _NR_close 6
-#define _NR_sprintk 1
-#define _NR_pause 2
+#define _NR_pause 1
 
 #define _syscall0(type,name) \
 type name(void){ \

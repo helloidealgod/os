@@ -4,9 +4,8 @@
 
 typedef int (*fn_ptr)();
 extern int sys_fork();
-extern int sys_printk(char *s);
 extern int sys_pause();
-fn_ptr sys_call_table[]={sys_fork,sys_printk,sys_pause};
+fn_ptr sys_call_table[]={sys_fork,sys_pause};
 
 static long memory_end = 0;
 static long buffer_memory_end = 0;
@@ -17,7 +16,6 @@ static inline int pause(void) __attribute__((always_inline));
 static inline _syscall0(int,fork)
 static inline _syscall0(int,exit)
 static inline _syscall0(int,pause)
-static inline _syscall1(int,sprintk,char *,p)
 
 int main(void){
 	memory_end = (1<<20) + (EXT_MEM_K << 10);
@@ -37,6 +35,8 @@ int main(void){
 	con_init();
 	sched_init();
 	printk("init complete!\n");
+	int test = 10;
+	printk("test=%d\n",test);
 	sti();
 	move_to_user_mode();
 	if(!fork()){
@@ -44,25 +44,21 @@ int main(void){
 		if(!fork()){
 			while(1){
 				a++;    
-			//	sprintk("A");
 			}
 		}
 		if(!fork()){
 			while(1){
 			  	b++;
-			//	sprintk("B");
 			}
 		}
 		if(!fork()){
 			while(1){ 
 				c++;
-			//	sprintk("C");
 			}
 		}
 		if(!fork()){
 			while(1){ 
 				d++;
-			//	sprintk("D");
 			}
 		}
 		for(;;)

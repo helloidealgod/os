@@ -59,9 +59,9 @@ traps.o: traps.c
 	@gcc -m32 -c ./kernel/traps.c -o traps.o
 OBJS += traps.o
 
-itoa.o: itoa.c
-	@gcc -m32 -c ./kernel/itoa.c -o itoa.o
-OBJS += itoa.o
+#itoa.o: itoa.c
+#	@gcc -m32 -c ./kernel/itoa.c -o itoa.o
+#OBJS += itoa.o
 
 system_call.o: system_call.s
 	@as --32 ./kernel/system_call.s -o system_call.o
@@ -95,6 +95,14 @@ OBJS += tty_io.o
 signal.o: signal.c
 	@gcc -m32 -c ./kernel/signal.c -o signal.o
 OBJS += signal.o
+
+printk.o: printk.c
+	@gcc -m32 -c ./kernel/printk.c -o printk.o
+OBJS += printk.o
+
+vsprintf.o: vsprintf.c
+	@gcc -m32 -c ./kernel/vsprintf.c -o vsprintf.o
+OBJS += vsprintf.o
 
 kernel.o: $(OBJS) ld-bootsect.ld
 	@ld -T ld-bootsect.ld $(OBJS) -o kernel.o
