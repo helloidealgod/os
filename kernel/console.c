@@ -95,7 +95,7 @@ void con_write(struct tty_struct * tty){
 	}
 }
 
-/**
+/*
 void printk(char c[]){
 	char * ptr;
 	int length = strlen(c);
@@ -183,6 +183,59 @@ void console_print(const char * b)
 	int currcons = fg_console;
 	char c;
 
+    ptr=(unsigned char *)video_mem_start + 2*x + 160*y;
+
+	while (c = *(b++)) {
+		/*if (c == 10) {
+			cr(currcons);
+			lf(currcons);
+			continue;
+		}
+		if (c == 13) {
+			cr(currcons);
+			continue;
+		}
+		if (x>=video_num_columns) {
+			x -= video_num_columns;
+			pos -= video_size_row;
+			lf(currcons);
+		}
+		__asm__("movb %2,%%ah\n\t"
+			"movw %%ax,%1\n\t"
+			::"a" (c),
+			"m" (*(short *)pos),
+			"m" (attr)
+			:"ax");
+		pos += 2;
+		x++;*/
+
+		if('\r' == c){
+			x = 0;
+		}else if('\n' == c){
+			x = 0;
+			y ++;
+			clear_line();
+		}else{
+			*ptr++ = c;
+			*ptr++ = 0x07;
+			x++;
+			if(80 <= x){
+				y++;
+				x-=80;
+			}
+		}
+		if(25 <= y){
+			y -= 25;
+		}
+	}
+	set_cursor(currcons);
+}
+/*
+void console_print(const char * b)
+{
+	int currcons = fg_console;
+	char c;
+
 	while (c = *(b++)) {
 		if (c == 10) {
 			cr(currcons);
@@ -208,4 +261,4 @@ void console_print(const char * b)
 		x++;
 	}
 	set_cursor(currcons);
-}
+}*/
