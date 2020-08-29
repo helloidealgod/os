@@ -47,12 +47,12 @@ struct sigaction{
 	sigset_t sa_mask;
 	int sa_flags;
 	void (*sa_restorer)(void);
-}
+};
 
 void (*signal(int _sig,void (*_func)(int)))(int);
 
 int raise(int sig);
-int kill(pid_t pid,int sig);
+//int kill(pid_t pid,int sig);
 int sigaddset(sigset_t * mask,int signo);
 int sigdelset(sigset_t * mask,int signo);
 int sigemptyset(sigset_t * mask);

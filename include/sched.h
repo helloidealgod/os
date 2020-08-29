@@ -21,6 +21,7 @@
 #define _TSS(n) ((((unsigned long)n)<<4)+(FIRST_TSS_ENTRY<<3))
 
 #include "head.h"
+#include "signal.h"
 
 struct i387_struct {
 	long cwd;

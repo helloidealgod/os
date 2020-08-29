@@ -1,4 +1,8 @@
 #include "../include/signal.h"
+#include "../include/sched.h"
+#include "../include/asm/segment.h"
+
+extern struct task_struct * current;
 
 //获取当前任务信号屏蔽位图（屏蔽码或阻塞码）
 int sys_sgetmask(){
@@ -50,11 +54,10 @@ int sys_sigaction(int signum, const struct sigaction * action, struct sigaction 
     if (signum < 1 || signum > 32 || signum == SIGKILL)
         return -1;
     tmp = current->sigaction[signum-1];
-    get_new((char *)action),
-            (char *)(signum-1+current->sigaction));
+    get_new((char *)action, (char *)(signum-1+current->sigaction));
     if (oldaction)
         save_old((char *)&tmp,(char *)oldaction);
-    if (current->sigaction[signum-1].sa_flag & SA_NOMASK)
+    if (current->sigaction[signum-1].sa_flags & SA_NOMASK)
         current->sigaction[signum-1].sa_mask = 0;
     else
         current->sigaction[signum-1].sa_mask |= (1<<(signum-1));
@@ -65,7 +68,7 @@ int sys_sigaction(int signum, const struct sigaction * action, struct sigaction 
 void do_signal(long signr,long eax,long ebx,long ecx,long edx,long fs,
 	long es,long ds,long eip,long cs,long eflags,unsigned long * esp,long ss){
 
-    unsigned long as_handler;
+    unsigned long sa_handler;
     long old_eip = eip;
     struct sigaction * sa = current->sigaction + signr -1;
     int longs;
@@ -77,8 +80,9 @@ void do_signal(long signr,long eax,long ebx,long ecx,long edx,long fs,
     if (!sa_handler){
         if (signr == SIGCHLD)
             return;
-        else
-            do_exit(1<<(signr-1));
+        else{
+         //   do_exit(1<<(signr-1));
+	}
     }
     if (sa->sa_flags & SA_ONESHOT)
         sa->sa_handler = NULL;
@@ -96,7 +100,7 @@ void do_signal(long signr,long eax,long ebx,long ecx,long edx,long fs,
     put_fs_long(edx,tmp_esp++);
     put_fs_long(eflags,tmp_esp++);
     put_fs_long(old_eip,tmp_esp++);
-    current-blocked |= sa->sa_mask;
+    current->blocked |= sa->sa_mask;
 }
 
 

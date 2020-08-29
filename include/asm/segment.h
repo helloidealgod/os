@@ -17,15 +17,15 @@ extern inline unsigned long get_fs_long(const unsigned long * addr){
 }
 
 extern inline void put_fs_byte(char var, char *addr){
-    __asm__("movb %0,%%fs:%1"::"r"(val),"m"(*addr));
+    __asm__("movb %0,%%fs:%1"::"r"(var),"m"(*addr));
 }
 
 extern inline void put_fs_word(short var, short *addr){
-    __asm__("movw %0,%%fs:%1"::"r"(val),"m"(*addr));
+    __asm__("movw %0,%%fs:%1"::"r"(var),"m"(*addr));
 }
 
 extern inline void put_fs_long(long var, long *addr){
-    __asm__("movl %0,%%fs:%1"::"r"(val),"m"(*addr));
+    __asm__("movl %0,%%fs:%1"::"r"(var),"m"(*addr));
 }
 
 extern inline unsigned long get_fs(){
@@ -40,8 +40,8 @@ extern inline unsigned long get_ds(){
     return _v;
 }
 
-extern inline void set_fs(unsigned long val){
-    __asm__("mov %0,%%fs"::"a"((unsigned short) val));
+extern inline void set_fs(unsigned long var){
+    __asm__("mov %0,%%fs"::"a"((unsigned short) var));
 }
 
 
