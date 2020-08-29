@@ -41,7 +41,7 @@ void con_init(){
 			display_desc = "*CGA";
 		}
 	}
-	
+
 	x = 76;y = 0;
 	printk(display_desc);
 	set_trap_gate(0x21,&keyboard_interrupt);
@@ -95,6 +95,7 @@ void con_write(struct tty_struct * tty){
 	}
 }
 
+/**
 void printk(char c[]){
 	char * ptr;
 	int length = strlen(c);
@@ -120,21 +121,11 @@ void printk(char c[]){
 		if(25 <= y){
 			y -= 25;
 		}
-	}	
+	}
 	set_cursor(x,y);
 }
+*/
 
-void printkc(char c){
-	char s[2];
-	s[0] = c;
-	s[1] = '\0';
-	printk(s);
-}
-void printks(short s){
-	char c[6];
-	itoa(s,c);
-	printk(c);
-}
 void set_cursor(unsigned char x, unsigned char y){
 	unsigned int p;
 	p = x + y * 80;
@@ -150,6 +141,7 @@ void set_cursor(unsigned char x, unsigned char y){
 	outb_p(video_port_val,y);
 	sti(); // 设置好IDT后取消注释，现在未设置中断，不能打开中断屏蔽
 }
+
 int strlen(char *s){
 	int length = 0;
 	while(*s++ != '\0'){
@@ -157,6 +149,7 @@ int strlen(char *s){
 	}
 	return length;
 }
+
 void clear_line(){
 	char * ptr;
 	ptr=(unsigned char *)video_mem_start + 2*x + 160*y;
@@ -164,5 +157,55 @@ void clear_line(){
 	for(i=0;i<80-x;i++){
 		*ptr++ = 32;
 		*ptr++ = 0x07;
-	}	
+	}
+}
+
+
+
+static void cr(int currcons)
+{
+	pos -= x<<1;
+	x=0;
+}
+
+static void lf(int currcons)
+{
+	if (y+1<bottom) {
+		y++;
+		pos += video_size_row;
+		return;
+	}
+	scrup(currcons);
+}
+
+void console_print(const char * b)
+{
+	int currcons = fg_console;
+	char c;
+
+	while (c = *(b++)) {
+		if (c == 10) {
+			cr(currcons);
+			lf(currcons);
+			continue;
+		}
+		if (c == 13) {
+			cr(currcons);
+			continue;
+		}
+		if (x>=video_num_columns) {
+			x -= video_num_columns;
+			pos -= video_size_row;
+			lf(currcons);
+		}
+		__asm__("movb %2,%%ah\n\t"
+			"movw %%ax,%1\n\t"
+			::"a" (c),
+			"m" (*(short *)pos),
+			"m" (attr)
+			:"ax");
+		pos += 2;
+		x++;
+	}
+	set_cursor(currcons);
 }
