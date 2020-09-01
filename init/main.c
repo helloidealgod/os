@@ -17,6 +17,37 @@ static inline _syscall0(int,fork)
 static inline _syscall0(int,exit)
 static inline _syscall0(int,pause)
 
+struct buffer_head {
+	char * b_data;
+	unsigned long b_blocknr;
+	unsigned short b_dev;
+	unsigned char b_uptodate;
+	unsigned char b_dirt;
+	unsigned char b_count;
+	unsigned char b_lock;
+	struct task_struct * b_wait;
+	struct buffer_head * b_prev;
+	struct buffer_head * b_next;
+	struct buffer_head * b_prev_free;
+	struct buffer_head * b_next_free;
+};
+struct request{
+	int dev;
+	int cmd;
+	int errors;
+	unsigned long sector;
+	unsigned long nr_sectors;
+	char * buffer;
+	struct task_struct * waiting;
+	struct buffer_head * bh;
+	struct request * next;
+};
+struct blk_dev_struct {
+	void (*request_fn)(void);
+	struct request * current_request;
+};
+
+
 int main(void){
 	memory_end = (1<<20) + (EXT_MEM_K << 10);
 	memory_end &= 0xfffff000;
