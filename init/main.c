@@ -47,6 +47,25 @@ struct blk_dev_struct {
 	struct request * current_request;
 };
 
+void ll_rw_block(int rw, struct buffer_heard *bh){
+
+}
+
+void blk_dev_init(){
+
+}
+
+void hd_init(){
+
+}
+
+static void add_request(struct blk_dev_struct * dev, struct request * req){
+
+}	
+
+static void make_request(int major, int rw, struct buffer_head * bh){
+
+}
 
 int main(void){
 	memory_end = (1<<20) + (EXT_MEM_K << 10);
