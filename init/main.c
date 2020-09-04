@@ -7,7 +7,14 @@
 ((s1)->dev < (s2)->dev || ((s1)->dev == (s2)->dev && \
 (s1)->sector < (s2)->sector)))
 
+#define NR_BLK_DEV	7
 #define NR_REQUEST	32
+#define NULL ((void *)0)
+#define READA 1
+#define READ 1
+#define WRITEA 2
+#define WRITE 2
+
 
 typedef int (*fn_ptr)();
 extern int sys_fork();
@@ -54,6 +61,17 @@ struct blk_dev_struct {
 	struct request * current_request;
 };
 
+struct request request[NR_REQUEST];
+struct blk_dev_struct blk_dev[NR_BLK_DEV]={
+	{NULL, NULL},
+	{NULL, NULL},
+	{NULL, NULL},
+	{NULL, NULL},
+	{NULL, NULL},
+	{NULL, NULL},
+	{NULL, NULL}
+};
+
 void ll_rw_block(int rw, struct buffer_heard *bh){
 
 }
@@ -80,7 +98,7 @@ static void add_request(struct blk_dev_struct * dev, struct request * req){
 	}
 	for (; tmp->next; tmp=tmp->next){
 		if (!req->bh)
-			if (tmp->next-bh)
+			if (tmp->next->bh)
 				break;
 			else
 				continue;
@@ -130,7 +148,7 @@ repeat:
 		goto repeat;
 	}
 
-	req->dev = hb->b_dev;
+	req->dev = bh->b_dev;
 	req->cmd = rw;
 	req->errors = 0;
 	req->sector = bh->b_blocknr<<1;
