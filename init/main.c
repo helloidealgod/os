@@ -2,6 +2,8 @@
 #include "../include/system.h"
 #define EXT_MEM_K (*(unsigned short *)0x90002)
 
+#include "../include/io.h"
+#include "../include/hdreg.h"
 #define IN_ORDER(s1,s2) \
 ((s1)->cmd<(s2)->cmd || (s1)->cmd==(s2)->cmd && \
 ((s1)->dev < (s2)->dev || ((s1)->dev == (s2)->dev && \
@@ -14,6 +16,22 @@
 #define READ 1
 #define WRITEA 2
 #define WRITE 2
+#define CURRENT (blk_dev[3].current_request)
+#define CURRENT_DEV DEVICE_NR(CURRENT->dev)
+
+#define DEVICE_INTR do_hd
+#ifdef DEVICE_INTR
+void (*DEVICE_INTR)(void) = NULL;
+#endif
+#define SET_INTR(x) (DEVICE_INTR = (x))
+
+#define port_read(port,buf,nr)\
+__asm__("cld;rep;insw"::"d"(port),"D"(buf),"c"(nr):)
+
+#define port_write(port,buf,nr)\
+__asm__("cld;rep;outsw"::"d"(port),"S"(buf),"c"(nr):)
+
+
 
 
 typedef int (*fn_ptr)();
@@ -72,16 +90,21 @@ struct blk_dev_struct blk_dev[NR_BLK_DEV]={
 	{NULL, NULL}
 };
 
+struct hd_i_struct {
+	int head,sect,cyl,wpcom,lzone,ctl;
+};
+struct hd_i_struct hd_info[] = { {0,0,0,0,0,0},{0,0,0,0,0,0,} };
+
 static void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
 		unsigned int head,unsigned int cyl,unsigned int cmd,
 		void (*intr_addr)(void))
 {
 	register int port asm("dx");
 
-	if (drive>1 || head>15)
-		panic("Trying to write bad sector");
-	if (!controller_ready())
-		panic("HD controller not ready");
+//	if (drive>1 || head>15)
+//		panic("Trying to write bad sector");
+//	if (!controller_ready())
+//		panic("HD controller not ready");
 	SET_INTR(intr_addr);
 	outb_p(hd_info[drive].ctl,HD_CMD);
 	port=HD_DATA;
@@ -96,11 +119,11 @@ static void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
 
 static void read_intr(void)
 {
-	if (win_result()) {
-		bad_rw_intr();
-		do_hd_request();
-		return;
-	}
+//	if (win_result()) {
+//		bad_rw_intr();
+//		do_hd_request();
+//		return;
+//	}
 	port_read(HD_DATA,CURRENT->buffer,256);
 	CURRENT->errors = 0;
 	CURRENT->buffer += 512;
@@ -109,17 +132,17 @@ static void read_intr(void)
 		SET_INTR(&read_intr);
 		return;
 	}
-	end_request(1);
-	do_hd_request();
+//	end_request(1);
+//	do_hd_request();
 }
 
 static void write_intr(void)
 {
-	if (win_result()) {
-		bad_rw_intr();
-		do_hd_request();
-		return;
-	}
+//	if (win_result()) {
+//		bad_rw_intr();
+//		do_hd_request();
+//		return;
+//	}
 	if (--CURRENT->nr_sectors) {
 		CURRENT->sector++;
 		CURRENT->buffer += 512;
@@ -127,10 +150,10 @@ static void write_intr(void)
 		port_write(HD_DATA,CURRENT->buffer,256);
 		return;
 	}
-	end_request(1);
-	do_hd_request();
+//	end_request(1);
+//	do_hd_request();
 }
-
+/*
 void do_hd_request(void)
 {
 	int i,r;
@@ -167,7 +190,7 @@ void do_hd_request(void)
 	if (CURRENT->cmd == WRITE) {
 		hd_out(dev,nsect,sec,head,cyl,WIN_WRITE,&write_intr);
 		for(i=0 ; i<10000 && !(r=inb_p(HD_STATUS)&DRQ_STAT) ; i++)
-			/* nothing */ ;
+			// nothing ;
 		if (!r) {
 			bad_rw_intr();
 			goto repeat;
@@ -186,7 +209,7 @@ void hd_init(void)
 	outb_p(inb_p(0x21)&0xfb,0x21);
 	outb(inb_p(0xA1)&0xbf,0xA1);
 }
-
+*/
 void ll_rw_block(int rw, struct buffer_heard *bh){
 
 }
@@ -292,6 +315,12 @@ int main(void){
 	int test = 10;
 	printk("test=%d\n",test);
 	sti();
+	printk("printf hd info\n");
+	char *p;
+	p = 0x90000;
+	for (int i=0; i < 512; i++){
+		printk("%X",*(p+i));
+	}
 	move_to_user_mode();
 	if(!fork()){
 		int a,b,c,d;
