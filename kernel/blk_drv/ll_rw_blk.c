@@ -1,37 +1,37 @@
 
-static void add_request(struct blk_dev_struct * dev, struct request *req){
+static void add_request(struct blk_dev_struct * dev, struct request *req) {
 	struct request * tmp;
 	req->next = NULL;
 	cli();
 	if (req->bh)
 		req->bh->b_dirt = 0;
-	if (!(tmp = dev->current_request)){
+	if (!(tmp = dev->current_request)) {
 		dev->current_request = req;
 		sti();
 		(dev->request_fn)();
 		return;
 	}
-	for (; tmp->next; tmp=tmp->next){
+	for (; tmp->next; tmp=tmp->next) {
 		if (!req->bh)
 			if (tmp->next-bh)
 				break;
 			else
 				continue;
 		if ((IN_ORDER(tmp,req) ||
-		 !IN_ORDER(tmp,tmp->next))&&
-		 IN_ORDER(req,tmp->next))
-		break;	
+		        !IN_ORDER(tmp,tmp->next))&&
+		        IN_ORDER(req,tmp->next))
+			break;
 	}
 	req->next = tmp->next;
 	tmp->next = req;
 	sti();
 }
 
-static void make_request(int major, int rw, struct buffer_head * bh){
+static void make_request(int major, int rw, struct buffer_head * bh) {
 	struct request * req;
 	int rw_ahead;
-	
-	if (rw_ahead = (rw == READA || rw == WRITEA)){
+
+	if (rw_ahead = (rw == READA || rw == WRITEA)) {
 		if (bh->b_lock)
 			return;
 		if (rw == READA)
@@ -54,8 +54,8 @@ repeat:
 	while (--req >= request)
 		if (req->dev < 0 )
 			break;
-	if (req < request){
-		if (rw_ahead){
+	if (req < request) {
+		if (rw_ahead) {
 			unlock_buffer(bh);
 			return;
 		}

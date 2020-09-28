@@ -15,8 +15,7 @@
 /* we use this so that we can do without the ctype library */
 #define is_digit(c)	((c) >= '0' && (c) <= '9')
 
-static int skip_atoi(const char **s)
-{
+static int skip_atoi(const char **s) {
 	int i=0;
 
 	while (is_digit(**s))
@@ -38,8 +37,7 @@ __asm__("divl %4":"=a" (n),"=d" (__res):"0" (n),"1" (0),"r" (base)); \
 __res; })
 
 static char * number(char * str, int num, int base, int size, int precision
-	,int type)
-{
+                     ,int type) {
 	char c,sign,tmp[36];
 	const char *digits="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	int i;
@@ -62,7 +60,7 @@ static char * number(char * str, int num, int base, int size, int precision
 	if (num==0)
 		tmp[i++]='0';
 	else while (num!=0)
-		tmp[i++]=digits[do_div(num,base)];
+			tmp[i++]=digits[do_div(num,base)];
 	if (i>precision) precision=i;
 	size -= precision;
 	if (!(type&(ZEROPAD+LEFT)))
@@ -89,8 +87,7 @@ static char * number(char * str, int num, int base, int size, int precision
 	return str;
 }
 
-int vsprintf(char *buf, const char *fmt, va_list args)
-{
+int vsprintf(char *buf, const char *fmt, va_list args) {
 	int len;
 	int i;
 	char * str;
@@ -109,19 +106,29 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 			*str++ = *fmt;
 			continue;
 		}
-			
+
 		/* process flags */
 		flags = 0;
-		repeat:
-			++fmt;		/* this also skips first '%' */
-			switch (*fmt) {
-				case '-': flags |= LEFT; goto repeat;
-				case '+': flags |= PLUS; goto repeat;
-				case ' ': flags |= SPACE; goto repeat;
-				case '#': flags |= SPECIAL; goto repeat;
-				case '0': flags |= ZEROPAD; goto repeat;
-				}
-		
+repeat:
+		++fmt;		/* this also skips first '%' */
+		switch (*fmt) {
+		case '-':
+			flags |= LEFT;
+			goto repeat;
+		case '+':
+			flags |= PLUS;
+			goto repeat;
+		case ' ':
+			flags |= SPACE;
+			goto repeat;
+		case '#':
+			flags |= SPECIAL;
+			goto repeat;
+		case '0':
+			flags |= ZEROPAD;
+			goto repeat;
+		}
+
 		/* get field width */
 		field_width = -1;
 		if (is_digit(*fmt))
@@ -138,7 +145,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 		/* get the precision */
 		precision = -1;
 		if (*fmt == '.') {
-			++fmt;	
+			++fmt;
 			if (is_digit(*fmt))
 				precision = skip_atoi(&fmt);
 			else if (*fmt == '*') {
@@ -185,7 +192,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 
 		case 'o':
 			str = number(str, va_arg(args, unsigned long), 8,
-				field_width, precision, flags);
+			             field_width, precision, flags);
 			break;
 
 		case 'p':
@@ -194,15 +201,15 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 				flags |= ZEROPAD;
 			}
 			str = number(str,
-				(unsigned long) va_arg(args, void *), 16,
-				field_width, precision, flags);
+			             (unsigned long) va_arg(args, void *), 16,
+			             field_width, precision, flags);
 			break;
 
 		case 'x':
 			flags |= SMALL;
 		case 'X':
 			str = number(str, va_arg(args, unsigned long), 16,
-				field_width, precision, flags);
+			             field_width, precision, flags);
 			break;
 
 		case 'd':
@@ -210,7 +217,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 			flags |= SIGN;
 		case 'u':
 			str = number(str, va_arg(args, unsigned long), 10,
-				field_width, precision, flags);
+			             field_width, precision, flags);
 			break;
 
 		case 'n':

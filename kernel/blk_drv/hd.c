@@ -12,9 +12,8 @@ __asm__("cld;rep;insw"::"d" (port),"D" (buf),"c" (nr):"cx","di")
 __asm__("cld;rep;outsw"::"d" (port),"S" (buf),"c" (nr):"cx","si")
 
 static void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
-		unsigned int head,unsigned int cyl,unsigned int cmd,
-		void (*intr_addr)(void))
-{
+                   unsigned int head,unsigned int cyl,unsigned int cmd,
+                   void (*intr_addr)(void)) {
 	register int port asm("dx");
 
 	if (drive>1 || head>15)
@@ -33,8 +32,7 @@ static void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
 	outb(cmd,++port);
 }
 
-static void read_intr(void)
-{
+static void read_intr(void) {
 	if (win_result()) {
 		bad_rw_intr();
 		do_hd_request();
@@ -52,8 +50,7 @@ static void read_intr(void)
 	do_hd_request();
 }
 
-static void write_intr(void)
-{
+static void write_intr(void) {
 	if (win_result()) {
 		bad_rw_intr();
 		do_hd_request();
@@ -69,8 +66,7 @@ static void write_intr(void)
 	end_request(1);
 	do_hd_request();
 }
-void do_hd_request(void)
-{
+void do_hd_request(void) {
 	int i,r;
 	unsigned int block,dev;
 	unsigned int sec,head,cyl;
@@ -86,9 +82,9 @@ void do_hd_request(void)
 	block += hd[dev].start_sect;
 	dev /= 5;
 	__asm__("divl %4":"=a" (block),"=d" (sec):"0" (block),"1" (0),
-		"r" (hd_info[dev].sect));
+	        "r" (hd_info[dev].sect));
 	__asm__("divl %4":"=a" (cyl),"=d" (head):"0" (block),"1" (0),
-		"r" (hd_info[dev].head));
+	        "r" (hd_info[dev].head));
 	sec++;
 	nsect = CURRENT->nr_sectors;
 	if (reset) {
@@ -99,7 +95,7 @@ void do_hd_request(void)
 	if (recalibrate) {
 		recalibrate = 0;
 		hd_out(dev,hd_info[CURRENT_DEV].sect,0,0,0,
-			WIN_RESTORE,&recal_intr);
+		       WIN_RESTORE,&recal_intr);
 		return;
 	}
 	if (CURRENT->cmd == WRITE) {
@@ -117,8 +113,7 @@ void do_hd_request(void)
 		panic("unknown hd-command");
 }
 
-void hd_init(void)
-{
+void hd_init(void) {
 	blk_dev[MAJOR_NR].request_fn = DEVICE_REQUEST;
 	set_intr_gate(0x2E,&hd_interrupt);
 	outb_p(inb_p(0x21)&0xfb,0x21);
