@@ -317,9 +317,13 @@ int main(void){
 	sti();
 	printk("printf hd info\n");
 	char *p;
-	p = 0x90000;
-	for (int i=0; i < 512; i++){
-		printk("%X",*(p+i));
+	p = 0x90080;
+	for (int i=0; i < 16; i++){
+		printk("%X ",*(p+i));
+	}
+	printk("\n");
+	for (int i=16; i < 32; i++){
+		printk("%X ",*(p+i));
 	}
 	move_to_user_mode();
 	if(!fork()){

@@ -3,3 +3,4 @@ megs: 16
 floppya: 1_44="./System",status=inserted
 boot: floppy
 display_library: x,options="gui_debug"
+ata0-master: type=disk, path="c.img", mode=flat
