@@ -124,6 +124,8 @@ static void read_intr(void)
 //		do_hd_request();
 //		return;
 //	}
+	printk("read_intr\n");
+	return;
 	port_read(HD_DATA,CURRENT->buffer,256);
 	CURRENT->errors = 0;
 	CURRENT->buffer += 512;
@@ -317,10 +319,34 @@ int main(void){
 	sti();
 	printk("printf hd info\n");
 	char *p;
-	p = 0x90000;
-	for (int i=0; i < 512; i++){
-		printk("%X",*(p+i));
+	p = 0x90080;
+	for (int i=0; i < 16; i++){
+		printk("%X ",*(p+i));
 	}
+	printk("\n");
+	for (int i=16; i < 32; i++){
+		printk("%X ",*(p+i));
+	}
+	printk("\n");
+	char hd_data[256];
+	void * BIOS;
+	BIOS = 0x90080;
+	hd_info[0].cyl = *(unsigned short *)BIOS;
+	hd_info[0].head = *(unsigned char *)(2+BIOS);
+	hd_info[0].wpcom = *(unsigned short *)(5+BIOS);
+
+	hd_info[0].ctl = *(unsigned char *)(8+BIOS);
+	hd_info[0].lzone = *(unsigned short *)(12+BIOS);
+	
+	hd_info[0].sect = *(unsigned char *)(14+BIOS);
+	
+	printk("cyl=%u\n",hd_info[0].cyl);
+	printk("head=%u\n",hd_info[0].head);
+	printk("wpcom=%u\n",hd_info[0].wpcom);
+	printk("ctl=%u\n",hd_info[0].ctl);
+	printk("sect=%u\n",hd_info[0].sect);
+	//hd_init();	
+//	hd_out(0,1,1,1,1,0x21,&read_intr);	
 	move_to_user_mode();
 	if(!fork()){
 		int a,b,c,d;
