@@ -4,6 +4,7 @@
 
 #include "../include/io.h"
 #include "../include/hdreg.h"
+#include "../include/head.h"
 #define IN_ORDER(s1,s2) \
 ((s1)->cmd<(s2)->cmd || (s1)->cmd==(s2)->cmd && \
 ((s1)->dev < (s2)->dev || ((s1)->dev == (s2)->dev && \
@@ -38,6 +39,7 @@ typedef int (*fn_ptr)();
 extern int sys_fork();
 extern int sys_pause();
 fn_ptr sys_call_table[]={sys_fork,sys_pause};
+extern hd_interrupt(void);
 
 static long memory_end = 0;
 static long buffer_memory_end = 0;
@@ -95,6 +97,25 @@ struct hd_i_struct {
 };
 struct hd_i_struct hd_info[] = { {0,0,0,0,0,0},{0,0,0,0,0,0,} };
 
+static int controller_ready(void){
+	int retries = 100000;
+	while(--retries && (inb_p(HD_STATUS)&0xc0) != 0x40);
+	//while(--retries && (inb_p(HD_STATUS)&0x80));
+	return retries;
+}
+static int win_result(void){
+	int i = inb_p(HD_STATUS);	
+	printk("HD_STATUS=%X\n",i);
+	if((i & (BUSY_STAT | READY_STAT | WRERR_STAT | SEEK_STAT |ERR_STAT)) == (READY_STAT | SEEK_STAT)){
+		return (0);
+	}
+	if(i&1){
+		i = inb(HD_ERROR);
+		printk("HD_ERROR=%X\n",i);
+	}
+
+	return (1);
+}
 static void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
 		unsigned int head,unsigned int cyl,unsigned int cmd,
 		void (*intr_addr)(void))
@@ -103,8 +124,11 @@ static void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
 
 //	if (drive>1 || head>15)
 //		panic("Trying to write bad sector");
-//	if (!controller_ready())
+	if (!controller_ready()){
 //		panic("HD controller not ready");
+		printk("HD contrller not ready\n");
+		return;
+	}
 	SET_INTR(intr_addr);
 	outb_p(hd_info[drive].ctl,HD_CMD);
 	port=HD_DATA;
@@ -203,15 +227,18 @@ void do_hd_request(void)
 	} else
 		panic("unknown hd-command");
 }
-
+*/
+void unexpected_hd_interrupte(void){
+	printk("unexpected hd interrupt\n");
+}
 void hd_init(void)
 {
-	blk_dev[MAJOR_NR].request_fn = DEVICE_REQUEST;
+//	blk_dev[MAJOR_NR].request_fn = DEVICE_REQUEST;
 	set_intr_gate(0x2E,&hd_interrupt);
 	outb_p(inb_p(0x21)&0xfb,0x21);
 	outb(inb_p(0xA1)&0xbf,0xA1);
 }
-*/
+
 void ll_rw_block(int rw, struct buffer_heard *bh){
 
 }
@@ -296,6 +323,7 @@ repeat:
 	add_request(major + blk_dev, req);
 }
 
+
 int main(void){
 	memory_end = (1<<20) + (EXT_MEM_K << 10);
 	memory_end &= 0xfffff000;
@@ -314,7 +342,7 @@ int main(void){
 	con_init();
 	sched_init();
 	printk("init complete!\n");
-	int test = 10;
+	/*int test = 10;
 	printk("test=%d\n",test);
 	sti();
 	printk("printf hd info\n");
@@ -328,7 +356,7 @@ int main(void){
 		printk("%X ",*(p+i));
 	}
 	printk("\n");
-	char hd_data[256];
+	char hd_data[256];*/
 	void * BIOS;
 	BIOS = 0x90080;
 	hd_info[0].cyl = *(unsigned short *)BIOS;
@@ -345,10 +373,18 @@ int main(void){
 	printk("wpcom=%u\n",hd_info[0].wpcom);
 	printk("ctl=%u\n",hd_info[0].ctl);
 	printk("sect=%u\n",hd_info[0].sect);
-	//hd_init();	
+	hd_init();
+	printk("hd init complete\n");	
 //	hd_out(0,1,1,1,1,0x21,&read_intr);	
+	hd_out(0,1,1,1,1,0x21,NULL);
+	int result = win_result();
+	if(0 == result){
+		printk("OK\n");
+	}else{
+		printk("ERR\n");
+	}	
 	move_to_user_mode();
-	if(!fork()){
+/*	if(!fork()){
 		int a,b,c,d;
 		if(!fork()){
 			while(1){
@@ -375,5 +411,5 @@ int main(void){
 	}
 	for(;;)
 		pause();
-	return 0;
+*/	return 0;
 }
