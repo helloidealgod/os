@@ -28,7 +28,7 @@ sa_restorer = 12
 
 nr_system_calls = 72
 
-.globl timer_interrupt,system_call,sys_fork,sys_printk
+.globl timer_interrupt,system_call,sys_fork,sys_printk,hd_interrupt
 
 .align 2
 bad_system_call:
@@ -111,3 +111,41 @@ sys_fork:
 	addl $20,%esp	#相当于 popl eax ebp edi esi gs (all 32bit)
 1:	ret
 
+hd_interrupt:
+	pushl %eax
+	pushl %ecx
+	pushl %edx
+	push %ds
+	push %es
+	push %fs
+	movl $0x10,%eax
+	mov %ax,%ds
+	mov %ax,%es
+	movl $0x17,%eax
+	mov %ax,%fs
+
+	movb $0x20,%al
+	outb %al,$0xA0
+	jmp 1f
+1:	jmp 1f
+1:	xorl %edx,%edx
+//	movl %edx,hd_timeout
+	xchgl do_hd,%edx
+	testl %edx,%edx
+	jne 1f
+//	movl $unexpected_hd_interrupt,%edx
+	push unexpected_msg
+	call printk
+1:	outb %al,$0x20
+	call *%edx
+	
+	pop %fs
+	pop %es
+	pop %ds
+	popl %edx
+	popl %ecx
+	popl %eax
+	iret
+
+unexpected_msg:
+	.asciz "upexpected hd interrupt"
