@@ -123,7 +123,7 @@ hd_interrupt:
 	outb %al,$0xA0
 	movl $unexpected_hd_interrupt,%edx
 	outb %al,$0x20
-#	call *%edx
+	call *%edx
 	
 	pop %fs
 	pop %es
