@@ -27,7 +27,7 @@ void (*DEVICE_INTR)(void) = NULL;
 #define SET_INTR(x) (DEVICE_INTR = (x))
 
 #define port_read(port,buf,nr)\
-__asm__("cld;rep;insw"::"d"(port),"D"(buf),"c"(nr):)
+__asm__("cld;rep;insw"::"d"(port),"S"(buf),"c"(nr):)
 
 #define port_write(port,buf,nr)\
 __asm__("cld;rep;outsw"::"d"(port),"S"(buf),"c"(nr):)
@@ -149,6 +149,12 @@ static void read_intr(void)
 //		return;
 //	}
 	printk("read_intr\n");
+	char buffer[256]={0};
+	port_read(HD_DATA,buffer,256);
+	int i = 0;
+	for(i=0;i<256;i++){
+		printk("%X",buffer[i]);
+	}
 	return;
 	port_read(HD_DATA,CURRENT->buffer,256);
 	CURRENT->errors = 0;
@@ -375,14 +381,7 @@ int main(void){
 	printk("sect=%u\n",hd_info[0].sect);
 	hd_init();
 	printk("hd init complete\n");	
-//	hd_out(0,1,1,1,1,0x21,&read_intr);	
-	hd_out(0,1,1,1,1,0x21,NULL);
-	int result = win_result();
-	if(0 == result){
-		printk("OK\n");
-	}else{
-		printk("ERR\n");
-	}	
+	hd_out(0,1,1,1,1,0x20,&read_intr);	
 //	move_to_user_mode();
 /*	if(!fork()){
 		int a,b,c,d;

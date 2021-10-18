@@ -121,8 +121,11 @@ hd_interrupt:
 
 	movb $0x20,%al
 	outb %al,$0xA0
+	xchgl do_hd,%edx
+	testl %edx,%edx
+	jne 1f
 	movl $unexpected_hd_interrupt,%edx
-	outb %al,$0x20
+1:	outb %al,$0x20
 	call *%edx
 	
 	pop %fs
