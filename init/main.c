@@ -99,8 +99,8 @@ struct hd_i_struct hd_info[] = { {0,0,0,0,0,0},{0,0,0,0,0,0,} };
 
 static int controller_ready(void){
 	int retries = 100000;
-	while(--retries && (inb_p(HD_STATUS)&0xc0) != 0x40);
-	//while(--retries && (inb_p(HD_STATUS)&0x80));
+	//while(--retries && (inb_p(HD_STATUS)&0xc0) != 0x40);
+	while(--retries && (inb_p(HD_STATUS)&0x80));
 	return retries;
 }
 static int win_result(void){
@@ -130,15 +130,15 @@ static void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
 		return;
 	}
 	SET_INTR(intr_addr);
-	outb_p(hd_info[drive].ctl,HD_CMD);
+	outb_p(HD_CMD,hd_info[drive].ctl);
 	port=HD_DATA;
-	outb_p(hd_info[drive].wpcom>>2,++port);
-	outb_p(nsect,++port);
-	outb_p(sect,++port);
-	outb_p(cyl,++port);
-	outb_p(cyl>>8,++port);
-	outb_p(0xA0|(drive<<4)|head,++port);
-	outb(cmd,++port);
+	outb_p(++port,hd_info[drive].wpcom>>2);
+	outb_p(++port,nsect);
+	outb_p(++port,sect);
+	outb_p(++port,cyl);
+	outb_p(++port,cyl>>8);
+	outb_p(++port,0xA0|(drive<<4)|head);
+	outb(++port,cmd);
 }
 
 static void read_intr(void)
@@ -228,15 +228,15 @@ void do_hd_request(void)
 		panic("unknown hd-command");
 }
 */
-void unexpected_hd_interrupte(void){
+void unexpected_hd_interrupt(void){
 	printk("unexpected hd interrupt\n");
 }
 void hd_init(void)
 {
 //	blk_dev[MAJOR_NR].request_fn = DEVICE_REQUEST;
-	set_intr_gate(0x2E,&hd_interrupt);
-	outb_p(inb_p(0x21)&0xfb,0x21);
-	outb(inb_p(0xA1)&0xbf,0xA1);
+	set_intr_gate(46,&hd_interrupt);
+	outb_p(0x21,inb_p(0x21)&0xfb);
+	outb(0xA1,inb_p(0xA1)&0xbf);
 }
 
 void ll_rw_block(int rw, struct buffer_heard *bh){
@@ -383,7 +383,7 @@ int main(void){
 	}else{
 		printk("ERR\n");
 	}	
-	move_to_user_mode();
+//	move_to_user_mode();
 /*	if(!fork()){
 		int a,b,c,d;
 		if(!fork()){

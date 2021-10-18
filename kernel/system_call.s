@@ -118,25 +118,11 @@ hd_interrupt:
 	push %ds
 	push %es
 	push %fs
-	movl $0x10,%eax
-	mov %ax,%ds
-	mov %ax,%es
-	movl $0x17,%eax
-	mov %ax,%fs
 
 	movb $0x20,%al
 	outb %al,$0xA0
-	jmp 1f
-1:	jmp 1f
-1:	xorl %edx,%edx
-//	movl %edx,hd_timeout
-	xchgl do_hd,%edx
-	testl %edx,%edx
-	jne 1f
-//	movl $unexpected_hd_interrupt,%edx
-	push unexpected_msg
-	call printk
-1:	outb %al,$0x20
+	movl $unexpected_hd_interrupt,%edx
+	outb %al,$0x20
 	call *%edx
 	
 	pop %fs
