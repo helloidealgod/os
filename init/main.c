@@ -27,7 +27,7 @@ void (*DEVICE_INTR)(void) = NULL;
 #define SET_INTR(x) (DEVICE_INTR = (x))
 
 #define port_read(port,buf,nr)\
-__asm__("cld;rep;insw"::"d"(port),"S"(buf),"c"(nr):)
+__asm__("cld;rep;insw"::"d"(port),"D"(buf),"c"(nr):)
 
 #define port_write(port,buf,nr)\
 __asm__("cld;rep;outsw"::"d"(port),"S"(buf),"c"(nr):)
@@ -105,7 +105,7 @@ static int controller_ready(void){
 }
 static int win_result(void){
 	int i = inb_p(HD_STATUS);	
-	printk("HD_STATUS=%X\n",i);
+//	printk("HD_STATUS=%X\n",i);
 	if((i & (BUSY_STAT | READY_STAT | WRERR_STAT | SEEK_STAT |ERR_STAT)) == (READY_STAT | SEEK_STAT)){
 		return (0);
 	}
@@ -114,8 +114,6 @@ static int win_result(void){
 		printk("HD_ERROR=%X\n",i);
 	}
 	i = inb(HD_ERROR);
-	printk("HD_ERROR=%X\n",i);
-
 	return (1);
 }
 static void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
@@ -150,12 +148,20 @@ static void read_intr(void)
 //		return;
 //	}
 	printk("read_intr\n");
-	char buffer[256]={0};
-	port_read(HD_DATA,buffer,256);
+//	cli();
+	char buffer[512]={0};
 	int i=0;
-	for(i=0;i<256;i++){
-		printk("%X",buffer[i]);
+	for(i=0;i<512;i++){
+		buffer[i] = 1;
 	}
+	port_read(HD_DATA,buffer,256);
+
+	for(i=0;i<512;i++){
+		printk("%d ",buffer[i]);
+	}
+	printk("\n");
+	SET_INTR(&read_intr);
+//	sti();
 	return;
 	port_read(HD_DATA,CURRENT->buffer,256);
 	CURRENT->errors = 0;
@@ -168,14 +174,23 @@ static void read_intr(void)
 //	end_request(1);
 //	do_hd_request();
 }
-
 static void write_intr(void)
 {
-//	if (win_result()) {
+	if (win_result()) {
 //		bad_rw_intr();
 //		do_hd_request();
-//		return;
-//	}
+		printk("write intr error\n");
+		return;
+	}
+	printk("write intr\n");
+	char buffer[512] = {2};
+	int i=0;
+	for(i=0;i<512;i++){
+		buffer[i] = 1;
+	}
+	SET_INTR(&write_intr);
+//	port_write(HD_DATA,buffer,256);
+	return;
 	if (--CURRENT->nr_sectors) {
 		CURRENT->sector++;
 		CURRENT->buffer += 512;
@@ -349,21 +364,6 @@ int main(void){
 	con_init();
 	sched_init();
 	printk("init complete!\n");
-	/*int test = 10;
-	printk("test=%d\n",test);
-	sti();
-	printk("printf hd info\n");
-	char *p;
-	p = 0x90080;
-	for (int i=0; i < 16; i++){
-		printk("%X ",*(p+i));
-	}
-	printk("\n");
-	for (int i=16; i < 32; i++){
-		printk("%X ",*(p+i));
-	}
-	printk("\n");
-	char hd_data[256];*/
 	void * BIOS;
 	BIOS = 0x90080;
 	hd_info[0].cyl = *(unsigned short *)BIOS;
@@ -382,9 +382,21 @@ int main(void){
 	printk("sect=%u\n",hd_info[0].sect);
 	hd_init();
 	printk("hd init complete\n");	
-	hd_out(0,1,1,1,1,0x20,&read_intr);	
-//	hd_out(0,1,1,1,1,0x20,NULL);
-	int result = win_result();
+	sti();
+/*	hd_out(0,1,1,1,1,WIN_WRITE,&write_intr);	
+	int i,r;
+	for(i=0 ; i<10000 && !(r=inb_p(HD_STATUS)&DRQ_STAT) ; i++){}
+	if(!r){
+		printk("error\n");	
+	}else{
+		char buffer[512]={24};
+		for(i=0;i<512;i++){
+			buffer[i] = 24;
+		}
+		port_write(HD_DATA,buffer,256);
+	}
+*/
+	hd_out(0,1,1,1,1,WIN_READ,&read_intr);	
 //	move_to_user_mode();
 /*	if(!fork()){
 		int a,b,c,d;
