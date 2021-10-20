@@ -396,34 +396,16 @@ int main(void){
 		port_write(HD_DATA,buffer,256);
 	}
 */
-	hd_out(0,1,1,1,1,WIN_READ,&read_intr);	
-//	move_to_user_mode();
-/*	if(!fork()){
-		int a,b,c,d;
-		if(!fork()){
-			while(1){
-				a++;
-			}
-		}
-		if(!fork()){
-			while(1){
-			  	b++;
-			}
-		}
-		if(!fork()){
-			while(1){
-				c++;
-			}
-		}
-		if(!fork()){
-			while(1){
-				d++;
-			}
-		}
-		for(;;)
-			pause();
+//	hd_out(0,1,1,1,1,WIN_READ,&read_intr);	
+	move_to_user_mode();
+	if(!fork()){
+		init();
 	}
 	for(;;)
 		pause();
-*/	return 0;
+	return 0;
+}
+
+void init(void){
+//	printk("in init()\n");
 }
