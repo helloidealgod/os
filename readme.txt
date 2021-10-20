@@ -24,3 +24,13 @@ kernel/
 lib/
 mm/
 tools/
+
+
+挂载img
+losetup /dev/loop0 16.img
+分区 fdisk /dev/loop0
+
+mount /dev/loop0 /mnt
+umount /mnt
+
+losetup -d /dev/loop0
