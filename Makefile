@@ -14,7 +14,7 @@ clean:
 CFLAGS=-fomit-frame-pointer
 OBJS =
 
-VPATH = boot:kernel:init:mm:kernel/chr_drv
+VPATH = boot:kernel:init:mm:kernel/chr_drv:kernel/blk_drv
 
 System: bootsect setup kernel.o 
 	@dd if=bootsect of=System bs=512 count=1
@@ -103,6 +103,10 @@ OBJS += printk.o
 vsprintf.o: vsprintf.c
 	@gcc -m32 -c ./kernel/vsprintf.c -o vsprintf.o
 OBJS += vsprintf.o
+
+hd.o: hd.c
+	@gcc -m32 -c ./kernel/blk_drv/hd.c -o hd.o
+OBJS += hd.o
 
 kernel.o: $(OBJS) ld-bootsect.ld
 	@ld -T ld-bootsect.ld $(OBJS) -o kernel.o
