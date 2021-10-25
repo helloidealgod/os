@@ -1,5 +1,5 @@
 struct buffer_head * bread(int dev, int block){
-	struct buffer_head * bh;
+/*	struct buffer_head * bh;
 	if (!(bh = getblk(dev,block)))
 		panic("");
 	if (bh->b_uptodata)
@@ -9,5 +9,5 @@ struct buffer_head * bread(int dev, int block){
 	if(bh->b_uptodata)
 		return bh;
 	brelse(bh);
-	return NULL;
+*/	return ((void *)0);
 }

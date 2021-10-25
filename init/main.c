@@ -85,9 +85,10 @@ int main(void){
 	move_to_user_mode();
 	if(!fork()){
 		init();
+		while(1);
 	}
-//	for(;;)
-//		pause();
+	for(;;)
+		pause();
 	return 0;
 }
 

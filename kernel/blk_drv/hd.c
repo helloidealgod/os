@@ -87,7 +87,8 @@ static struct hd_struct{
 int sys_setup(void * BIOS){
 	static int callable = 1;
 	int drive,i;
-	printk("in sys_setup\n");
+	struct buffer_head * bh;
+
 	if(!callable){
 		return -1;
 	}
@@ -113,22 +114,17 @@ int sys_setup(void * BIOS){
 		hd[i*5].nr_sects = hd_info[i].head * hd_info[i].sect * hd_info[i].cyl;
 		printk("start_sect=%u,nr_sects=%u\n",hd[i*5].start_sect,hd[i*5].nr_sects);
 	}
-	for(i=0;i<NR_HD;i++){
-		hd[i*5].start_sect = 0;
-		hd[i*5].nr_sects = hd_info[i].head * hd_info[i].sect * hd_info[i].cyl;
-	}	for(i=0;i<NR_HD;i++){
-		hd[i*5].start_sect = 0;
-		hd[i*5].nr_sects = hd_info[i].head * hd_info[i].sect * hd_info[i].cyl;
-	}
-	for(i=0;i<NR_HD;i++){
-		hd[i*5].start_sect = 0;
-		hd[i*5].nr_sects = hd_info[i].head * hd_info[i].sect * hd_info[i].cyl;
-	}
-	for(i=0;i<NR_HD;i++){
-		hd[i*5].start_sect = 0;
-		hd[i*5].nr_sects = hd_info[i].head * hd_info[i].sect * hd_info[i].cyl;
-	}
 
+	for(drive=0;drive<NR_HD;drive++){
+		if(!(bh = bread(0x300 + drive*5,0))){
+			printk("Unable to read partition table of drive %d\n",drive);
+			panic("");
+		}
+		if(bh->b_data[510] != 0x55 || (unsigned char)bh->b_data[511] != 0xAA){
+			printk("Bad partition table on drive %d\n",drive);
+			panic("");
+		}
+	}
 	return 0;
 }
 static int controller_ready(void){
@@ -160,11 +156,10 @@ void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
 {
 	register int port asm("dx");
 
-//	if (drive>1 || head>15)
-//		panic("Trying to write bad sector");
+	if (drive>1 || head>15)
+		panic("Trying to write bad sector");
 	if (!controller_ready()){
-//		panic("HD controller not ready");
-		printk("HD contrller not ready\n");
+		panic("HD controller not ready\n");
 		return;
 	}
 	SET_INTR(intr_addr);
@@ -346,8 +341,8 @@ static void make_request(int major, int rw, struct buffer_head * bh){
 		else
 			rw = WRITE;
 	}
-//	if (rw != READ && rw != WRITE)
-//		panic("");
+	if (rw != READ && rw != WRITE)
+		panic("");
 //	lock_buffer(bh);
 //	if ((rw == WRITE && !bh->b_dirt) || (rw == READ && bh->b_uptodate)) {
 //		unlock_buffer(bh);

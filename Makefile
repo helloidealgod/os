@@ -116,6 +116,14 @@ open.o: open.c
 	@gcc -m32 -c ./fs/open.c -o open.o
 OBJS += open.o
 
+panic.o: panic.c
+	@gcc -m32 -c ./kernel/panic.c -o panic.o
+OBJS += panic.o
+
+buffer.o: buffer.c
+	@gcc -m32 -c ./fs/buffer.c -o buffer.o
+OBJS += buffer.o
+
 kernel.o: $(OBJS) ld-bootsect.ld
 	@ld -T ld-bootsect.ld $(OBJS) -o kernel.o
 	@objcopy -O binary -R .note -R .comment kernel.o
