@@ -86,8 +86,8 @@ int main(void){
 	if(!fork()){
 		init();
 	}
-	for(;;)
-		pause();
+//	for(;;)
+//		pause();
 	return 0;
 }
 
