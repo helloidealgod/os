@@ -3,12 +3,12 @@
 
 #define _NR_setup 0
 #define _NR_exit 1
-#define _NR_fork 0
-#define _NR_read 3
-#define _NR_write 4
-#define _NR_open 5
-#define _NR_close 6
-#define _NR_pause 1
+#define _NR_fork 1
+#define _NR_read 2
+#define _NR_write 3
+#define _NR_open 4
+#define _NR_close 5
+#define _NR_pause 6
 
 #define _syscall0(type,name) \
 type name(void){ \

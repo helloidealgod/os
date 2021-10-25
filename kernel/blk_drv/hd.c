@@ -23,6 +23,7 @@
 void (*DEVICE_INTR)(void) = NULL;
 #endif
 #define SET_INTR(x) (DEVICE_INTR = (x))
+#define MAX_HD 2
 
 #define port_read(port,buf,nr)\
 __asm__("cld;rep;insw"::"d"(port),"D"(buf),"c"(nr):)
@@ -77,7 +78,44 @@ struct hd_i_struct {
 	int head,sect,cyl,wpcom,lzone,ctl;
 };
 struct hd_i_struct hd_info[] = { {0,0,0,0,0,0},{0,0,0,0,0,0,} };
+static int NR_HD = 0;
+static struct hd_struct{
+	long start_sect;
+	long nr_sects;
+}hd[5*MAX_HD]={{0,0},};
 
+int sys_setup(void * BIOS){
+	static int callable = 1;
+	int drive,i;
+	printk("in sys_setup\n");
+	if(!callable){
+		return -1;
+	}
+	callable = 0;
+	for(drive=0;drive<2;drive++){
+		hd_info[drive].cyl = *(unsigned short *)BIOS;
+		hd_info[drive].head = *(unsigned char *)(2+BIOS);
+		hd_info[drive].wpcom = *(unsigned short *)(5+BIOS);
+		hd_info[drive].ctl = *(unsigned char *)(8+BIOS);
+		hd_info[drive].lzone = *(unsigned short *)(12+BIOS);
+		hd_info[drive].sect = *(unsigned char *)(14+BIOS);
+		BIOS +=16;
+
+//		printk("cyl=%u,head=%u,sect=%u\n",hd_info[drive].cyl,hd_info[drive].head,hd_info[drive].sect);
+	}
+	if(hd_info[1].cyl){
+		NR_HD = 2;
+	}else{
+		NR_HD = 1;
+	}
+	for(i=0;i<NR_HD;i++){
+		hd[i*5].start_sect = 0;
+		hd[i*5].nr_sects = hd_info[i].head * hd_info[i].sect * hd_info[i].cyl;
+
+//		printk("start_sect=%u,nr_sects=%u\n",hd[i*5].start_sect,hd[i*5].nr_sects);
+	}
+	return 0;
+}
 static int controller_ready(void){
 	int retries = 100000;
 	//while(--retries && (inb_p(HD_STATUS)&0xc0) != 0x40);
@@ -328,3 +366,4 @@ repeat:
 	req->next = NULL;
 	add_request(major + blk_dev, req);
 }
+

@@ -16,9 +16,24 @@
 #define CURRENT_DEV DEVICE_NR(CURRENT->dev)
 
 typedef int (*fn_ptr)();
+
+extern int sys_setup();
 extern int sys_fork();
+extern int sys_read();
+extern int sys_write();
+extern int sys_open();
+extern int sys_close();
 extern int sys_pause();
-fn_ptr sys_call_table[]={sys_fork,sys_pause};
+fn_ptr sys_call_table[]={sys_setup,sys_fork,sys_read,sys_write,sys_open,sys_close,sys_pause};
+
+static inline int fork(void) __attribute__((always_inline));
+static inline int pause(void) __attribute__((always_inline));
+static inline int setup(void * BIOS) __attribute__((always_inline));
+static inline _syscall0(int,fork)
+static inline _syscall0(int,exit)
+static inline _syscall0(int,pause)
+static inline _syscall1(int,setup,void *,BIOS)
+
 
 extern void read_intr(void);
 extern void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,unsigned int head,unsigned int cyl,unsigned int cmd,void (*intr_addr)(void));
@@ -26,12 +41,6 @@ extern void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,unsig
 static long memory_end = 0;
 static long buffer_memory_end = 0;
 static long main_memory_start = 0;
-
-static inline int fork(void) __attribute__((always_inline));
-static inline int pause(void) __attribute__((always_inline));
-static inline _syscall0(int,fork)
-static inline _syscall0(int,exit)
-static inline _syscall0(int,pause)
 
 struct hd_i_struct{
 	int head,sect,cyl,wpcom,lzone,ctl;
@@ -56,22 +65,6 @@ int main(void){
 	con_init();
 	sched_init();
 	printk("init complete!\n");
-	void * BIOS;
-	BIOS = 0x90080;
-	hd_info[0].cyl = *(unsigned short *)BIOS;
-	hd_info[0].head = *(unsigned char *)(2+BIOS);
-	hd_info[0].wpcom = *(unsigned short *)(5+BIOS);
-
-	hd_info[0].ctl = *(unsigned char *)(8+BIOS);
-	hd_info[0].lzone = *(unsigned short *)(12+BIOS);
-	
-	hd_info[0].sect = *(unsigned char *)(14+BIOS);
-	
-	printk("cyl=%u\n",hd_info[0].cyl);
-	printk("head=%u\n",hd_info[0].head);
-	printk("wpcom=%u\n",hd_info[0].wpcom);
-	printk("ctl=%u\n",hd_info[0].ctl);
-	printk("sect=%u\n",hd_info[0].sect);
 	hd_init();
 	printk("hd init complete\n");	
 	sti();
@@ -88,16 +81,24 @@ int main(void){
 		port_write(HD_DATA,buffer,256);
 	}
 */
-	hd_out(0,1,1,0,0,WIN_READ,&read_intr);	
-/*	move_to_user_mode();
+//	hd_out(0,1,1,0,0,WIN_READ,&read_intr);	
+	move_to_user_mode();
 	if(!fork()){
 		init();
 	}
-*/	for(;;)
+	for(;;)
 		pause();
 	return 0;
 }
 
+static int printf(const char * fmt,...){
+	int i;
+/*	va_list args;
+	write(1,printbuf,i=vsprintf(printbuf,fmt,args));
+	va_end(args);
+*/	return i;
+}
 void init(void){
-//	printk("in init()\n");
+//	setup((void *)&drive_info);	
+	setup(0x90080);
 }
