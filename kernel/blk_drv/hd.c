@@ -82,6 +82,11 @@ int sys_setup(void * BIOS){
 			printk("Unable to read partition table of drive %d\n",drive);
 			panic("");
 		}
+		printk("%u %u\n",bh->b_data[510],bh->b_data[511]);
+		for(i=0;i<1024;i++){
+			printk("%u",bh->b_data[i]);
+		}
+		printk("\n");
 		if(bh->b_data[510] != 0x55 || (unsigned char)bh->b_data[511] != 0xAA){
 			printk("Bad partition table on drive %d\n",drive);
 			panic("");
@@ -178,7 +183,7 @@ static void read_intr(void)
 	port_read(HD_DATA,CURRENT->buffer,256);
 
 /*	printk("read_intr\n");
-		for(i=0;i<512;i++){
+	for(i=0;i<512;i++){
 		printk("%d ",CURRENT->buffer[i]);
 	}
 */
@@ -237,12 +242,12 @@ void do_hd_request(void)
 	}
 */	block += hd[dev].start_sect;
 	dev /= 5;
-/*	__asm__("divl %4":"=a" (block),"=d" (sec):"0" (block),"1" (0),
+	__asm__("divl %4":"=a" (block),"=d" (sec):"0" (block),"1" (0),
 		"r" (hd_info[dev].sect));
 	__asm__("divl %4":"=a" (cyl),"=d" (head):"0" (block),"1" (0),
 		"r" (hd_info[dev].head));
 	sec++;
-*/	nsect = CURRENT->nr_sectors;
+	nsect = CURRENT->nr_sectors;
 /*	if (reset) {
 		recalibrate = 1;
 		reset_hd();
