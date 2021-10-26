@@ -2,6 +2,7 @@
 #include "../../include/io.h"
 #include "../../include/head.h"
 #include "../../include/system.h"
+#include "../../include/fs.h"
 
 #define IN_ORDER(s1,s2) \
 ((s1)->cmd<(s2)->cmd || (s1)->cmd==(s2)->cmd && \
@@ -33,20 +34,6 @@ __asm__("cld;rep;outsw"::"d"(port),"S"(buf),"c"(nr):)
 
 extern hd_interrupt(void);
 
-struct buffer_head {
-	char * b_data;
-	unsigned long b_blocknr;
-	unsigned short b_dev;
-	unsigned char b_uptodate;
-	unsigned char b_dirt;
-	unsigned char b_count;
-	unsigned char b_lock;
-	struct task_struct * b_wait;
-	struct buffer_head * b_prev;
-	struct buffer_head * b_next;
-	struct buffer_head * b_prev_free;
-	struct buffer_head * b_next_free;
-};
 struct request{
 	int dev;
 	int cmd;

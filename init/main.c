@@ -82,6 +82,8 @@ int main(void){
 	}
 */
 //	hd_out(0,1,1,0,0,WIN_READ,&read_intr);	
+	//buffer 1M ~ 4M
+	buffer_init(4*1024*1024);
 	move_to_user_mode();
 	if(!fork()){
 		init();
