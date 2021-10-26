@@ -160,7 +160,7 @@ static void read_intr(void)
 		SET_INTR(&read_intr);
 		return;
 	}
-	printk("\n");
+	printk("read_intr end\n");
 //	end_request(1);
 //	do_hd_request();
 }
@@ -226,7 +226,6 @@ void do_hd_request(void)
 		return;
 	}
 */	
-	printk("cmd=%d\n",CURRENT->cmd);
 	if (CURRENT->cmd == WRITE) {
 		hd_out(dev,nsect,sec,head,cyl,WIN_WRITE,&write_intr);
 		for(i=0 ; i<10000 && !(r=inb_p(HD_STATUS)&DRQ_STAT) ; i++)
@@ -237,7 +236,6 @@ void do_hd_request(void)
 		}
 		port_write(HD_DATA,CURRENT->buffer,256);
 	} else if (CURRENT->cmd == READ) {
-		printk("do_hd_request:read,hd_out\n");
 		hd_out(dev,nsect,sec,head,cyl,WIN_READ,&read_intr);
 	} else
 		panic("unknown hd-command");

@@ -37,7 +37,6 @@ static void add_request(struct blk_dev_struct * dev, struct request *req) {
 	if (!(tmp = dev->current_request)) {
 		dev->current_request = req;
 		sti();
-		printk("in add_request:before do hd request\n");
 		(dev->request_fn)();
 		return;
 	}
@@ -103,8 +102,6 @@ repeat:
 	req->waiting = NULL;
 	req->bh = bh;
 	req->next = NULL;
-	printk("in make request:rw=%d,major=%d\n",rw,major); 
-	printk("before add_request\n");
 	add_request(major + blk_dev, req);
 }
 
@@ -115,7 +112,6 @@ void ll_rw_block(int rw,struct buffer_head * bh){
 		printk("Trying to read nonexistent block-device\n");
 		return;
 	}
-	printk("end of ll_rw_block:rw=%d\n",rw);
 	make_request(major,rw,bh);
 }
 

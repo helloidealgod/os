@@ -45,14 +45,17 @@ struct buffer_head * bread(int dev, int block){
 		panic("");
 	if (bh->b_uptodata)
 		return bh;
-	printk("in bread():rw=%d\n",READ);
+
 	ll_rw_block(READ,bh);
 	wait_on_buffer(bh);
 	int i;
 	for(i=0;i<512;i++){
 		printk("%c",bh->b_data[i]);
 	}
-	printk("\nb_uptodata=%d\n",bh->b_uptodata);
+	
+	printk("\n");
+	bh->b_uptodata = 1;
+
 	if(bh->b_uptodata)
 		return bh;
 	printk("in bread():before brelse\n");
