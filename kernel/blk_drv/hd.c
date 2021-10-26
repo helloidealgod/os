@@ -137,22 +137,51 @@ void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
 	outb_p(++port,0xA0|(drive<<4)|head);
 	outb(++port,cmd);
 }
+
+static void lock_buffer(struct buffer_head * bh){
+	cli();
+	while(bh->b_lock){
+		sleep_on(&bh->b_wait);
+	}
+	bh->b_lock = 1;
+	sti();
+}
+
+static void unlock_buffer(struct buffer_head * bh){
+	bh->b_lock = 0;
+	wake_up(&bh->b_wait);
+}
+
+static void end_request(int uptodata){
+	if(CURRENT->bh){
+		CURRENT->bh->b_uptodata = uptodata;
+		unlock_buffer(CURRENT->bh);
+	}
+	if(!uptodata){
+		printk("I/O error\n");
+	}
+	wake_up(&CURRENT->waiting);
+//	wake_up(&wait_for_request);
+	CURRENT->dev = -1;
+	CURRENT = CURRENT->next;
+}
+
 static void read_intr(void)
-//void read_intr(void)
 {
-//	if (win_result()) {
+	if (win_result()) {
 //		bad_rw_intr();
-//		do_hd_request();
-//		return;
-//	}
+		do_hd_request();
+		return;
+	}
 	int i=0;
 
 	port_read(HD_DATA,CURRENT->buffer,256);
 
-//	for(i=0;i<512;i++){
-//		printk("%c",CURRENT->buffer[i]);
-//	}
-
+/*	printk("read_intr\n");
+		for(i=0;i<512;i++){
+		printk("%d ",CURRENT->buffer[i]);
+	}
+*/
 	CURRENT->errors = 0;
 	CURRENT->buffer += 512;
 	CURRENT->sector++;
@@ -161,7 +190,7 @@ static void read_intr(void)
 		return;
 	}
 	printk("read_intr end\n");
-//	end_request(1);
+	end_request(1);
 //	do_hd_request();
 }
 static void write_intr(void)
@@ -188,8 +217,8 @@ static void write_intr(void)
 		port_write(HD_DATA,CURRENT->buffer,256);
 		return;
 	}
-//	end_request(1);
-//	do_hd_request();
+	end_request(1);
+	do_hd_request();
 }
 
 void do_hd_request(void)
@@ -208,12 +237,12 @@ void do_hd_request(void)
 	}
 */	block += hd[dev].start_sect;
 	dev /= 5;
-	__asm__("divl %4":"=a" (block),"=d" (sec):"0" (block),"1" (0),
+/*	__asm__("divl %4":"=a" (block),"=d" (sec):"0" (block),"1" (0),
 		"r" (hd_info[dev].sect));
 	__asm__("divl %4":"=a" (cyl),"=d" (head):"0" (block),"1" (0),
 		"r" (hd_info[dev].head));
 	sec++;
-	nsect = CURRENT->nr_sectors;
+*/	nsect = CURRENT->nr_sectors;
 /*	if (reset) {
 		recalibrate = 1;
 		reset_hd();
@@ -244,6 +273,7 @@ void do_hd_request(void)
 void unexpected_hd_interrupt(void){
 	printk("unexpected hd interrupt\n");
 }
+
 void hd_init(void)
 {
 	blk_dev[MAJOR_NR].request_fn = DEVICE_REQUEST;
@@ -295,11 +325,11 @@ static void make_request(int major, int rw, struct buffer_head * bh){
 	}
 	if (rw != READ && rw != WRITE)
 		panic("");
-//	lock_buffer(bh);
-//	if ((rw == WRITE && !bh->b_dirt) || (rw == READ && bh->b_uptodate)) {
-//		unlock_buffer(bh);
-//		return;
-//	}
+	lock_buffer(bh);
+	if ((rw == WRITE && !bh->b_dirt) || (rw == READ && bh->b_uptodata)) {
+		unlock_buffer(bh);
+		return;
+	}
 repeat:
 	if (rw == READ)
 		req = request + NR_REQUEST;
@@ -310,7 +340,7 @@ repeat:
 			break;
 	if (req < request){
 		if (rw_ahead){
-//			unlock_buffer(bh);
+			unlock_buffer(bh);
 			return;
 		}
 //		sleep_on(&wait_for_request);

@@ -15,8 +15,8 @@ struct blk_dev_struct blk_dev[NR_BLK_DEV] = {
 
 static inline void lock_buffer(struct buffer_head * bh){
 	cli();
-//	while(bh->b_lock)
-//		sleep_on(&bh->b_wait);
+	while(bh->b_lock)
+		sleep_on(&bh->b_wait);
 	bh->b_lock = 1;
 	sti();
 }
@@ -25,7 +25,7 @@ static inline void unlock_buffer(struct buffer_head * bh){
 	if(!bh->b_lock)
 		printk("ll_rw_blk.c:buffer not locked\n");
 	bh->b_lock = 0;
-//	wake_up(&bh->b_wait);
+	wake_up(&bh->b_wait);
 }
 
 static void add_request(struct blk_dev_struct * dev, struct request *req) {

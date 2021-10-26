@@ -17,8 +17,8 @@ static inline void wait_on_buffer(struct buffer_head * bh){
 	cli();
 	int i = 10000000;
 	while(i--&bh->b_lock);
-//	while(bh->b_lock)
-//		sleep_on(&bh->b_wait);
+	while(bh->b_lock)
+		sleep_on(&bh->b_wait);
 	sti();
 }
 
@@ -30,7 +30,7 @@ void brelse(struct buffer_head * buf){
 	if(!(buf->b_count--)){
 		panic("Trying to free free buffer");
 	}
-//	wake_up(&buffer_wait);
+	wake_up(&buffer_wait);
 }
 
 struct buffer_head * getblk(int dev,int block){
@@ -48,13 +48,14 @@ struct buffer_head * bread(int dev, int block){
 
 	ll_rw_block(READ,bh);
 	wait_on_buffer(bh);
+	printk("after wait_on_buffer\n");
 	int i;
 	for(i=0;i<512;i++){
 		printk("%c",bh->b_data[i]);
 	}
 	
 	printk("\n");
-	bh->b_uptodata = 1;
+//	bh->b_uptodata = 1;
 
 	if(bh->b_uptodata)
 		return bh;
