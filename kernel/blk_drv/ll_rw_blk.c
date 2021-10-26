@@ -1,3 +1,32 @@
+#include "../../include/fs.h"
+#include "../../include/system.h"
+#include "blk.h"
+#define NULL ((void *)0)
+
+struct blk_dev_struct blk_dev[NR_BLK_DEV] = {
+	{NULL,NULL},					
+	{NULL,NULL},
+	{NULL,NULL},
+	{NULL,NULL},
+	{NULL,NULL},
+	{NULL,NULL},
+	{NULL,NULL}
+};
+
+static inline void lock_buffer(struct buffer_head * bh){
+	cli();
+//	while(bh->b_lock)
+//		sleep_on(&bh->b_wait);
+	bh->b_lock = 1;
+	sti();
+}
+
+static inline void unlock_buffer(struct buffer_head * bh){
+	if(!bh->b_lock)
+		printk("ll_rw_blk.c:buffer not locked\n");
+	bh->b_lock = 0;
+//	wake_up(&bh->b_wait);
+}
 
 static void add_request(struct blk_dev_struct * dev, struct request *req) {
 	struct request * tmp;
@@ -8,12 +37,13 @@ static void add_request(struct blk_dev_struct * dev, struct request *req) {
 	if (!(tmp = dev->current_request)) {
 		dev->current_request = req;
 		sti();
+		printk("in add_request:before do hd request\n");
 		(dev->request_fn)();
 		return;
 	}
 	for (; tmp->next; tmp=tmp->next) {
 		if (!req->bh)
-			if (tmp->next-bh)
+			if (tmp->next->bh)
 				break;
 			else
 				continue;
@@ -42,7 +72,7 @@ static void make_request(int major, int rw, struct buffer_head * bh) {
 	if (rw != READ && rw != WRITE)
 		panic("");
 	lock_buffer(bh);
-	if ((rw == WRITE && !bh->b_dirt) || (rw == READ && bh->b_uptodate)) {
+	if ((rw == WRITE && !bh->b_dirt) || (rw == READ && bh->b_uptodata)) {
 		unlock_buffer(bh);
 		return;
 	}
@@ -59,11 +89,12 @@ repeat:
 			unlock_buffer(bh);
 			return;
 		}
-		sleep_on(&wait_for_request);
-		goto repeat;
+//		sleep_on(&wait_for_request);
+		printk("before goto repeat\n");
+//		goto repeat;
 	}
 
-	req->dev = hb->b_dev;
+	req->dev = bh->b_dev;
 	req->cmd = rw;
 	req->errors = 0;
 	req->sector = bh->b_blocknr<<1;
@@ -72,7 +103,27 @@ repeat:
 	req->waiting = NULL;
 	req->bh = bh;
 	req->next = NULL;
+	printk("in make request:rw=%d,major=%d\n",rw,major); 
+	printk("before add_request\n");
 	add_request(major + blk_dev, req);
 }
 
+void ll_rw_block(int rw,struct buffer_head * bh){
+	unsigned int major;
+	if((major = MAJOR(bh->b_dev)) >= NR_BLK_DEV ||
+			!(blk_dev[major].request_fn)){
+		printk("Trying to read nonexistent block-device\n");
+		return;
+	}
+	printk("end of ll_rw_block:rw=%d\n",rw);
+	make_request(major,rw,bh);
+}
+
+void blk_dev_init(void){
+	int i;
+	for(i=0;i<NR_REQUEST;i++){
+		request[i].dev = -1;
+		request[i].next = NULL;
+	}
+}
 

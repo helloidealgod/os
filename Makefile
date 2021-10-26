@@ -124,6 +124,10 @@ buffer.o: buffer.c
 	@gcc -m32 -c ./fs/buffer.c -o buffer.o
 OBJS += buffer.o
 
+ll_rw_blk.o: ll_rw_blk.c
+	@gcc -m32 -c ./kernel/blk_drv/ll_rw_blk.c -o ll_rw_blk.o
+OBJS += ll_rw_blk.o
+
 kernel.o: $(OBJS) ld-bootsect.ld
 	@ld -T ld-bootsect.ld $(OBJS) -o kernel.o
 	@objcopy -O binary -R .note -R .comment kernel.o

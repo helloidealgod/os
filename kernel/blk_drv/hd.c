@@ -3,6 +3,7 @@
 #include "../../include/head.h"
 #include "../../include/system.h"
 #include "../../include/fs.h"
+#include "blk.h"
 
 #define IN_ORDER(s1,s2) \
 ((s1)->cmd<(s2)->cmd || (s1)->cmd==(s2)->cmd && \
@@ -12,10 +13,6 @@
 #define NR_BLK_DEV	7
 #define NR_REQUEST	32
 #define NULL ((void *)0)
-#define READA 1
-#define READ 1
-#define WRITEA 2
-#define WRITE 2
 #define CURRENT (blk_dev[3].current_request)
 #define CURRENT_DEV DEVICE_NR(CURRENT->dev)
 
@@ -25,6 +22,7 @@ void (*DEVICE_INTR)(void) = NULL;
 #endif
 #define SET_INTR(x) (DEVICE_INTR = (x))
 #define MAX_HD 2
+#define MAJOR_NR 3
 
 #define port_read(port,buf,nr)\
 __asm__("cld;rep;insw"::"d"(port),"D"(buf),"c"(nr):)
@@ -34,38 +32,15 @@ __asm__("cld;rep;outsw"::"d"(port),"S"(buf),"c"(nr):)
 
 extern hd_interrupt(void);
 
-struct request{
-	int dev;
-	int cmd;
-	int errors;
-	unsigned long sector;
-	unsigned long nr_sectors;
-	char * buffer;
-	struct task_struct * waiting;
-	struct buffer_head * bh;
-	struct request * next;
-};
-struct blk_dev_struct {
-	void (*request_fn)(void);
-	struct request * current_request;
-};
-
 struct request request[NR_REQUEST];
-struct blk_dev_struct blk_dev[NR_BLK_DEV]={
-	{NULL, NULL},
-	{NULL, NULL},
-	{NULL, NULL},
-	{NULL, NULL},
-	{NULL, NULL},
-	{NULL, NULL},
-	{NULL, NULL}
-};
 
 struct hd_i_struct {
 	int head,sect,cyl,wpcom,lzone,ctl;
 };
 struct hd_i_struct hd_info[] = { {0,0,0,0,0,0},{0,0,0,0,0,0,} };
+
 static int NR_HD = 0;
+
 static struct hd_struct{
 	long start_sect;
 	long nr_sects;
@@ -112,6 +87,7 @@ int sys_setup(void * BIOS){
 			panic("");
 		}
 	}
+	printk("setup complete\n");
 	return 0;
 }
 static int controller_ready(void){
@@ -120,6 +96,7 @@ static int controller_ready(void){
 	while(--retries && (inb_p(HD_STATUS)&0x80));
 	return retries;
 }
+
 static int win_result(void){
 	int i = inb_p(HD_STATUS);	
 	if((i & (BUSY_STAT | READY_STAT | WRERR_STAT | SEEK_STAT |ERR_STAT)) == (READY_STAT | SEEK_STAT)){
@@ -131,15 +108,15 @@ static int win_result(void){
 	i = inb(HD_ERROR);
 	return (1);
 }
-/*
+
 static void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
 		unsigned int head,unsigned int cyl,unsigned int cmd,
 		void (*intr_addr)(void))
-*/
+/*
 void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
 		unsigned int head,unsigned int cyl,unsigned int cmd,
 		void (*intr_addr)(void))
-
+*/
 {
 	register int port asm("dx");
 
@@ -160,29 +137,22 @@ void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
 	outb_p(++port,0xA0|(drive<<4)|head);
 	outb(++port,cmd);
 }
-//static void read_intr(void)
-void read_intr(void)
+static void read_intr(void)
+//void read_intr(void)
 {
 //	if (win_result()) {
 //		bad_rw_intr();
 //		do_hd_request();
 //		return;
 //	}
-	printk("read_intr\n");
-	char buffer[512]={0};
 	int i=0;
-	for(i=0;i<512;i++){
-		buffer[i] = 1;
-	}
-	port_read(HD_DATA,buffer,256);
 
-	for(i=0;i<512;i++){
-		printk("%c",buffer[i]);
-	}
-	printk("\n");
-	SET_INTR(&read_intr);
-	return;
 	port_read(HD_DATA,CURRENT->buffer,256);
+
+//	for(i=0;i<512;i++){
+//		printk("%c",CURRENT->buffer[i]);
+//	}
+
 	CURRENT->errors = 0;
 	CURRENT->buffer += 512;
 	CURRENT->sector++;
@@ -190,6 +160,7 @@ void read_intr(void)
 		SET_INTR(&read_intr);
 		return;
 	}
+	printk("\n");
 //	end_request(1);
 //	do_hd_request();
 }
@@ -220,7 +191,7 @@ static void write_intr(void)
 //	end_request(1);
 //	do_hd_request();
 }
-/*
+
 void do_hd_request(void)
 {
 	int i,r;
@@ -228,14 +199,14 @@ void do_hd_request(void)
 	unsigned int sec,head,cyl;
 	unsigned int nsect;
 
-	INIT_REQUEST;
+//	INIT_REQUEST;
 	dev = MINOR(CURRENT->dev);
 	block = CURRENT->sector;
-	if (dev >= 5*NR_HD || block+2 > hd[dev].nr_sects) {
+/*	if (dev >= 5*NR_HD || block+2 > hd[dev].nr_sects) {
 		end_request(0);
 		goto repeat;
 	}
-	block += hd[dev].start_sect;
+*/	block += hd[dev].start_sect;
 	dev /= 5;
 	__asm__("divl %4":"=a" (block),"=d" (sec):"0" (block),"1" (0),
 		"r" (hd_info[dev].sect));
@@ -243,7 +214,7 @@ void do_hd_request(void)
 		"r" (hd_info[dev].head));
 	sec++;
 	nsect = CURRENT->nr_sectors;
-	if (reset) {
+/*	if (reset) {
 		recalibrate = 1;
 		reset_hd();
 		return;
@@ -254,39 +225,35 @@ void do_hd_request(void)
 			WIN_RESTORE,&recal_intr);
 		return;
 	}
+*/	
+	printk("cmd=%d\n",CURRENT->cmd);
 	if (CURRENT->cmd == WRITE) {
 		hd_out(dev,nsect,sec,head,cyl,WIN_WRITE,&write_intr);
 		for(i=0 ; i<10000 && !(r=inb_p(HD_STATUS)&DRQ_STAT) ; i++)
 			// nothing ;
 		if (!r) {
-			bad_rw_intr();
-			goto repeat;
+//			bad_rw_intr();
+//			goto repeat;
 		}
 		port_write(HD_DATA,CURRENT->buffer,256);
 	} else if (CURRENT->cmd == READ) {
+		printk("do_hd_request:read,hd_out\n");
 		hd_out(dev,nsect,sec,head,cyl,WIN_READ,&read_intr);
 	} else
 		panic("unknown hd-command");
 }
-*/
+
 void unexpected_hd_interrupt(void){
 	printk("unexpected hd interrupt\n");
 }
 void hd_init(void)
 {
-//	blk_dev[MAJOR_NR].request_fn = DEVICE_REQUEST;
+	blk_dev[MAJOR_NR].request_fn = DEVICE_REQUEST;
 	set_intr_gate(46,&hd_interrupt);
 	outb_p(0x21,inb_p(0x21)&0xfb);
 	outb(0xA1,inb_p(0xA1)&0xbf);
 }
 
-void ll_rw_block(int rw, struct buffer_heard *bh){
-
-}
-
-void blk_dev_init(){
-
-}
 
 static void add_request(struct blk_dev_struct * dev, struct request * req){
     struct request * tmp;

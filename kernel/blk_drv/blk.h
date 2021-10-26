@@ -3,6 +3,7 @@
 
 #define NR_BLK_DEV	7
 #define NR_REQUEST	32
+#define DEVICE_REQUEST do_hd_request
 
 struct request {
 	int dev;		/* -1 if no request */
