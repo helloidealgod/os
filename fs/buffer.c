@@ -48,7 +48,7 @@ struct buffer_head * bread(int dev, int block){
 
 	ll_rw_block(READ,bh);
 	wait_on_buffer(bh);
-	printk("after wait_on_buffer\n");
+/*	printk("after wait_on_buffer\n");
 	int i;
 	for(i=0;i<512;i++){
 		printk("%c",bh->b_data[i]);
@@ -56,7 +56,7 @@ struct buffer_head * bread(int dev, int block){
 	
 	printk("\n");
 //	bh->b_uptodata = 1;
-
+*/
 	if(bh->b_uptodata)
 		return bh;
 	printk("in bread():before brelse\n");

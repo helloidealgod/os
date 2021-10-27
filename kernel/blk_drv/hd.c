@@ -82,9 +82,12 @@ int sys_setup(void * BIOS){
 			printk("Unable to read partition table of drive %d\n",drive);
 			panic("");
 		}
-		printk("%u %u\n",bh->b_data[510],bh->b_data[511]);
-		for(i=0;i<1024;i++){
-			printk("%u",bh->b_data[i]);
+		printk("%02x %02x\n",(unsigned char)bh->b_data[510],(unsigned char)bh->b_data[511]);
+		for(i=0;i<512;i++){
+			printk("%02x ",(unsigned char)bh->b_data[i]);
+			if(0 != i && 0 == i %26){
+				printk("\n");
+			}
 		}
 		printk("\n");
 		if(bh->b_data[510] != 0x55 || (unsigned char)bh->b_data[511] != 0xAA){
