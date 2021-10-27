@@ -83,17 +83,15 @@ int sys_setup(void * BIOS){
 			panic("");
 		}
 		printk("%02x %02x\n",(unsigned char)bh->b_data[510],(unsigned char)bh->b_data[511]);
-		for(i=0;i<512;i++){
-			printk("%02x ",(unsigned char)bh->b_data[i]);
-			if(0 != i && 0 == i %26){
-				printk("\n");
-			}
-		}
-		printk("\n");
 		if(bh->b_data[510] != 0x55 || (unsigned char)bh->b_data[511] != 0xAA){
 			printk("Bad partition table on drive %d\n",drive);
 			panic("");
 		}
+		unsigned short DBR_sects = (unsigned short)bh->b_data[0x0E];
+		unsigned short FAT_sects = (unsigned short)bh->b_data[0x16];
+		unsigned char fats = (unsigned char)bh->b_data[0x10];
+		printk("fat start sect no=%d\n",DBR_sects);
+		printk("fdt start sect no=%d\n",DBR_sects+FAT_sects*fats);
 	}
 	printk("setup complete\n");
 	return 0;
