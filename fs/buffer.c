@@ -36,13 +36,17 @@ void brelse(struct buffer_head * buf){
 struct buffer_head * getblk(int dev,int block){
 	struct buffer_head * tmp, *bh;
 	free_list->b_dev = dev;
-	return free_list;
+	free_list->b_blocknr = block;
+
+	tmp = free_list;
+	free_list = tmp->b_next_free;
+	return tmp;
 }
 
 struct buffer_head * bread(int dev, int block){
 	struct buffer_head * bh;
 	if (!(bh = getblk(dev,block)))
-		panic("");
+		panic("getblk failed\n");
 	if (bh->b_uptodata)
 		return bh;
 
