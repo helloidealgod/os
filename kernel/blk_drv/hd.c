@@ -92,16 +92,33 @@ int sys_setup(void * BIOS){
 		unsigned char fats = (unsigned char)bh->b_data[0x10];
 		printk("fat start sect no=%d\n",DBR_sects);
 		printk("fdt start sect no=%d\n",DBR_sects+FAT_sects*fats);
-		if(!(bh = bread(0x300 + drive*5,68))){
+		if(!(bh = bread(0x300 + drive*5,34))){
 			printk("read FAT failed\n");
 		}
-		for(i=0;i<16*10;i++){
+/*		for(i=0;i<32*10;i++){
 			if(0!=i && 0==i%16){
 				printk("\n");
 			}
-			printk("%02x ",(unsigned char)bh->b_data[i]);
+			printk("%02X ",(unsigned char)bh->b_data[i]);
 		}
 		printk("\n");
+*/
+		int length;
+		for(i=0;i<22;i++){
+			if(0x0F == (unsigned char)bh->b_data[0x0B + i*32]){
+				printk("long file dir,no=%d;",0x0f & bh->b_data[0 + i*32]);
+			}else if(0x00 != (unsigned char)bh->b_data[0x0B + i*32]){
+				unsigned short no = (unsigned short)bh->b_data[0x1A + i*32];
+				printk("short file dir,start_cluster_no=%d,filename=",no);
+				for(length=0;length<8;length++){
+					if(0x20 == (unsigned char)bh->b_data[length+i*32]){
+						printk("\n");
+						break;
+					}
+					printk("%c",(unsigned char)bh->b_data[length+i*32]);
+				}
+			}
+		}
 	}
 	printk("setup complete\n");
 	return 0;
