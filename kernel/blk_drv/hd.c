@@ -87,11 +87,17 @@ int sys_setup(void * BIOS){
 			printk("Bad partition table on drive %d\n",drive);
 			panic("");
 		}
-		unsigned short DBR_sects = (unsigned short)bh->b_data[0x0E];
-		unsigned short FAT_sects = (unsigned short)bh->b_data[0x16];
+		unsigned short DBR_sects = *((unsigned short *)&bh->b_data[0x0E]);
+		unsigned short FAT_sects = *((unsigned short *)&bh->b_data[0x16]);
 		unsigned char fats = (unsigned char)bh->b_data[0x10];
+		unsigned short root_max_dirs =*((unsigned short *)&bh->b_data[0x11]);
+		unsigned char cluster_sects = (unsigned char)bh->b_data[0x0D];
+		int data_start = DBR_sects + FAT_sects*fats + 32;
 		printk("fat start sect no=%d\n",DBR_sects);
 		printk("fdt start sect no=%d\n",DBR_sects+FAT_sects*fats);
+		printk("root max dirs=%d,cluster_sects=%d\n",root_max_dirs,cluster_sects);
+		printk("DATA start sect = %d\n",data_start);
+
 		if(!(bh = bread(0x300 + drive*5,34))){
 			printk("read FAT failed\n");
 		}
@@ -124,6 +130,34 @@ int sys_setup(void * BIOS){
 				}
 			}
 		}
+		int cluster = 12;
+		int home_sects = data_start + (cluster - 2) * cluster_sects;
+	        int home_block = home_sects / 2;	
+		printk("h_sects=%d,h_block=%d\n",home_sects,home_block);
+		if(!(bh = bread(0x300 + drive*5,home_block))){
+			printk("read FAT failed\n");
+		}
+		for(i=0;i<12;i++){
+			if(0xE5 == (unsigned char)bh->b_data[0x00 + i*32]){
+				//item has been deleted
+			}else if(0x0F == (unsigned char)bh->b_data[0x0B + i*32]){
+				printk("long file dir,no=%d;",0x0f & bh->b_data[0 + i*32]);
+			}else if(0x00 != (unsigned char)bh->b_data[0x0B + i*32]){
+				unsigned short no = (unsigned short)bh->b_data[0x1A + i*32];
+				printk("short file dir,start_cluster_no=%d,filename=",no);
+				for(length=0;length<8;length++){
+					if(0x20 == (unsigned char)bh->b_data[length+i*32]){
+						printk("\n");
+						break;
+					}
+					printk("%c",(unsigned char)bh->b_data[length+i*32]);
+					if(7==length){
+						printk("\n");
+					}
+				}
+			}
+		}
+
 	}
 	printk("setup complete\n");
 	return 0;
