@@ -104,7 +104,7 @@ int sys_setup(void * BIOS){
 		printk("\n");
 */
 		int length;
-		for(i=0;i<22;i++){
+		for(i=0;i<32;i++){
 			if(0x0F == (unsigned char)bh->b_data[0x0B + i*32]){
 				printk("long file dir,no=%d;",0x0f & bh->b_data[0 + i*32]);
 			}else if(0x00 != (unsigned char)bh->b_data[0x0B + i*32]){
@@ -116,6 +116,9 @@ int sys_setup(void * BIOS){
 						break;
 					}
 					printk("%c",(unsigned char)bh->b_data[length+i*32]);
+					if(7==length){
+						printk("\n");
+					}
 				}
 			}
 		}
