@@ -105,7 +105,9 @@ int sys_setup(void * BIOS){
 */
 		int length;
 		for(i=0;i<32;i++){
-			if(0x0F == (unsigned char)bh->b_data[0x0B + i*32]){
+			if(0xE5 == (unsigned char)bh->b_data[0x00 + i*32]){
+				//item has been deleted
+			}else if(0x0F == (unsigned char)bh->b_data[0x0B + i*32]){
 				printk("long file dir,no=%d;",0x0f & bh->b_data[0 + i*32]);
 			}else if(0x00 != (unsigned char)bh->b_data[0x0B + i*32]){
 				unsigned short no = (unsigned short)bh->b_data[0x1A + i*32];
