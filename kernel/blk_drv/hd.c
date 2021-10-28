@@ -157,7 +157,19 @@ int sys_setup(void * BIOS){
 				}
 			}
 		}
-
+		cluster = 13;
+		home_sects = data_start + (cluster - 2) * cluster_sects;
+	        home_block = home_sects / 2;	
+		if(!(bh = bread(0x300 + drive*5,home_block))){
+			printk("read FAT failed\n");
+		}
+		for(i=0;i<128;i++){
+			if(0==bh->b_data[i]){
+				break;
+			}else{
+				printk("%c",(unsigned char)bh->b_data[i]);
+			}
+		}
 	}
 	printk("setup complete\n");
 	return 0;
@@ -308,7 +320,7 @@ void do_hd_request(void)
 		goto repeat;
 	}
 */	block += hd[dev].start_sect;
-	printk("block=%d\n");
+//	printk("block=%d\n");
 	dev /= 5;
 	__asm__("divl %4":"=a" (block),"=d" (sec):"0" (block),"1" (0),
 		"r" (hd_info[dev].sect));
@@ -338,7 +350,7 @@ void do_hd_request(void)
 		}
 		port_write(HD_DATA,CURRENT->buffer,256);
 	} else if (CURRENT->cmd == READ) {
-		printk("dev=%d,nsect=%d,sec=%d,head=%d,cyl=%d\n",dev,nsect,sec,head,cyl);
+//		printk("dev=%d,nsect=%d,sec=%d,head=%d,cyl=%d\n",dev,nsect,sec,head,cyl);
 		hd_out(dev,nsect,sec,head,cyl,WIN_READ,&read_intr);
 	} else
 		panic("unknown hd-command");
