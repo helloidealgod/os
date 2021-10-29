@@ -15,6 +15,7 @@
 #define CURRENT (blk_dev[3].current_request)
 #define CURRENT_DEV DEVICE_NR(CURRENT->dev)
 
+#include "../include/stdarg.h"
 typedef int (*fn_ptr)();
 
 extern int sys_setup();
@@ -29,10 +30,14 @@ fn_ptr sys_call_table[]={sys_setup,sys_fork,sys_read,sys_write,sys_open,sys_clos
 static inline int fork(void) __attribute__((always_inline));
 static inline int pause(void) __attribute__((always_inline));
 static inline int setup(void * BIOS) __attribute__((always_inline));
+static inline int write(unsigned int fd,char * buff,int count) __attribute__((always_inline));
+
 static inline _syscall0(int,fork)
 static inline _syscall0(int,exit)
 static inline _syscall0(int,pause)
 static inline _syscall1(int,setup,void *,BIOS)
+static inline _syscall3(int,write,unsigned int,fd,char *,buff,int,count)
+
 
 
 extern void read_intr(void);
@@ -96,12 +101,15 @@ int main(void){
 
 static int printf(const char * fmt,...){
 	int i;
-/*	va_list args;
+	va_list args;
+	char printbuf[128];
 	write(1,printbuf,i=vsprintf(printbuf,fmt,args));
+//	vsprintf(printbuf,fmt,args);
 	va_end(args);
-*/	return i;
+	return i;
 }
 void init(void){
 //	setup((void *)&drive_info);	
 	setup(0x90080);
+	printf("test printf:hello init\n");
 }
