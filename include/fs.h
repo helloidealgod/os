@@ -46,4 +46,11 @@ struct file{
 	struct m_inode * f_inode;
 	off_t f_pos;
 };
+
+struct dir_entry{
+	unsigned short inode;
+	char name[14];
+};
+
+extern struct file file_table[64];
 #endif

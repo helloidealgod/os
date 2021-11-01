@@ -23,6 +23,8 @@
 #include "head.h"
 #include "signal.h"
 
+extern struct task_struct * current;
+
 struct i387_struct {
 	long cwd;
 	long swd;

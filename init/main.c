@@ -34,6 +34,7 @@ static inline int pause(void) __attribute__((always_inline));
 static inline int setup(void * BIOS) __attribute__((always_inline));
 static inline int write(unsigned int fd,char * buff,int count) __attribute__((always_inline));
 static inline int execve(char * filename,char * argv,char * envp) __attribute__((always_inline));
+static inline int open(const char * filename,int flag,int mode)__attribute__((always_inline));
 
 static inline _syscall0(int,fork)
 static inline _syscall0(int,exit)
@@ -41,7 +42,7 @@ static inline _syscall0(int,pause)
 static inline _syscall1(int,setup,void *,BIOS)
 static inline _syscall3(int,write,unsigned int,fd,char *,buff,int,count)
 static inline _syscall3(int,execve,char *,filename,char *,argv,char *,envp)
-
+static inline _syscall3(int,open,const char *,filename,int,flag,int,mode)
 
 
 extern void read_intr(void);
@@ -118,6 +119,7 @@ void init(void){
 //	setup((void *)&drive_info);	
 	setup(0x90080);
 	printf("test printf:hello init\n");
+	open("/home/readme.txt",0,0);
 	int pid;
 	if(!(pid=fork())){
 		execve("",argv,envp);
