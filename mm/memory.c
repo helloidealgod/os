@@ -90,13 +90,13 @@ int copy_page_tables(unsigned long from,unsigned long to,long size){
 
 void free_page(unsigned long addr){
 	if (addr < LOW_MEM) return;
-	if (addr >= HIGH_MEMORY) return;
-//		panic("trying to free noneexistern");
+	if (addr >= HIGH_MEMORY)
+		panic("trying to free noneexistern");
 	addr -= LOW_MEM;
 	addr >>= 12;
 	if (mem_map[addr]--) return;
 	mem_map[addr] = 0;
-//	panic("trying to free page");
+	panic("trying to free page");
 }
 int free_page_tables(unsigned long from,unsigned long size){
 	unsigned long * pg_table;
@@ -151,7 +151,6 @@ void un_wp_page(unsigned long * table_entry){
 }
 
 void do_wp_page(unsigned long error_code,unsigned long address){
-//	printk("do_wp_page");
 	un_wp_page((unsigned long *)
 		(((address>>10) & 0xffc) + (0xfffff000 &
 		*((unsigned long *)((address>>20) & 0xffc)))));
