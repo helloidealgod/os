@@ -128,6 +128,14 @@ ll_rw_blk.o: ll_rw_blk.c
 	@gcc -m32 -c ./kernel/blk_drv/ll_rw_blk.c -o ll_rw_blk.o
 OBJS += ll_rw_blk.o
 
+namei.o: namei.c
+	@gcc -m32 -c ./fs/namei.c -o namei.o
+OBJS += namei.o
+
+exec.o: exec.c
+	@gcc -m32 -c ./fs/exec.c -o exec.o
+OBJS += exec.o
+
 kernel.o: $(OBJS) ld-bootsect.ld
 	@ld -T ld-bootsect.ld $(OBJS) -o kernel.o
 	@objcopy -O binary -R .note -R .comment kernel.o
