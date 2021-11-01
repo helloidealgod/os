@@ -25,18 +25,22 @@ extern int sys_write();
 extern int sys_open();
 extern int sys_close();
 extern int sys_pause();
-fn_ptr sys_call_table[]={sys_setup,sys_fork,sys_read,sys_write,sys_open,sys_close,sys_pause};
+extern int sys_execve();
+fn_ptr sys_call_table[]={sys_setup,sys_fork,sys_read,sys_write,sys_open,sys_close,sys_pause,
+		NULL,NULL,NULL,NULL,sys_execve};
 
 static inline int fork(void) __attribute__((always_inline));
 static inline int pause(void) __attribute__((always_inline));
 static inline int setup(void * BIOS) __attribute__((always_inline));
 static inline int write(unsigned int fd,char * buff,int count) __attribute__((always_inline));
+static inline int execve(char * filename,char * argv,char * envp) __attribute__((always_inline));
 
 static inline _syscall0(int,fork)
 static inline _syscall0(int,exit)
 static inline _syscall0(int,pause)
 static inline _syscall1(int,setup,void *,BIOS)
 static inline _syscall3(int,write,unsigned int,fd,char *,buff,int,count)
+static inline _syscall3(int,execve,char *,filename,char *,argv,char *,envp)
 
 
 
@@ -46,6 +50,9 @@ extern void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,unsig
 static long memory_end = 0;
 static long buffer_memory_end = 0;
 static long main_memory_start = 0;
+
+static char * argv = {"-/bin/sh",NULL};
+static char * envp = {"HOME=/usr/root",NULL,NULL};
 
 struct hd_i_struct{
 	int head,sect,cyl,wpcom,lzone,ctl;
@@ -112,4 +119,8 @@ void init(void){
 //	setup((void *)&drive_info);	
 	setup(0x90080);
 	printf("test printf:hello init\n");
+	int pid;
+	if(!(pid=fork())){
+		execve("",argv,envp);
+	}
 }

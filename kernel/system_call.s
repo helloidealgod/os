@@ -28,7 +28,7 @@ sa_restorer = 12
 
 nr_system_calls = 72
 
-.globl timer_interrupt,system_call,sys_fork,sys_printk,hd_interrupt
+.globl timer_interrupt,system_call,sys_fork,sys_printk,hd_interrupt,sys_execve
 
 .align 2
 bad_system_call:
@@ -95,9 +95,15 @@ timer_interrupt:
 	call do_timer
 	addl $4,%esp
 	jmp ret_from_sys_call
+.align 2
+sys_execve:
+	lea EIP(%esp),%eax
+	pushl %eax
+	call do_execve
+	addl $4,%esp
+	ret
 
 .align 2
-
 sys_fork:
 	call find_empty_process
 	testl %eax,%eax

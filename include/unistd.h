@@ -9,6 +9,7 @@
 #define _NR_open 4
 #define _NR_close 5
 #define _NR_pause 6
+#define _NR_execve 11
 
 #define _syscall0(type,name) \
 type name(void){ \
