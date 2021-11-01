@@ -1,6 +1,8 @@
 #ifndef _FS_H
 #define _FS_H
 
+#include "types.h"
+
 #define BLOCK_SIZE 1024
 #define READ 0
 #define WRITE 1
@@ -23,5 +25,25 @@ struct buffer_head {
 	struct buffer_head * b_next;
 	struct buffer_head * b_prev_free;
 	struct buffer_head * b_next_free;
+};
+
+struct m_inode{
+	unsigned short i_mode;
+	unsigned short i_uid;
+	unsigned long i_size;
+	struct task_struct * i_wait;
+	struct task_struct * i_wait2;
+	unsigned short i_dev;
+	unsigned short i_num;
+	unsigned short i_count;
+	unsigned char i_lock;
+};
+
+struct file{
+	unsigned short f_mode;
+	unsigned short f_flags;
+	unsigned short f_count;
+	struct m_inode * f_inode;
+	off_t f_pos;
 };
 #endif

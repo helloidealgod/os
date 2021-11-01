@@ -80,7 +80,12 @@ struct task_struct{
 	unsigned short used_math;
 	int tty;
 	unsigned short umask;
+	struct m_inode * pwd;
+	struct m_inode * root;
+	struct m_inode * executable;
+	struct m_inode * library;
 	unsigned long close_on_exec;
+	struct file * filp[32];
 	struct desc_struct ldt[3];
 	struct tss_struct tss;
 };

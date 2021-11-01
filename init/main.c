@@ -111,7 +111,6 @@ static int printf(const char * fmt,...){
 	va_list args;
 	char printbuf[128];
 	write(1,printbuf,i=vsprintf(printbuf,fmt,args));
-//	vsprintf(printbuf,fmt,args);
 	va_end(args);
 	return i;
 }
