@@ -120,6 +120,8 @@ void init(void){
 	setup(0x90080);
 	printf("test printf:hello init\n");
 	open("/home/readme.txt",0,0);
+	open("/home/test1/hi2.txt",0,0);
+	open("/home/test1/hello1.txt",0,0);
 	int pid;
 	if(!(pid=fork())){
 		execve("",argv,envp);

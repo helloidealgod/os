@@ -1,6 +1,8 @@
 #include "../include/types.h"
 #include "../include/fs.h"
 
+struct m_inode inode_table[64];
+
 static struct m_inode * get_dir(const char * pathname,struct m_inode * inode){
 	return NULL;
 }
@@ -32,17 +34,22 @@ void namei(const char * pathname){
 struct m_inode * fat16_namei(const char * filename){
 	printk("fat16_namei:i_dev=%x,i_num=%d",root_inode.i_dev,root_inode.i_num);
 	struct buffer_head * bh;
+	struct m_inode * inode;
 	unsigned short start_cluster;
-	int block = root_inode.i_num;
+	int dev,block;
+       	char c,c1,c2;
+	char * basename;
 	long i_size;
-	char * basename = filename;
-	char c,c1,c2;
+
+	inode = NULL;
+	dev = root_inode.i_dev;
+	block = root_inode.i_num;
+	basename = filename;
+
 label1:
 	c = get_fs_byte(basename);
-	printk("label %c",c);
 	if('/' == c){
-		printk("block=%d",block);
-		bh = bread(root_inode.i_dev,block);
+		bh = bread(dev,block);
 
 		basename++;
 		int i,len,match;
@@ -55,7 +62,7 @@ label1:
 					c1 = get_fs_byte(basename+len);
 					c2 = (unsigned char)bh->b_data[len + i*32];
 					if(0x20 == c2){
-						printk("\n");
+						printk(" ");
 						if('/'== c1 || '.' == c1 || '\0' == c1){
 							match = 1;
 							basename += len;
@@ -79,11 +86,12 @@ label1:
 					printk("MATCH start_cluster=%d,c=%c\n",start_cluster,c1);
 					block = root_inode.i_num * 2 + 32 + (start_cluster - 2)*4;
 					block /= 2;
-					if('.' != c1 || '\0' != c1){
+					if('.' == c1 || '\0' == c1){
 						i_size = (unsigned long)bh->b_data[0x1C + i*32];
-						//m_inode.i_num = block;
-						//m_inode.i_dev = dev;
-						//m_inode.i_size = i_size;
+						inode = inode_table+0;
+						inode->i_num = block;
+						inode->i_dev = dev;
+						inode->i_size = i_size;
 						printk("file_size=%dbytes\n",i_size);
 					}
 					goto label1;
@@ -92,7 +100,7 @@ label1:
 		}
 	}
 
-	return NULL;
+	return inode;
 }
 
 int open_namei(const char * pathname,int flag,int mode,
