@@ -52,7 +52,7 @@ label1:
 		bh = bread(dev,block);
 
 		basename++;
-		int i,len,match;
+		int i,j,len,match;
 		for(i=0;i<32;i++){
 			match = 0;
 			if(0xE5 != (unsigned char)bh->b_data[0x00 + i*32]
@@ -60,16 +60,40 @@ label1:
 			&& 0x00 != (unsigned char)bh->b_data[0x0B + i*32]){
 				for(len=0;len<8;len++){
 					c1 = get_fs_byte(basename+len);
+					c1 = (c1>= 97 && c1 <=122)? c1-32 : c1; 
 					c2 = (unsigned char)bh->b_data[len + i*32];
 					if(0x20 == c2){
-						printk(" ");
-						if('/'== c1 || '.' == c1 || '\0' == c1){
+						if('.' == c1){
+							printk("%c",c1);
+						//	c2 = (unsigned char)bh->b_data[0x08 + j + i*32];
+							for(j=0;j<1;j++){
+							//	c1 = get_fs_byte(basename+len+j);
+								c1 = (c1>= 97 && c1 <=122)? c1-32 : c1; 
+								printk("c1=%c,c2=%c\n",c1,c2);
+							/*	if(0x20 == c2){
+									if('\0' == c1){
+										printk(" ");
+										match = 1;
+										basename += len;
+									}
+								}
+								if(c1 != c2){
+									match = 0;
+									break;
+								}
+								printk("%c",c2);
+								if(2 == j){
+									basename += len;
+								}
+						*/	}
+						}
+						if('/'== c1 || '\0' == c1){
+							printk(" ");
 							match = 1;
 							basename += len;
 						}
 						break;
 					}
-					c1 = (c1>= 97 && c1 <=122)? c1-32 : c1; 
 					if(c1 != c2){
 						match = 0;
 						break;
