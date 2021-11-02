@@ -53,4 +53,5 @@ struct dir_entry{
 };
 
 extern struct file file_table[64];
+extern struct m_inode root_inode;
 #endif

@@ -39,6 +39,8 @@ struct hd_i_struct {
 };
 struct hd_i_struct hd_info[] = { {0,0,0,0,0,0},{0,0,0,0,0,0,} };
 
+struct m_inode root_inode;
+
 static int NR_HD = 0;
 
 static struct hd_struct{
@@ -97,18 +99,13 @@ int sys_setup(void * BIOS){
 		printk("fdt start sect no=%d\n",DBR_sects+FAT_sects*fats);
 		printk("root max dirs=%d,cluster_sects=%d\n",root_max_dirs,cluster_sects);
 		printk("DATA start sect = %d\n",data_start);
+	
+		root_inode.i_dev = 0x300;
+		root_inode.i_num = (DBR_sects + FAT_sects * fats)/2;
 
 		if(!(bh = bread(0x300 + drive*5,34))){
 			printk("read FAT failed\n");
 		}
-/*		for(i=0;i<32*10;i++){
-			if(0!=i && 0==i%16){
-				printk("\n");
-			}
-			printk("%02X ",(unsigned char)bh->b_data[i]);
-		}
-		printk("\n");
-*/
 		int length;
 		for(i=0;i<32;i++){
 			if(0xE5 == (unsigned char)bh->b_data[0x00 + i*32]){
