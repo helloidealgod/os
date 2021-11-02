@@ -36,13 +36,17 @@ int open_namei(const char * pathname,int flag,int mode,
 	struct m_inode *dir,*inode;
 	struct buffer_head * bh;
 	struct dir_entry * de;
+
 	printk("open_namei\n");
 	if(!(dir = dir_namei(pathname,&namelen,&basename,NULL))){
-//		return -1;
+		return -1;
 	}
 	if(!namelen){
 
 	}
+
+	*res_inode = dir;
+
 	int i=0;
 	for(i=0;i<namelen;i++){
 		printk("%c",get_fs_byte(basename+i));
