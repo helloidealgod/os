@@ -66,7 +66,7 @@ int sys_setup(void * BIOS){
 		hd_info[drive].sect = *(unsigned char *)(14+BIOS);
 		BIOS +=16;
 
-		printk("cyl=%u,head=%u,sect=%u\n",hd_info[drive].cyl,hd_info[drive].head,hd_info[drive].sect);
+	//	printk("cyl=%u,head=%u,sect=%u\n",hd_info[drive].cyl,hd_info[drive].head,hd_info[drive].sect);
 	}
 	if(hd_info[1].cyl){
 		NR_HD = 2;
@@ -76,7 +76,7 @@ int sys_setup(void * BIOS){
 	for(i=0;i<NR_HD;i++){
 		hd[i*5].start_sect = 0;
 		hd[i*5].nr_sects = hd_info[i].head * hd_info[i].sect * hd_info[i].cyl;
-		printk("start_sect=%u,nr_sects=%u\n",hd[i*5].start_sect,hd[i*5].nr_sects);
+	//	printk("start_sect=%u,nr_sects=%u\n",hd[i*5].start_sect,hd[i*5].nr_sects);
 	}
 
 	for(drive=0;drive<NR_HD;drive++){

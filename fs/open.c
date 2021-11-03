@@ -26,7 +26,9 @@ int sys_open(const char * filename,int flag,int mode){
 
 //	printk("sys_open:fd=%d,file_table=%d\n",fd,i);
 	i = open_namei(filename,flag,mode,&inode);
-
+	if(!i){
+		return -1;
+	}
 	f->f_count++;
 	current->filp[fd] = f;
 	f->f_flags = flag;

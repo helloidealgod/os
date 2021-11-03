@@ -51,7 +51,7 @@ label1:
 //		printk("dev=%x,block=%d\n",dev,block);
 		bh = bread(dev,block);
 
-		printk("%c",c);
+//		printk("%c",c);
 		basename++;
 		int i,j,len,match,off;
 		for(i=0;i<32;i++){
@@ -88,7 +88,7 @@ label1:
 						match = 0;
 						break;
 					}
-					printk("%c",c1);
+//					printk("%c",c1);
 					match = 1;
 					if(10 == len){
 						c1 = get_fs_byte(basename + off + 11);
@@ -104,7 +104,7 @@ label1:
 					block = root_inode.i_num * 2 + 32 + (start_cluster - 2)*4;
 					block /= 2;
 					if(2 == match){
-						printk(" MATCH start_cluster=%d",start_cluster);
+				//		printk(" MATCH start_cluster=%d",start_cluster);
 						i_size = (unsigned long)bh->b_data[0x1C + i*32];
 						for(len=0;len<64;len++){
 							if(!inode_table[len].i_count){
@@ -116,7 +116,7 @@ label1:
 						inode->i_dev = dev;
 						inode->i_size = i_size;
 						inode->i_count = 1;
-						printk(" dev=%x,block=%d,file_size=%dbytes\n",dev,block,i_size);
+				//		printk(" dev=%x,block=%d,file_size=%dbytes\n",dev,block,i_size);
 					}
 					goto label1;
 				}
@@ -135,6 +135,9 @@ int open_namei(const char * pathname,int flag,int mode,
 	struct buffer_head * bh;
 
 	dir = fat16_namei(pathname);
+	if(NULL == dir){
+		return 0;
+	}
 	*res_inode = dir;
-	return 0;
+	return 1;
 }

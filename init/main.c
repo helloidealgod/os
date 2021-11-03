@@ -110,11 +110,24 @@ void init(void){
 	int fd = open("/home/readme.txt",0,0);
 	
 	printf("open file:/home/test1/hi2.txt\n");
-	open("/home/test1/hi2.txt",0,0);
-//	int fd = open("/home/test1/hello1.txt",0,0);
-//	int fd = open("/home/test1/hello11.txt",0,0);
+	int fd1 = open("/home/test1/hi2.txt",0,0);
+
 	unsigned char s[512];
 	int i;
+
+	if(fd >= 0){
+		write(1,"fd open\n",8);
+	}else{
+		write(1,"fd not open\n",12);
+
+	}
+	if(fd1 >= 0){
+		write(1,"fd1 open\n",9);
+	}else{
+		write(1,"fd1 not open\n",13);
+
+	}
+
 	for(i=0;i<512;i++){
 		s[i] = 'A';
 	//	printf("%c ",s[i]); has a bug
