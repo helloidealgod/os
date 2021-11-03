@@ -48,6 +48,7 @@ struct m_inode * fat16_namei(const char * filename){
 label1:
 	c = get_fs_byte(basename);
 	if('/' == c){
+		printk("dev=%x,block=%d\n",dev,block);
 		bh = bread(dev,block);
 
 		printk("%c",c);
@@ -83,7 +84,6 @@ label1:
 							}
 						}
 					}
-					
 					if(c1 != c2){
 						match = 0;
 						break;
@@ -91,7 +91,7 @@ label1:
 					printk("%c",c1);
 					match = 1;
 					if(10 == len){
-						c1 = get_fs_byte(basename + 11);
+						c1 = get_fs_byte(basename + off + 11);
 						if('\0' == c1){
 							match = 2;
 						}else{
@@ -104,7 +104,7 @@ label1:
 					block = root_inode.i_num * 2 + 32 + (start_cluster - 2)*4;
 					block /= 2;
 					if(2 == match){
-					printk("MATCH start_cluster=%d\n",start_cluster);
+						printk(" MATCH start_cluster=%d",start_cluster);
 						i_size = (unsigned long)bh->b_data[0x1C + i*32];
 						for(len=0;len<64;len++){
 							if(!inode_table[len].i_count){
@@ -116,7 +116,7 @@ label1:
 						inode->i_dev = dev;
 						inode->i_size = i_size;
 						inode->i_count = 1;
-						printk(" file_size=%dbytes\n",i_size);
+						printk(" dev=%x,block=%d,file_size=%dbytes\n",dev,block,i_size);
 					}
 					goto label1;
 				}

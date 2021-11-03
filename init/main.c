@@ -82,23 +82,9 @@ int main(void){
 	printk("init complete!\n");
 	hd_init();
 	printk("hd init complete\n");	
-	sti();
-/*	hd_out(0,1,1,1,1,WIN_WRITE,&write_intr);	
-	int i,r;
-	for(i=0 ; i<10000 && !(r=inb_p(HD_STATUS)&DRQ_STAT) ; i++){}
-	if(!r){
-		printk("error\n");	
-	}else{
-		char buffer[512]={24};
-		for(i=0;i<512;i++){
-			buffer[i] = 24;
-		}
-		port_write(HD_DATA,buffer,256);
-	}
-*/
-//	hd_out(0,1,1,0,0,WIN_READ,&read_intr);	
 	//buffer 1M ~ 4M
 	buffer_init(4*1024*1024);
+	sti();
 	move_to_user_mode();
 	if(!fork()){
 		init();
@@ -120,19 +106,22 @@ static int printf(const char * fmt,...){
 void init(void){
 //	setup((void *)&drive_info);	
 	setup(0x90080);
-//	printf("\nopen file:/home/readme\n");
-//	open("/home/readme",0,0);
 	printf("open file:/home/readme.txt\n");
 	int fd = open("/home/readme.txt",0,0);
-
-//	open("/home/test1/hi2.txt",0,0);
+	
+	printf("open file:/home/test1/hi2.txt\n");
+	open("/home/test1/hi2.txt",0,0);
 //	int fd = open("/home/test1/hello1.txt",0,0);
 //	int fd = open("/home/test1/hello11.txt",0,0);
-	char s[512] = {'A',};
-	int count = read(fd,s,10);
+	unsigned char s[512];
 	int i;
-	for(i=0;i<10;i++){
-//		printf("%c",s[i]);
+	for(i=0;i<512;i++){
+		s[i] = 'A';
+	//	printf("%c ",s[i]); has a bug
+	}
+	int count = read(fd,s,32);
+	for(i=0;i<32;i++){
+		write(1,s+i,1);
 	}
 	int pid;
 	if(!(pid=fork())){
