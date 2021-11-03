@@ -140,6 +140,10 @@ file_table.o: file_table.c
 	@gcc -m32 -c ./fs/file_table.c -o file_table.o
 OBJS += file_table.o
 
+file_dev.o: file_dev.c
+	@gcc -m32 -c ./fs/file_dev.c -o file_dev.o
+OBJS += file_dev.o
+
 kernel.o: $(OBJS) ld-bootsect.ld
 	@ld -T ld-bootsect.ld $(OBJS) -o kernel.o
 	@objcopy -O binary -R .note -R .comment kernel.o

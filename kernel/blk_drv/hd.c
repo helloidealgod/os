@@ -270,7 +270,7 @@ static void read_intr(void)
 		SET_INTR(&read_intr);
 		return;
 	}
-	printk("read_intr end\n");
+//	printk("read_intr end\n");
 	end_request(1);
 //	do_hd_request();
 }

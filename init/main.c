@@ -33,6 +33,7 @@ static inline int fork(void) __attribute__((always_inline));
 static inline int pause(void) __attribute__((always_inline));
 static inline int setup(void * BIOS) __attribute__((always_inline));
 static inline int write(unsigned int fd,char * buff,int count) __attribute__((always_inline));
+static inline int read(unsigned int fd,char * buff,int count) __attribute__((always_inline));
 static inline int execve(char * filename,char * argv,char * envp) __attribute__((always_inline));
 static inline int open(const char * filename,int flag,int mode)__attribute__((always_inline));
 
@@ -41,6 +42,7 @@ static inline _syscall0(int,exit)
 static inline _syscall0(int,pause)
 static inline _syscall1(int,setup,void *,BIOS)
 static inline _syscall3(int,write,unsigned int,fd,char *,buff,int,count)
+static inline _syscall3(int,read,unsigned int,fd,char *,buff,int,count)
 static inline _syscall3(int,execve,char *,filename,char *,argv,char *,envp)
 static inline _syscall3(int,open,const char *,filename,int,flag,int,mode)
 
@@ -118,10 +120,20 @@ static int printf(const char * fmt,...){
 void init(void){
 //	setup((void *)&drive_info);	
 	setup(0x90080);
-	printf("test printf:hello init\n");
-	open("/home/readme.txt",0,0);
-	open("/home/test1/hi2.txt",0,0);
-	open("/home/test1/hello1.txt",0,0);
+//	printf("\nopen file:/home/readme\n");
+//	open("/home/readme",0,0);
+	printf("open file:/home/readme.txt\n");
+	int fd = open("/home/readme.txt",0,0);
+
+//	open("/home/test1/hi2.txt",0,0);
+//	int fd = open("/home/test1/hello1.txt",0,0);
+//	int fd = open("/home/test1/hello11.txt",0,0);
+	char s[512] = {'A',};
+	int count = read(fd,s,10);
+	int i;
+	for(i=0;i<10;i++){
+//		printf("%c",s[i]);
+	}
 	int pid;
 	if(!(pid=fork())){
 		execve("",argv,envp);
