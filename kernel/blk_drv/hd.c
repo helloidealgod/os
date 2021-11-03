@@ -84,7 +84,7 @@ int sys_setup(void * BIOS){
 			printk("Unable to read partition table of drive %d\n",drive);
 			panic("");
 		}
-		printk("%02x %02x\n",(unsigned char)bh->b_data[510],(unsigned char)bh->b_data[511]);
+//		printk("%02x %02x\n",(unsigned char)bh->b_data[510],(unsigned char)bh->b_data[511]);
 		if(bh->b_data[510] != 0x55 || (unsigned char)bh->b_data[511] != 0xAA){
 			printk("Bad partition table on drive %d\n",drive);
 			panic("");
@@ -95,15 +95,15 @@ int sys_setup(void * BIOS){
 		unsigned short root_max_dirs =*((unsigned short *)&bh->b_data[0x11]);
 		unsigned char cluster_sects = (unsigned char)bh->b_data[0x0D];
 		int data_start = DBR_sects + FAT_sects*fats + 32;
-		printk("fat start sect no=%d\n",DBR_sects);
-		printk("fdt start sect no=%d\n",DBR_sects+FAT_sects*fats);
-		printk("root max dirs=%d,cluster_sects=%d\n",root_max_dirs,cluster_sects);
-		printk("DATA start sect = %d\n",data_start);
+//		printk("fat start sect no=%d\n",DBR_sects);
+//		printk("fdt start sect no=%d\n",DBR_sects+FAT_sects*fats);
+//		printk("root max dirs=%d,cluster_sects=%d\n",root_max_dirs,cluster_sects);
+//		printk("DATA start sect = %d\n",data_start);
 	
 		root_inode.i_dev = 0x300;
 		root_inode.i_num = (DBR_sects + FAT_sects * fats)/2;
 
-		if(!(bh = bread(0x300 + drive*5,34))){
+/*		if(!(bh = bread(0x300 + drive*5,34))){
 			printk("read FAT failed\n");
 		}
 		int length;
@@ -167,7 +167,7 @@ int sys_setup(void * BIOS){
 				printk("%c",(unsigned char)bh->b_data[i]);
 			}
 		}
-	}
+*/	}
 	printk("setup complete\n");
 	return 0;
 }
@@ -193,11 +193,6 @@ static int win_result(void){
 static void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
 		unsigned int head,unsigned int cyl,unsigned int cmd,
 		void (*intr_addr)(void))
-/*
-void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,
-		unsigned int head,unsigned int cyl,unsigned int cmd,
-		void (*intr_addr)(void))
-*/
 {
 	register int port asm("dx");
 

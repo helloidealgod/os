@@ -48,7 +48,7 @@ struct m_inode * fat16_namei(const char * filename){
 label1:
 	c = get_fs_byte(basename);
 	if('/' == c){
-		printk("dev=%x,block=%d\n",dev,block);
+//		printk("dev=%x,block=%d\n",dev,block);
 		bh = bread(dev,block);
 
 		printk("%c",c);
