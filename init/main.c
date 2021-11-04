@@ -93,8 +93,8 @@ static int printf(const char * fmt,...){
 void init(void){
 //	setup((void *)&drive_info);	
 	setup(0x90080);
-	printf("open file:/home/readme.txt\n");
-	int fd = open("/home/readme.txt",0,0);
+//	printf("open file:/home/readme.txt\n");
+//	int fd = open("/home/readme.txt",0,0);
 	
 	printf("open file:/init/hello\n");
 	int fd1 = open("/init/hello",0,0);
@@ -108,8 +108,11 @@ void init(void){
 		}
 		printf("%02x ",s[i]);
 	}
+	printf("\n");
 	int pid;
-	if(!(pid=fork())){
-		execve("",argv,envp);
-	}
+//	if(!(pid=fork())){
+//	after fork mm is share and can not writed
+		execve("/init/hello",argv,envp);
+//	}
+	while(1);
 }
