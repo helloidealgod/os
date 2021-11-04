@@ -5,16 +5,7 @@
 #include "../include/io.h"
 #include "../include/hdreg.h"
 #include "../include/head.h"
-#define NR_BLK_DEV	7
-#define NR_REQUEST	32
 #define NULL ((void *)0)
-#define READA 1
-#define READ 1
-#define WRITEA 2
-#define WRITE 2
-#define CURRENT (blk_dev[3].current_request)
-#define CURRENT_DEV DEVICE_NR(CURRENT->dev)
-
 #include "../include/stdarg.h"
 typedef int (*fn_ptr)();
 
@@ -46,21 +37,12 @@ static inline _syscall3(int,read,unsigned int,fd,char *,buff,int,count)
 static inline _syscall3(int,execve,char *,filename,char *,argv,char *,envp)
 static inline _syscall3(int,open,const char *,filename,int,flag,int,mode)
 
-
-extern void read_intr(void);
-extern void hd_out(unsigned int drive,unsigned int nsect,unsigned int sect,unsigned int head,unsigned int cyl,unsigned int cmd,void (*intr_addr)(void));
-
 static long memory_end = 0;
 static long buffer_memory_end = 0;
 static long main_memory_start = 0;
 
 static char * argv = {"-/bin/sh",NULL};
 static char * envp = {"HOME=/usr/root",NULL,NULL};
-
-struct hd_i_struct{
-	int head,sect,cyl,wpcom,lzone,ctl;
-};
-extern struct hd_i_struct hd_info[2];
 
 int main(void){
 	memory_end = (1<<20) + (EXT_MEM_K << 10);
