@@ -99,10 +99,15 @@ static int printf(const char * fmt,...){
 	int i;
 	va_list args;
 	char printbuf[128];
-	write(1,printbuf,i=vsprintf(printbuf,fmt,args));
+
+	va_start(args,fmt);
+	i=vsprintf(printbuf,fmt,args);
 	va_end(args);
+	write(1,printbuf,i);
+	
 	return i;
 }
+
 void init(void){
 //	setup((void *)&drive_info);	
 	setup(0x90080);
@@ -115,27 +120,11 @@ void init(void){
 	unsigned char s[512];
 	int i;
 
-	if(fd >= 0){
-		write(1,"fd open\n",8);
-	}else{
-		write(1,"fd not open\n",12);
-
-	}
-	if(fd1 >= 0){
-		write(1,"fd1 open\n",9);
-	}else{
-		write(1,"fd1 not open\n",13);
-
-	}
-
 	for(i=0;i<512;i++){
 		s[i] = 'A';
-	//	printf("%c ",s[i]); has a bug
 	}
 	int count = read(fd,s,32);
-	for(i=0;i<32;i++){
-		write(1,s+i,1);
-	}
+	printf("%s",s);
 	int pid;
 	if(!(pid=fork())){
 		execve("",argv,envp);
