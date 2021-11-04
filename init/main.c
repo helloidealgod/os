@@ -110,9 +110,10 @@ void init(void){
 	}
 	printf("\n");
 	int pid;
-//	if(!(pid=fork())){
-//	after fork mm is share and can not writed
+	if(!(pid=fork())){
 		execve("/init/hello",argv,envp);
-//	}
-	while(1);
+		while(1);
+	}
+	for(;;)
+		pause();
 }
