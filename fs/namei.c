@@ -65,7 +65,7 @@ label1:
 					c1 = (c1>= 97 && c1 <=122)? c1-32 : c1; 
 					c2 = (unsigned char)bh->b_data[len + i*32];
 					if(0x20 == c2){
-						if(8 == len && '\0' == c1){
+						if(8 >= len && '\0' == c1){
 							match = 2;
 							break;
 						}
@@ -88,7 +88,7 @@ label1:
 						match = 0;
 						break;
 					}
-//					printk("%c",c1);
+			//		printk("%c",c1);
 					match = 1;
 					if(10 == len){
 						c1 = get_fs_byte(basename + off + 11);
@@ -100,12 +100,12 @@ label1:
 					}
 				}
 				if(match){
-					start_cluster = (unsigned short)bh->b_data[0x1A + i*32];
+					start_cluster = *((unsigned short *)&bh->b_data[0x1A + i*32]);
 					block = root_inode.i_num * 2 + 32 + (start_cluster - 2)*4;
 					block /= 2;
 					if(2 == match){
-				//		printk(" MATCH start_cluster=%d",start_cluster);
-						i_size = (unsigned long)bh->b_data[0x1C + i*32];
+			//			printk(" MATCH start_cluster=%d",start_cluster);
+						i_size = *((unsigned long *)&bh->b_data[0x1C + i*32]);
 						for(len=0;len<64;len++){
 							if(!inode_table[len].i_count){
 								inode = inode_table+len;
@@ -116,7 +116,7 @@ label1:
 						inode->i_dev = dev;
 						inode->i_size = i_size;
 						inode->i_count = 1;
-				//		printk(" dev=%x,block=%d,file_size=%dbytes\n",dev,block,i_size);
+			//			printk(" dev=%x,block=%d,file_size=%dbytes\n",dev,block,i_size);
 					}
 					goto label1;
 				}

@@ -96,17 +96,18 @@ void init(void){
 	printf("open file:/home/readme.txt\n");
 	int fd = open("/home/readme.txt",0,0);
 	
-	printf("open file:/home/test1/hi2.txt\n");
-	int fd1 = open("/home/test1/hi2.txt",0,0);
+	printf("open file:/init/hello\n");
+	int fd1 = open("/init/hello",0,0);
 
 	unsigned char s[512];
 	int i;
-
-	for(i=0;i<512;i++){
-		s[i] = 'A';
+	int count = read(fd1,s,512);
+	for(i=0;i<count;i++){
+		if(0 != i && 0 == i%26){
+			printf("\n");
+		}
+		printf("%02x ",s[i]);
 	}
-	int count = read(fd,s,32);
-	printf("%s",s);
 	int pid;
 	if(!(pid=fork())){
 		execve("",argv,envp);

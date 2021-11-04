@@ -11,7 +11,6 @@ bochs:
 clean:
 	@- rm -f *.o bootsect setup System
 	@- rm -f console.s
-	@- rm hello.o hellos.o hello
 
 hello:
 	@gcc -m32 -c hello.c -o hello.o
