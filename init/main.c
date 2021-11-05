@@ -69,9 +69,12 @@ int main(void){
 	sti();
 	move_to_user_mode();
 	if(!fork()){
-//		init();
-		printf("pid=1");
-	//	while(1);
+		init();
+		//执行init()后，若无其他代码，子线程也执行Pause(),过段时间会报错
+		//再过段时间又不报错，原因未清楚，
+		//暂时定位到ds=0x17,而cs=0x08,es=0x10,ss=0x10
+		//movl %ds:(%eax),%eax   (%eax=0xfff000)
+		while(1);
 	}
 	for(;;)
 		pause();
