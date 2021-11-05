@@ -69,8 +69,9 @@ int main(void){
 	sti();
 	move_to_user_mode();
 	if(!fork()){
-		init();
-		while(1);
+//		init();
+		printf("pid=1");
+	//	while(1);
 	}
 	for(;;)
 		pause();
