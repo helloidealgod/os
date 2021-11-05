@@ -15,22 +15,16 @@ extern struct task_struct * task[NR_TASKS];
 unsigned long get_free_page(void);
 
 int find_empty_process(){
-//	printk("find empty process\n");
 	int i;
 	repeat:
 		if((++last_pid)<0) last_pid=1;
 		for(i=0;i<NR_TASKS;i++)
 			if(task[i] && task[i]->pid == last_pid)
 				goto repeat;
-	last_pid = 1;
 	for(i=1;i<NR_TASKS;i++)
 		if(!task[i]){
-/*			char s[10];
-			itoa(i,s);
-			printk("pid=");
-			printk(s);
-			printk("\n");
-*/			return i;
+//			printk("find empty process=%d\n",i);
+			return i;
 		}
 	return -EAGAIN;
 }
@@ -45,11 +39,7 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	       	return -EAGAIN;
 	}
 	task[nr] = p;
-/*	char s[10];
-	itoa(nr,s);
-	printk(s);
-	printk("\n");
-*/	*p = *current;
+	*p = *current;
 
 	p->state = 2;
 	p->pid = last_pid;
@@ -79,14 +69,13 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	p->tss.trace_bitmap = 0x80000000;
 	set_tss_desc(gdt + (nr<<1) + FIRST_TSS_ENTRY,&(p->tss));
 	set_ldt_desc(gdt + (nr<<1) + FIRST_LDT_ENTRY,&(p->ldt));
-//	printk("copy process\n");
 	if (copy_mem(nr,p)){
 		task[nr] = NULL;
 		return -11;
 	}
 
 	p->state = 0;
-
+//	printk("copy process nr=%d,last_pid=%d\n",nr,last_pid);
 	return last_pid;
 }
 
