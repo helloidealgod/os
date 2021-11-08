@@ -1,0 +1,53 @@
+0x80:65b2 move_to_use()
+0x80:65c7: after fork()
+
+中断：
+	6d96 段保护 6d7f
+	7d94 缺页
+	72ea 时间中断
+	72ac int 0x80
+	
+线程:
+	40065c7
+	ss = 17
+	ebp = 1e238
+	esp = 1e220
+	
+	
+出错地址：
+	7735 mov %ds:(%eax),%eax   ds=0x17,eax=0x00ff f000
+	
+72a2:	reschedule:
+			pushl $ret_from_sys_call
+			jmp schedule
+			
+72ac:	system_call:
+			cmpl $nr_system_calls-1,%eax
+			ja bad_system_call
+			push %ds
+			push %es
+			push %fs
+			pushl %edx
+			pushl %ecx
+			pushl %ebx
+			movl $0x10,%edx
+			mov %dx,%ds
+			mov %dx,%es
+			mov $0x17,%edx
+			mov %dx,%fs
+72c8:		call sys_call_table(,%eax,4) #call sys_call_table + 2*4
+			pushl %eax
+			movl current,%eax
+			cmpl $0,state(%eax)
+72d8:		jne reschedule
+			cmpl $0,counter(%eax)
+72de:		je reschedule
+		ret_from_sys_call:
+			popl %eax
+			popl %ebx
+			popl %ecx
+			popl %edx
+			pop %fs
+			pop %es
+			pop %ds
+72e8:		iret	
