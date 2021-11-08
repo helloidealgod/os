@@ -104,20 +104,25 @@ void init(void){
 	int fd1 = open("/init/hello",0,0);
 
 	unsigned char s[512];
+//	unsigned char s1='\n';
 	int i;
 	int count = read(fd1,s,512);
-	for(i=0;i<count;i++){
+//	printf("count=%d\n",count);
+//	printf("");
+	//i=116及以上报错,上一行输出信息，不报错
+	for(i=116;i<count;i++){
 		if(0 != i && 0 == i%26){
-			printf("\n");
+		//	printf("\n"); //注释该行暂时不报错
+	//		printf("%c",s1);
 		}
 		printf("%02x ",s[i]);
 	}
-	printf("\n");
-	int pid;
+//	printf("count=%d\n",count);
+/*	int pid;
 	if(!(pid=fork())){
 		execve("/init/hello",argv,envp);
 		while(1);
-	}
-	for(;;)
-		pause();
+	}*/
+//	for(;;)
+//		pause();
 }
