@@ -25,6 +25,12 @@ struct task_struct * current = &(init_task.task);
 struct task_struct * task[NR_TASKS];
 extern unsigned long pg_dir[1024];
 static int task_index = 0;
+long user_stack[PAGE_SIZE>>2];
+
+struct {
+	long * a;
+	short b;
+}stack_start = {&user_stack[PAGE_SIZE>>2],0x10};
 
 void schedule(void);
 

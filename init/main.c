@@ -70,11 +70,6 @@ int main(void){
 	move_to_user_mode();
 	if(!fork()){
 		init();
-		//执行init()后，若无其他代码，子线程也执行Pause(),过段时间会报错
-		//再过段时间又不报错，原因未清楚，
-		//暂时定位到ds=0x17,而cs=0x08,es=0x10,ss=0x10
-		//movl %ds:(%eax),%eax   (%eax=0xfff000)
-		while(1);
 	}
 	for(;;)
 		pause();
@@ -104,25 +99,18 @@ void init(void){
 	int fd1 = open("/init/hello",0,0);
 
 	unsigned char s[512];
-//	unsigned char s1='\n';
 	int i;
 	int count = read(fd1,s,512);
-//	printf("count=%d\n",count);
-//	printf("");
-	//i=116及以上报错,上一行输出信息，不报错
 	for(i=116;i<count;i++){
 		if(0 != i && 0 == i%26){
-		//	printf("\n"); //注释该行暂时不报错
-	//		printf("%c",s1);
+			printf("\n"); //注释该行暂时不报错
 		}
 		printf("%02x ",s[i]);
 	}
-//	printf("count=%d\n",count);
-/*	int pid;
+	printf("count=%d\n",count);
+	int pid;
 	if(!(pid=fork())){
 		execve("/init/hello",argv,envp);
 		while(1);
-	}*/
-//	for(;;)
-//		pause();
+	}
 }
