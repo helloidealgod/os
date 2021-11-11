@@ -101,13 +101,13 @@ void init(void){
 	unsigned char s[512];
 	int i;
 	int count = read(fd1,s,512);
-	for(i=116;i<count;i++){
+/*	for(i=116;i<count;i++){
 		if(0 != i && 0 == i%26){
 			printf("\n"); //注释该行暂时不报错
 		}
 		printf("%02x ",s[i]);
 	}
-	printf("count=%d\n",count);
+*/	printf("count=%d\n",count);
 	int pid;
 	if(!(pid=fork())){
 		execve("/init/hello",argv,envp);
