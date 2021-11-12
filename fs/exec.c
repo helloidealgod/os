@@ -49,6 +49,7 @@ int do_execve(unsigned long * eip,long tmp,char * filename,char ** argv,char ** 
 	//故实际指令地址0x080480a4=cs(0x08000000)-eip,eip=0x480a4
 //	eip[0] = ex.e_entry;
 	eip[0] = 0x480a4;
-	eip[3] = 0xc000000-4;
+//	eip[3] = 0xc000000-4;
+	eip[3] = 0xa0000;
 	return 0;
 }
