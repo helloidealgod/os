@@ -19,6 +19,11 @@ int sys_read(unsigned int fd,char * buf,int count){
 int sys_write(unsigned int fd,char * buf,int count){
 	int i;
 	if(1==fd){
+		printk("buf addr=%x\n",buf);
+		if(buf > 0x8000000){
+			buf -= 0x8000000;
+			printk("buf addr=%x\n",buf);
+		}
 		for(i=0;i<count;i++){
 			printk("%c",get_fs_byte(buf+i));
 		}
