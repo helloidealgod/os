@@ -168,29 +168,29 @@ void do_no_page(unsigned long error_code,unsigned long address){
 	struct buffer_head * bh;
 	int i,block;
 
-	printk("do_no_page,addr=%x\n",address);
+//	printk("do_no_page,addr=%x\n",address);
 	if(address < 0x4000000){
 		panic("BAD!! KERNEL PAGE MISSING\n");
 	}
 	//address >> 20 整除以1K
 	// & 0xffc 相当于 整除以4得到目录项（从0开始），再乘以每项4字节得到目录项内容的指针
 	page = *(unsigned long *)((address >> 20) & 0xffc);	//取目录项内容
-	printk("page=%x\n",page);
+//	printk("page=%x\n",page);
 	if(page & 1){
-		page &= 0xfffff000;					//二级页表地址
-		printk("page &=%x\n",page);
+		page &= 0xfffff000;			//二级页表地址
+//		printk("page &=%x\n",page);
 		page += (address >> 10) & 0xffc;	//页表项指针
-		printk("page +=%x\n",page);
+//		printk("page +=%x\n",page);
 		tmp = *(unsigned long *)page;		//页表项内容
-		printk("tmp =%x\n",tmp);
+//		printk("tmp =%x\n",tmp);
 		if(tmp && !(1 & tmp)){
 			printk("swap_in\n");
 			return;
 		}
 	}
-	address &= 0xfffff000;					//address处缺页页面地址
+	address &= 0xfffff000;			//address处缺页页面地址
 	tmp = address - current->start_code;	//缺页页面对应的逻辑地址
-	printk("address &=%x\n",address);
+//	printk("address &=%x\n",address);
 	inode = current->executable;
 	block = 1;
 	if(!inode){
@@ -211,10 +211,9 @@ void do_no_page(unsigned long error_code,unsigned long address){
 
 	}
 	if(put_page(page,address)){
-		printk("put_page done!\n");
+//		printk("put_page done!\n");
 		return;
 	}
-	while(1);
 }
 
 void un_wp_page(unsigned long * table_entry){
