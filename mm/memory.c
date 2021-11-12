@@ -8,6 +8,9 @@
 __asm__("cld;rep;movsl"\
 		::"S" (from),"D" (to),"c" (1024))
 
+#include "../include/sched.h"
+#include "../include/fs.h"
+
 static long HIGH_MEMORY = 0;
 static unsigned char mem_map[PAGING_PAGES] = {0,};
 
@@ -40,6 +43,7 @@ unsigned long get_free_page(void){
 		:"0" (0),"i" (LOW_MEM),"c" (PAGING_PAGES),
 		"D" (mem_map + PAGING_PAGES - 1));
 }
+
 int copy_page_tables(unsigned long from,unsigned long to,long size){
 	unsigned long * from_page_table;
 	unsigned long * to_page_table;
@@ -98,6 +102,7 @@ void free_page(unsigned long addr){
 	mem_map[addr] = 0;
 	panic("trying to free page");
 }
+
 int free_page_tables(unsigned long from,unsigned long size){
 	unsigned long * pg_table;
 	unsigned long * dir,nr;
@@ -129,8 +134,85 @@ int free_page_tables(unsigned long from,unsigned long size){
 	return 0;
 }
 
+static unsigned long put_page(unsigned long page,unsigned long address){
+	unsigned long tmp,*page_table;
+	
+	if(page < LOW_MEM || page >= HIGH_MEMORY){
+		printk("Trying to put %x at %x",page,address);
+	}
+	page_table = (unsigned long *)((address>>20)&0xffc);
+	if((*page_table)&1){
+		page_table = (unsigned long *)(0xfffff000 & *page_table);
+	}else{
+		if(!(tmp=get_free_page())){
+			return 0;
+		}
+		*page_table = tmp | 7;
+		page_table = (unsigned long *)tmp;
+	}
+	page_table[(address>>12) & 0x3ff] = page | 7;
+	return page;
+}
+
+void get_empty_page(unsigned long address){
+	unsigned long tmp;
+	if(!(tmp=get_free_page()) || put_page(tmp,address)){
+		free_page(tmp);
+	}
+}
+
 void do_no_page(unsigned long error_code,unsigned long address){
-	printk("do_no_page");
+	unsigned long page;
+	unsigned long tmp;
+	struct m_inode * inode;
+	struct buffer_head * bh;
+	int i,block;
+
+	printk("do_no_page,addr=%x\n",address);
+	if(address < 0x4000000){
+		panic("BAD!! KERNEL PAGE MISSING\n");
+	}
+	page = *(unsigned long *)((address >> 20) & 0xffc);	//取目录项内容
+	printk("page=%x\n",page);
+	if(page & 1){
+		page &= 0xfffff000;			//二级页表地址
+		printk("page &=%x\n",page);
+		page += (address >> 10) & 0xffc;	//页表项指针
+		printk("page +=%x\n",page);
+		tmp = *(unsigned long *)page;		//页表项内容
+		printk("tmp =%x\n",tmp);
+		if(tmp && !(1 & tmp)){
+			printk("swap_in\n");
+			return;
+		}
+	}
+	address &= 0xfffff000;			//address处缺页页面地址
+	tmp = address - current->start_code;	//缺页页面对应的逻辑地址
+	printk("address &=%x\n",address);
+	inode = current->executable;
+	block = 1;
+	if(!inode){
+		get_empty_page(address);
+		printk("get_empty_page\n");
+		return;
+	}
+	page = get_free_page();
+	bh = bread(inode->i_dev,inode->i_num);
+	if(bh){
+		tmp = page;
+		for(i=0;i<0x74;i++){
+			*(char *)(tmp++) = 0;
+		}
+		for(i=116;i<512;i++){
+			*(char *)(tmp++) = bh->b_data[i];
+		}
+
+	}
+	if(put_page(page,address)){
+		printk("put_page done!\n");
+		return;
+	}
+	while(1);
 }
 
 void un_wp_page(unsigned long * table_entry){
