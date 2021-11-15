@@ -26,6 +26,9 @@ static unsigned char	video_page;		/* Initial video page		*/
 static unsigned short	video_port_reg;		/* Video register select port	*/
 static unsigned short	video_port_val;		/* Video register value port	*/
 
+#define MAX_CONSOLES 1
+int currcons=0;
+#define NPAR 1
 static struct {
 	unsigned short	vc_video_erase_char;	
 	unsigned char	vc_attr;
@@ -230,7 +233,7 @@ void console_print(const char * b){
 			:"ax");
 		pos += 2;
 		x++;
-
+	}
 	set_cursor(currcons);
 }
 
