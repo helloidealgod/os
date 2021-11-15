@@ -16,6 +16,61 @@ static unsigned long y = 0;
 extern void keyboard_interrupt(void);
 
 int fg_console = 0;
+static unsigned char	video_type;		/* Type of display being used	*/
+static unsigned long	video_num_columns;	/* Number of text columns	*/
+static unsigned long	video_mem_base;		/* Base of video memory		*/
+static unsigned long	video_mem_term;		/* End of video memory		*/
+static unsigned long	video_size_row;		/* Bytes per row		*/
+static unsigned long	video_num_lines;	/* Number of test lines		*/
+static unsigned char	video_page;		/* Initial video page		*/
+static unsigned short	video_port_reg;		/* Video register select port	*/
+static unsigned short	video_port_val;		/* Video register value port	*/
+
+static struct {
+	unsigned short	vc_video_erase_char;	
+	unsigned char	vc_attr;
+	unsigned char	vc_def_attr;
+	int		vc_bold_attr;
+	unsigned long	vc_ques;
+	unsigned long	vc_state;
+	unsigned long	vc_restate;
+	unsigned long	vc_checkin;
+	unsigned long	vc_origin;		/* Used for EGA/VGA fast scroll	*/
+	unsigned long	vc_scr_end;		/* Used for EGA/VGA fast scroll	*/
+	unsigned long	vc_pos;
+	unsigned long	vc_x,vc_y;
+	unsigned long	vc_top,vc_bottom;
+	unsigned long	vc_npar,vc_par[NPAR];
+	unsigned long	vc_video_mem_start;	/* Start of video RAM		*/
+	unsigned long	vc_video_mem_end;	/* End of video RAM (sort of)	*/
+	unsigned int	vc_saved_x;
+	unsigned int	vc_saved_y;
+	unsigned int	vc_iscolor;
+	char *		vc_translate;
+} vc_cons [MAX_CONSOLES];
+
+#define origin		(vc_cons[currcons].vc_origin)
+#define scr_end		(vc_cons[currcons].vc_scr_end)
+#define pos		(vc_cons[currcons].vc_pos)
+#define top		(vc_cons[currcons].vc_top)
+#define bottom		(vc_cons[currcons].vc_bottom)
+#define x		(vc_cons[currcons].vc_x)
+#define y		(vc_cons[currcons].vc_y)
+#define state		(vc_cons[currcons].vc_state)
+#define restate		(vc_cons[currcons].vc_restate)
+#define checkin		(vc_cons[currcons].vc_checkin)
+#define npar		(vc_cons[currcons].vc_npar)
+#define par		(vc_cons[currcons].vc_par)
+#define ques		(vc_cons[currcons].vc_ques)
+#define attr		(vc_cons[currcons].vc_attr)
+#define saved_x		(vc_cons[currcons].vc_saved_x)
+#define saved_y		(vc_cons[currcons].vc_saved_y)
+#define translate	(vc_cons[currcons].vc_translate)
+#define video_mem_start	(vc_cons[currcons].vc_video_mem_start)
+#define video_mem_end	(vc_cons[currcons].vc_video_mem_end)
+#define def_attr	(vc_cons[currcons].vc_def_attr)
+#define video_erase_char  (vc_cons[currcons].vc_video_erase_char)	
+#define iscolor		(vc_cons[currcons].vc_iscolor)
 
 void con_init(){
 	register unsigned char a;
@@ -152,8 +207,6 @@ void console_print(const char * b){
 	int currcons = fg_console;
 	char c;
 
-//    ptr=(unsigned char *)video_mem_start + 2*x + 160*y;
-
 	while (c = *(b++)) {
 		if (c == 10) {
 			cr(currcons);
@@ -178,26 +231,6 @@ void console_print(const char * b){
 		pos += 2;
 		x++;
 
-/*		if('\r' == c){
-			x = 0;
-		}else if('\n' == c){
-			x = 0;
-			y ++;
-			clear_line();
-		}else{
-			*ptr++ = c;
-			*ptr++ = 0x07;
-			x++;
-			if(80 <= x){
-				y++;
-				x-=80;
-			}
-		}
-		if(25 <= y){
-			y -= 25;
-		}
-	}
-*/	set_cursor(currcons);
-//	set_cursor(x,y);
+	set_cursor(currcons);
 }
 
