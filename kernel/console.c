@@ -15,6 +15,8 @@ static unsigned long y = 0;
 
 extern void keyboard_interrupt(void);
 
+int fg_console = 0;
+
 void con_init(){
 	register unsigned char a;
 	char *display_desc = "????";
@@ -95,37 +97,6 @@ void con_write(struct tty_struct * tty){
 	}
 }
 
-/*
-void printk(char c[]){
-	char * ptr;
-	int length = strlen(c);
-	ptr=(unsigned char *)video_mem_start + 2*x + 160*y;
-	clear_line();
-	int i;
-	for(i=0;i<length;i++){
-		if('\r' == c[i]){
-			x = 0;
-		}else if('\n' == c[i]){
-			x = 0;
-			y ++;
-			clear_line();
-		}else{
-			*ptr++ = c[i];
-			*ptr++ = 0x07;
-			x++;
-			if(80 <= x){
-				y++;
-				x-=80;
-			}
-		}
-		if(25 <= y){
-			y -= 25;
-		}
-	}
-	set_cursor(x,y);
-}
-*/
-
 void set_cursor(unsigned char x, unsigned char y){
 	unsigned int p;
 	p = x + y * 80;
@@ -161,15 +132,13 @@ void clear_line(){
 }
 
 
-/*
-static void cr(int currcons)
-{
+
+static void cr(int currcons){
 	pos -= x<<1;
 	x=0;
-}*/
-/*
-static void lf(int currcons)
-{
+}
+
+static void lf(int currcons){
 	if (y+1<bottom) {
 		y++;
 		pos += video_size_row;
@@ -177,66 +146,13 @@ static void lf(int currcons)
 	}
 	scrup(currcons);
 }
-*/
-void console_print(const char * b)
-{
+
+void console_print(const char * b){
 	char * ptr;
-//	int currcons = fg_console;
-	char c;
-
-    ptr=(unsigned char *)video_mem_start + 2*x + 160*y;
-
-	while (c = *(b++)) {
-		/*if (c == 10) {
-			cr(currcons);
-			lf(currcons);
-			continue;
-		}
-		if (c == 13) {
-			cr(currcons);
-			continue;
-		}
-		if (x>=video_num_columns) {
-			x -= video_num_columns;
-			pos -= video_size_row;
-			lf(currcons);
-		}
-		__asm__("movb %2,%%ah\n\t"
-			"movw %%ax,%1\n\t"
-			::"a" (c),
-			"m" (*(short *)pos),
-			"m" (attr)
-			:"ax");
-		pos += 2;
-		x++;*/
-
-		if('\r' == c){
-			x = 0;
-		}else if('\n' == c){
-			x = 0;
-			y ++;
-			clear_line();
-		}else{
-			*ptr++ = c;
-			*ptr++ = 0x07;
-			x++;
-			if(80 <= x){
-				y++;
-				x-=80;
-			}
-		}
-		if(25 <= y){
-			y -= 25;
-		}
-	}
-//	set_cursor(currcons);
-	set_cursor(x,y);
-}
-/*
-void console_print(const char * b)
-{
 	int currcons = fg_console;
 	char c;
+
+//    ptr=(unsigned char *)video_mem_start + 2*x + 160*y;
 
 	while (c = *(b++)) {
 		if (c == 10) {
@@ -261,6 +177,27 @@ void console_print(const char * b)
 			:"ax");
 		pos += 2;
 		x++;
+
+/*		if('\r' == c){
+			x = 0;
+		}else if('\n' == c){
+			x = 0;
+			y ++;
+			clear_line();
+		}else{
+			*ptr++ = c;
+			*ptr++ = 0x07;
+			x++;
+			if(80 <= x){
+				y++;
+				x-=80;
+			}
+		}
+		if(25 <= y){
+			y -= 25;
+		}
 	}
-	set_cursor(currcons);
-}*/
+*/	set_cursor(currcons);
+//	set_cursor(x,y);
+}
+
