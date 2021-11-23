@@ -75,6 +75,20 @@ static struct {
 #define video_erase_char  (vc_cons[currcons].vc_video_erase_char)	
 #define iscolor		(vc_cons[currcons].vc_iscolor)
 
+static void cr(int currcons){
+	pos -= x<<1;
+	x=0;
+}
+
+static void lf(int currcons){
+	if (y+1<bottom) {
+		y++;
+		pos += video_size_row;
+		return;
+	}
+	scrup(currcons);
+}
+
 void con_init(){
 	register unsigned char a;
 	char *display_desc = "????";
@@ -155,6 +169,9 @@ void con_write(struct tty_struct * tty){
 	}
 }
 */
+
+enum{ESnormal,ESesc,ESsquare,ESgetpars,ESgotpars,ESfunckey,ESsetterm,ESsetgraph};
+
 void con_write(struct tty_struct * tty)
 {
 	int nr;
@@ -452,19 +469,6 @@ void clear_line(){
 	}
 }
 
-static void cr(int currcons){
-	pos -= x<<1;
-	x=0;
-}
-
-static void lf(int currcons){
-	if (y+1<bottom) {
-		y++;
-		pos += video_size_row;
-		return;
-	}
-	scrup(currcons);
-}
 
 void console_print(const char * b){
 	char * ptr;
