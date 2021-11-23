@@ -156,14 +156,14 @@ static void scrup(int currcons)
 				__asm__("cld\n\t"
 					"rep\n\t"
 					"movsl\n\t"
-					"movl _video_num_columns,%1\n\t"
+					"movl video_num_columns,%1\n\t"
 					"rep\n\t"
 					"stosw"
 					::"a" (video_erase_char),
 					"c" ((video_num_lines-1)*video_num_columns>>1),
 					"D" (video_mem_start),
-					"S" (origin)
-					:"cx","di","si");
+					"S" (origin));
+				//	:"cx","di","si");
 				scr_end -= origin-video_mem_start;
 				pos -= origin-video_mem_start;
 				origin = video_mem_start;
@@ -173,22 +173,22 @@ static void scrup(int currcons)
 					"stosw"
 					::"a" (video_erase_char),
 					"c" (video_num_columns),
-					"D" (scr_end-video_size_row)
-					:"cx","di");
+					"D" (scr_end-video_size_row));
+				//	:"cx","di");
 			}
 			set_origin(currcons);
 		} else {
 			__asm__("cld\n\t"
 				"rep\n\t"
 				"movsl\n\t"
-				"movl _video_num_columns,%%ecx\n\t"
+				"movl video_num_columns,%%ecx\n\t"
 				"rep\n\t"
 				"stosw"
 				::"a" (video_erase_char),
 				"c" ((bottom-top-1)*video_num_columns>>1),
 				"D" (origin+video_size_row*top),
-				"S" (origin+video_size_row*(top+1))
-				:"cx","di","si");
+				"S" (origin+video_size_row*(top+1)));
+			//	:"cx","di","si");
 		}
 	}
 	else		/* Not EGA/VGA */
@@ -196,14 +196,14 @@ static void scrup(int currcons)
 		__asm__("cld\n\t"
 			"rep\n\t"
 			"movsl\n\t"
-			"movl _video_num_columns,%%ecx\n\t"
+			"movl video_num_columns,%%ecx\n\t"
 			"rep\n\t"
 			"stosw"
 			::"a" (video_erase_char),
 			"c" ((bottom-top-1)*video_num_columns>>1),
 			"D" (origin+video_size_row*top),
-			"S" (origin+video_size_row*(top+1))
-			:"cx","di","si");
+			"S" (origin+video_size_row*(top+1)));
+		//	:"cx","di","si");
 	}
 }
 
@@ -217,14 +217,14 @@ static void scrdown(int currcons)
 			"rep\n\t"
 			"movsl\n\t"
 			"addl $2,%%edi\n\t"	/* %edi has been decremented by 4 */
-			"movl _video_num_columns,%%ecx\n\t"
+			"movl video_num_columns,%%ecx\n\t"
 			"rep\n\t"
 			"stosw"
 			::"a" (video_erase_char),
 			"c" ((bottom-top-1)*video_num_columns>>1),
 			"D" (origin+video_size_row*bottom-4),
-			"S" (origin+video_size_row*(bottom-1)-4)
-			:"ax","cx","di","si");
+			"S" (origin+video_size_row*(bottom-1)-4));
+		//	:"ax","cx","di","si");
 	}
 	else		/* Not EGA/VGA */
 	{
@@ -232,14 +232,14 @@ static void scrdown(int currcons)
 			"rep\n\t"
 			"movsl\n\t"
 			"addl $2,%%edi\n\t"	/* %edi has been decremented by 4 */
-			"movl _video_num_columns,%%ecx\n\t"
+			"movl video_num_columns,%%ecx\n\t"
 			"rep\n\t"
 			"stosw"
 			::"a" (video_erase_char),
 			"c" ((bottom-top-1)*video_num_columns>>1),
 			"D" (origin+video_size_row*bottom-4),
-			"S" (origin+video_size_row*(bottom-1)-4)
-			:"ax","cx","di","si");
+			"S" (origin+video_size_row*(bottom-1)-4));
+		//	:"ax","cx","di","si");
 	}
 }
 
