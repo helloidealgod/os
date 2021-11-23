@@ -25,7 +25,7 @@ struct tty_queue {
 };
 
 struct tty_struct {
-/*    struct termios termios;//驱动设备属性*/
+	struct termios termios;//驱动设备属性
     int pgrp;
     int stopped;
     void (*write)(struct tty_struct * tty);//写函数指针，具体设备的写处理，会在tty_write中被调用！

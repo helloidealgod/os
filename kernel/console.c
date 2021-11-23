@@ -2,6 +2,7 @@
 #include "../include/system.h"
 #include "../include/head.h"
 #include "../include/tty.h"
+#include "../include/sched.h"
 
 #define ORIG_VIDEO_MODE ((*(unsigned short *)0x90006) & 0xff)
 #define ORIG_VIDEO_EGA_BX (*(unsigned short *)0x9000a)
@@ -74,6 +75,34 @@ static struct {
 #define def_attr	(vc_cons[currcons].vc_def_attr)
 #define video_erase_char  (vc_cons[currcons].vc_video_erase_char)	
 #define iscolor		(vc_cons[currcons].vc_iscolor)
+
+#define DEF_TERMIOS \
+(struct termios) { \
+	ICRNL, \
+	OPOST | ONLCR, \
+	0, \
+	IXON | ISIG | ICANON | ECHO | ECHOCTL | ECHOKE, \
+	0, \
+	INIT_C_CC \
+}
+
+static char * translations[] = {
+/* normal 7-bit ascii */
+	" !\"#$%&'()*+,-./0123456789:;<=>?"
+	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
+	"`abcdefghijklmnopqrstuvwxyz{|}~ ",
+/* vt100 graphics */
+	" !\"#$%&'()*+,-./0123456789:;<=>?"
+	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^ "
+	"\004\261\007\007\007\007\370\361\007\007\275\267\326\323\327\304"
+	"\304\304\304\304\307\266\320\322\272\363\362\343\\007\234\007 "
+};
+
+#define NORM_TRANS (translations[0])
+#define GRAF_TRANS (translations[1])
+
+int blankinterval = 0;
+int blankcount = 0;
 
 static void cr(int currcons){
 	pos -= x<<1;
