@@ -304,13 +304,20 @@ void con_init(){
 		}
 	}
 
-	x = 76;y = 0;
+//	x = 76;y = 0;
+	gotoxy(currcons,ORIG_X,ORIG_Y);
+	update_screen();
 	printk(display_desc);
 	set_trap_gate(0x21,&keyboard_interrupt);
 	outb_p(0x21,inb_p(0x21)&0xfd);
 	a=inb_p(0x61);
 	outb_p(0x61,a|0x80);
 	outb_p(0x61,a);
+}
+
+void update_screen(void){
+	set_origin(fg_console);
+	set_cursor(fg_console);
 }
 /*
 void con_write(struct tty_struct * tty){
