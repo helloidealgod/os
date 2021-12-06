@@ -67,6 +67,11 @@ int main(void){
 	//buffer 1M ~ 4M
 	buffer_init(4*1024*1024);
 	sti();
+	printk("hello world0!\n");
+	printk("hello world1!\n");
+	set_origin();
+	printk("hello world2!\n");
+	return;
 	move_to_user_mode();
 	if(!fork()){
 		init();

@@ -13,6 +13,7 @@ static unsigned short video_port_val;
 static unsigned long x = 0;
 static unsigned long y = 0;
 static unsigned long screen_mem_start;	//显示屏物理内存起始地址
+static unsigned long pos;		//当前字符的地址
 
 extern void keyboard_interrupt(void);
 
@@ -45,6 +46,7 @@ void con_init(){
 
 	screen_mem_start = video_mem_start; 
 	x = 76;y = 0;
+	pos = screen_mem_start + 2*x + 160*y;
 	printk(display_desc);
 	set_trap_gate(0x21,&keyboard_interrupt);
 	outb_p(0x21,inb_p(0x21)&0xfd);
@@ -86,7 +88,7 @@ void con_write(struct tty_struct * tty){
 	}
 }
 
-void set_cursor(unsigned char x, unsigned char y){
+void _set_cursor(unsigned char x, unsigned char y){
 	unsigned int p;
 	p = x + y * 80;
 	if(p >= 25*80){
@@ -102,13 +104,35 @@ void set_cursor(unsigned char x, unsigned char y){
 	sti(); // 设置好IDT后取消注释，现在未设置中断，不能打开中断屏蔽
 }
 
+void set_cursor(){
+	//光标的位置相对于显存的物理内存
+	pos = screen_mem_start + 2*x + 160*y;
+	unsigned int p = (pos - video_mem_start) >> 1;
+	unsigned int h = (p & 0x00ff);
+	unsigned int l = (p & 0xff00) >> 8;
+	cli();
+	outb_p(video_port_reg,0x0e);
+	outb_p(video_port_val,l);
+	outb_p(video_port_reg,0x0f);
+	outb_p(video_port_val,h);
+	sti(); // 设置好IDT后取消注释，现在未设置中断，不能打开中断屏蔽
+}
+
 void set_origin(){
+	//显示的地址相对于显存的物理地址
+	pos = screen_mem_start + 2*x + 160*y;
+	screen_mem_start = pos;
+	unsigned int p = (pos - video_mem_start) >> 1;
+	unsigned int h = (p & 0x00ff);
+	unsigned int l = (p & 0xff00) >> 8;
+
 	cli();
 	outb_p(video_port_reg,12);
-	outb_p(video_port_val,0xff&((origin-video_mem_base)>>9));
+	outb_p(video_port_val,l);
 	outb_p(video_port_reg,13);
-	outb_p(video_port_val,0xff&((origin-video_mem_base)>>1));
+	outb_p(video_port_val,h);
 	sti();
+	x=0;y=0;
 }
 
 int strlen(char *s){
@@ -156,6 +180,7 @@ void console_print(const char * b){
 			y -= 25;
 		}
 	}
-	set_cursor(x,y);
+
+	set_cursor();
 }
 
