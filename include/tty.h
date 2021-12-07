@@ -16,15 +16,6 @@
 #define GETCHAR(queue,c) (void)({c=(queue).buf[(queue).tail];})
 #define PUTCH(c,queue) (void)({(queue).buf[(queue).head]=(c);INC((queue).head);})
 
-#define INTR_CHAR(tty) ((tty)->termios.c_cc[VINTR])
-#define QUIT_CHAR(tty) ((tty)->termios.c_cc[VQUIT])
-#define ERASE_CHAR(tty) ((tty)->termios.c_cc[VERASE])
-#define KILL_CHAR(tty) ((tty)->termios.c_cc[VKILL])
-#define EOF_CHAR(tty) ((tty)->termios.c_cc[VEOF])
-#define START_CHAR(tty) ((tty)->termios.c_cc[VSTART])
-#define STOP_CHAR(tty) ((tty)->termios.c_cc[VSTOP])
-#define SUSPEND_CHAR(tty) ((tty)->termios.c_cc[VSUSP])
-
 struct tty_queue {
     unsigned long data;
     unsigned long head;
@@ -34,7 +25,7 @@ struct tty_queue {
 };
 
 struct tty_struct {
-	struct termios termios;//驱动设备属性
+/*    struct termios termios;//驱动设备属性*/
     int pgrp;
     int stopped;
     void (*write)(struct tty_struct * tty);//写函数指针，具体设备的写处理，会在tty_write中被调用！

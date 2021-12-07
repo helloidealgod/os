@@ -3,13 +3,11 @@
 extern void con_write(struct tty_struct * tty);
 
 struct termios termios;
-/*
+
 struct tty_struct tty_table[] = {
 	{0,0,con_write,{0,0,0,0,""},
 	{0,0,0,0,""},{0,0,0,0,""}}
 };
-*/
-struct tty_struct tty_table[256];
 
 struct tty_queue table_list[]={
 	&tty_table[0].read_q,
