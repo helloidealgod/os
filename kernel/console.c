@@ -17,16 +17,6 @@ static unsigned long pos;		//当前字符的地址
 
 extern void keyboard_interrupt(void);
 
-void srcup(){
-	//清空下一行内容（应为屏幕外一行）
-	clear_line();
-	//向上卷动一行
-	screen_mem_start += 80*160；
-	set_origin();
-	//更新光标位置
-	y -= 25;
-}
-
 void con_init(){
 	register unsigned char a;
 	char *display_desc = "????";
@@ -187,7 +177,7 @@ void console_print(const char * b){
 		}
 		if(25 <= y){
 			//向上卷动一行
-			srcup()
+			scrup();
 		}
 	}
 
