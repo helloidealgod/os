@@ -66,6 +66,10 @@ int main(void){
 	printk("hd init complete\n");	
 	//buffer 1M ~ 4M
 	buffer_init(4*1024*1024);
+	int i;
+	for(i=0;i<15;i++){
+		printk("hello world!%d\n",i);
+	}
 	sti();
 	move_to_user_mode();
 	if(!fork()){
@@ -101,16 +105,19 @@ void init(void){
 	unsigned char s[512];
 	int i;
 	int count = read(fd1,s,512);
-/*	for(i=116;i<count;i++){
+	for(i=0;i<count;i++){
 		if(0 != i && 0 == i%26){
-			printf("\n"); //注释该行暂时不报错
+		//	printf("\n");
 		}
-		printf("%02x ",s[i]);
+		printf("i=%d %02x",i,s[i]);
 	}
-*/	printf("count=%d\n",count);
+	printf("count=%d\n",count);
+	printf("hi\n");
+	printf("how are u\n");
+
 	int pid;
 	if(!(pid=fork())){
-		execve("/init/hello",argv,envp);
+		execve("/init/hello",argv,envp);	
 		while(1);
 	}
 }

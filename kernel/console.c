@@ -81,7 +81,7 @@ void con_write(struct tty_struct * tty){
 				}
 			}
 			if(25 <= y){
-				y -= 25;
+				scrup();
 			}
 			set_cursor(x,y);
 		}
@@ -120,9 +120,7 @@ void set_cursor(){
 
 void set_origin(){
 	//显示的地址相对于显存的物理地址
-	pos = screen_mem_start + 2*x + 160*y;
-	screen_mem_start = pos;
-	unsigned int p = (pos - video_mem_start) >> 1;
+	unsigned int p = (screen_mem_start - video_mem_start) >> 1;
 	unsigned int h = (p & 0x00ff);
 	unsigned int l = (p & 0xff00) >> 8;
 
@@ -132,7 +130,6 @@ void set_origin(){
 	outb_p(video_port_reg,13);
 	outb_p(video_port_val,h);
 	sti();
-	x=0;y=0;
 }
 
 int strlen(char *s){
@@ -148,6 +145,9 @@ void clear_line(){
 	ptr=(unsigned char *)screen_mem_start + 2*x + 160*y;
 	int i;
 	for(i=0;i<80-x;i++){
+		if(ptr >= video_mem_end){
+			break;
+		}
 		*ptr++ = 32;
 		*ptr++ = 0x07;
 	}
@@ -166,7 +166,6 @@ void console_print(const char * b){
 		}else if('\n' == c){
 			x = 0;
 			y ++;
-			clear_line();
 		}else{
 			*ptr++ = c;
 			*ptr++ = 0x07;
@@ -177,10 +176,19 @@ void console_print(const char * b){
 			}
 		}
 		if(25 <= y){
-			y -= 25;
+			scrup();
 		}
 	}
 
 	set_cursor();
 }
 
+void scrup(){
+	screen_mem_start += 160;
+	if(screen_mem_start >= video_mem_end){
+		screen_mem_start = video_mem_start;
+		y = 1;
+	}
+	set_origin();
+	y -= 1;
+}
