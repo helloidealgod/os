@@ -29,17 +29,22 @@ static inline void unlock_buffer(struct buffer_head * bh){
 }
 
 static void add_request(struct blk_dev_struct * dev, struct request *req) {
+	printk("in add_request\n");
 	struct request * tmp;
 	req->next = NULL;
 	cli();
 	if (req->bh)
 		req->bh->b_dirt = 0;
+
+	printk("in add_request,if before request_fn\n");
 	if (!(tmp = dev->current_request)) {
 		dev->current_request = req;
 		sti();
+		printk("in add_request,if before request_fn,after sti\n");
 		(dev->request_fn)();
 		return;
 	}
+	printk("in add_request,last for\n");
 	for (; tmp->next; tmp=tmp->next) {
 		if (!req->bh)
 			if (tmp->next->bh)
@@ -54,6 +59,7 @@ static void add_request(struct blk_dev_struct * dev, struct request *req) {
 	req->next = tmp->next;
 	tmp->next = req;
 	sti();
+	printk("end add_request\n");
 }
 
 static void make_request(int major, int rw, struct buffer_head * bh) {
