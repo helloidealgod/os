@@ -89,7 +89,7 @@ void con_write(struct tty_struct * tty){
 			}
 		set_cursor(x,y);
 		}else{
-		/*	if(BS == c){
+			if(BS == c){
 				*(--ptr) = 0x07;
 				*(--ptr) = 32;
 				x -= 1;
@@ -99,7 +99,7 @@ void con_write(struct tty_struct * tty){
 				}
 
 			}
-			set_cursor(x,y);*/
+			set_cursor(x,y);
 		}
 	}
 }

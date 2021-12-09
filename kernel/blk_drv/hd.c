@@ -49,6 +49,7 @@ static struct hd_struct{
 }hd[5*MAX_HD]={{0,0},};
 
 int sys_setup(void * BIOS){
+	printk("in sys_setup\n");
 	static int callable = 1;
 	int drive,i;
 	struct buffer_head * bh;
@@ -66,7 +67,6 @@ int sys_setup(void * BIOS){
 		hd_info[drive].sect = *(unsigned char *)(14+BIOS);
 		BIOS +=16;
 
-	//	printk("cyl=%u,head=%u,sect=%u\n",hd_info[drive].cyl,hd_info[drive].head,hd_info[drive].sect);
 	}
 	if(hd_info[1].cyl){
 		NR_HD = 2;
@@ -76,15 +76,17 @@ int sys_setup(void * BIOS){
 	for(i=0;i<NR_HD;i++){
 		hd[i*5].start_sect = 0;
 		hd[i*5].nr_sects = hd_info[i].head * hd_info[i].sect * hd_info[i].cyl;
-	//	printk("start_sect=%u,nr_sects=%u\n",hd[i*5].start_sect,hd[i*5].nr_sects);
 	}
 
+	printk("before bread\n");
+
 	for(drive=0;drive<NR_HD;drive++){
+		printk("drive=%d,bread\n",drive);
+
 		if(!(bh = bread(0x300 + drive*5,0))){
 			printk("Unable to read partition table of drive %d\n",drive);
 			panic("");
 		}
-//		printk("%02x %02x\n",(unsigned char)bh->b_data[510],(unsigned char)bh->b_data[511]);
 		if(bh->b_data[510] != 0x55 || (unsigned char)bh->b_data[511] != 0xAA){
 			printk("Bad partition table on drive %d\n",drive);
 			panic("");
@@ -95,79 +97,10 @@ int sys_setup(void * BIOS){
 		unsigned short root_max_dirs =*((unsigned short *)&bh->b_data[0x11]);
 		unsigned char cluster_sects = (unsigned char)bh->b_data[0x0D];
 		int data_start = DBR_sects + FAT_sects*fats + 32;
-//		printk("fat start sect no=%d\n",DBR_sects);
-//		printk("fdt start sect no=%d\n",DBR_sects+FAT_sects*fats);
-//		printk("root max dirs=%d,cluster_sects=%d\n",root_max_dirs,cluster_sects);
-//		printk("DATA start sect = %d\n",data_start);
 	
 		root_inode.i_dev = 0x300;
 		root_inode.i_num = (DBR_sects + FAT_sects * fats)/2;
-
-/*		if(!(bh = bread(0x300 + drive*5,34))){
-			printk("read FAT failed\n");
-		}
-		int length;
-		for(i=0;i<32;i++){
-			if(0xE5 == (unsigned char)bh->b_data[0x00 + i*32]){
-				//item has been deleted
-			}else if(0x0F == (unsigned char)bh->b_data[0x0B + i*32]){
-				printk("long file dir,no=%d;",0x0f & bh->b_data[0 + i*32]);
-			}else if(0x00 != (unsigned char)bh->b_data[0x0B + i*32]){
-				unsigned short no = (unsigned short)bh->b_data[0x1A + i*32];
-				printk("short file dir,start_cluster_no=%d,filename=",no);
-				for(length=0;length<8;length++){
-					if(0x20 == (unsigned char)bh->b_data[length+i*32]){
-						printk("\n");
-						break;
-					}
-					printk("%c",(unsigned char)bh->b_data[length+i*32]);
-					if(7==length){
-						printk("\n");
-					}
-				}
-			}
-		}
-		int cluster = 12;
-		int home_sects = data_start + (cluster - 2) * cluster_sects;
-	        int home_block = home_sects / 2;	
-		printk("h_sects=%d,h_block=%d\n",home_sects,home_block);
-		if(!(bh = bread(0x300 + drive*5,home_block))){
-			printk("read FAT failed\n");
-		}
-		for(i=0;i<12;i++){
-			if(0xE5 == (unsigned char)bh->b_data[0x00 + i*32]){
-				//item has been deleted
-			}else if(0x0F == (unsigned char)bh->b_data[0x0B + i*32]){
-				printk("long file dir,no=%d;",0x0f & bh->b_data[0 + i*32]);
-			}else if(0x00 != (unsigned char)bh->b_data[0x0B + i*32]){
-				unsigned short no = (unsigned short)bh->b_data[0x1A + i*32];
-				printk("short file dir,start_cluster_no=%d,filename=",no);
-				for(length=0;length<8;length++){
-					if(0x20 == (unsigned char)bh->b_data[length+i*32]){
-						printk("\n");
-						break;
-					}
-					printk("%c",(unsigned char)bh->b_data[length+i*32]);
-					if(7==length){
-						printk("\n");
-					}
-				}
-			}
-		}
-		cluster = 13;
-		home_sects = data_start + (cluster - 2) * cluster_sects;
-	        home_block = home_sects / 2;	
-		if(!(bh = bread(0x300 + drive*5,home_block))){
-			printk("read FAT failed\n");
-		}
-		for(i=0;i<128;i++){
-			if(0==bh->b_data[i]){
-				break;
-			}else{
-				printk("%c",(unsigned char)bh->b_data[i]);
-			}
-		}
-*/	}
+	}
 	printk("setup complete\n");
 	return 0;
 }
