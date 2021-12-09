@@ -5,6 +5,10 @@
 
 #define ORIG_VIDEO_MODE ((*(unsigned short *)0x90006) & 0xff)
 #define ORIG_VIDEO_EGA_BX (*(unsigned short *)0x9000a)
+#define ESC 0x01
+#define BS 0x0e
+#define ENTER 0x1c
+#define CAPLOCK 0x3a
 
 static unsigned long video_mem_start;	//显存物理内存起始地址
 static unsigned long video_mem_end;		//显存物理内存终止地址
@@ -83,7 +87,19 @@ void con_write(struct tty_struct * tty){
 			if(25 <= y){
 				scrup();
 			}
-			set_cursor(x,y);
+		set_cursor(x,y);
+		}else{
+		/*	if(BS == c){
+				*(--ptr) = 0x07;
+				*(--ptr) = 32;
+				x -= 1;
+				if(x < 0){
+					x = 79;
+					y -= 1;
+				}
+
+			}
+			set_cursor(x,y);*/
 		}
 	}
 }

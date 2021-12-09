@@ -16,14 +16,10 @@ struct tty_queue table_list[]={
 
 void copy_to_cooked(struct tty_struct * tty){
 	signed char c;
-/*	if ((tty->read_q).head != (tty->read_q).tail){
-		GETCH(tty->read_q,c);
-		printkc(c);
-	}
-*/	while (!EMPTY(tty->read_q) && !FULL(tty->secondary)){
+	while (!EMPTY(tty->read_q) && !FULL(tty->secondary)){
 		GETCH(tty->read_q,c);
 		PUTCH(c,tty->write_q);
-//		printkc(c);
+//		printk("%2x ",c);
 		tty->write(tty);
 	}
 }
