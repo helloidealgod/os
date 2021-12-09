@@ -21,3 +21,6 @@
 
 		ab6b movl %ds:32(%eax) ,%eax 	eax = 0x40007400
 
+add_request()
+	多调用一次printk()打印就会报错？？
+	原因未知，猜测是堆栈问题

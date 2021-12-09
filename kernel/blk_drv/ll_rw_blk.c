@@ -44,18 +44,26 @@ static void add_request(struct blk_dev_struct * dev, struct request *req) {
 		(dev->request_fn)();
 		return;
 	}
-	printk("in add_request,last for\n");
+	printk("in add_request,last for1\n");
+//	printk("in add_request,last for2\n");
 	for (; tmp->next; tmp=tmp->next) {
-		if (!req->bh)
-			if (tmp->next->bh)
+		if (!req->bh){
+			if (tmp->next->bh){
+				printk("break1\n");
 				break;
-			else
+			}else{
+				printk("continue\n");
 				continue;
+			}
+		}
 		if ((IN_ORDER(tmp,req) ||
 		        !IN_ORDER(tmp,tmp->next))&&
-		        IN_ORDER(req,tmp->next))
+		        IN_ORDER(req,tmp->next)){
+			printk("break2\n");
 			break;
+		}
 	}
+	printk("in add_request,last for end\n");
 	req->next = tmp->next;
 	tmp->next = req;
 	sti();
