@@ -1,5 +1,23 @@
 2021-12-09
-	0x6604 init()
-	9983 sys_setup()
-	9b38 printf "before bread"
+	6604 init()
+	9983 sys_setup
+	9b38  printf before bread
 	9b6f call bread
+	a80f call ll_rw_block
+	ad9a call make_request
+	ac3d call lock_buffer
+	ad43 call add_request
+	add_request: a9dc ~ 
+
+	a9ea call printf in add request
+	a9fc cli
+	aa19 call printf in add request if before request_fn
+
+	aa4e call printf in add request last for
+
+	aa56 jmp .+ 318
+
+		ab9c movl %ds:32(%eax) ,%eax  	eax = 0x6239ff54
+
+		ab6b movl %ds:32(%eax) ,%eax 	eax = 0x40007400
+
