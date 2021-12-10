@@ -87,7 +87,7 @@ void con_write(struct tty_struct * tty){
 			if(25 <= y){
 				scrup();
 			}
-		set_cursor(x,y);
+			set_cursor();
 		}else{
 			if(BS == c){
 				*(--ptr) = 0x07;
@@ -99,25 +99,9 @@ void con_write(struct tty_struct * tty){
 				}
 
 			}
-			set_cursor(x,y);
+			set_cursor();
 		}
 	}
-}
-
-void _set_cursor(unsigned char x, unsigned char y){
-	unsigned int p;
-	p = x + y * 80;
-	if(p >= 25*80){
-		p = 0;
-	}
-	y = p & 0x00ff;
-	x = (p & 0xff00) >> 8;
-	cli();
-	outb_p(video_port_reg,0x0e);
-	outb_p(video_port_val,x);
-	outb_p(video_port_reg,0x0f);
-	outb_p(video_port_val,y);
-	sti(); // 设置好IDT后取消注释，现在未设置中断，不能打开中断屏蔽
 }
 
 void set_cursor(){
