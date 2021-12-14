@@ -60,6 +60,7 @@ int main(void){
 	mem_init(main_memory_start,memory_end);
 	trap_init();
 	con_init();
+	blk_dev_init();
 	sched_init();
 	printk("init complete!\n");
 	hd_init();
@@ -68,7 +69,7 @@ int main(void){
 	buffer_init(4*1024*1024);
 	int i;
 	for(i=0;i<15;i++){
-		printk("hello world!%d\n",i);
+//		printk("hello world!%d\n",i);
 	}
 	sti();
 	move_to_user_mode();

@@ -135,5 +135,9 @@ void blk_dev_init(void){
 		request[i].dev = -1;
 		request[i].next = NULL;
 	}
+	for(i=0;i<NR_BLK_DEV;i++){
+		printk("blk_dev[%d].current_request=%x\n",i,blk_dev[i].current_request);
+		blk_dev[i].current_request = NULL;
+	}
 }
 
