@@ -89,6 +89,18 @@ void con_write(struct tty_struct * tty){
 			}
 			set_cursor();
 		}else{
+			*ptr++ = c;
+			*ptr++ = 0x07;
+			x++;
+			if(80 <= x){
+				y++;
+				x-=80;
+			}
+			if(25 <= y){
+				scrup();
+			}
+			set_cursor();
+		/*
 			if(BS == c){
 				*(--ptr) = 0x07;
 				*(--ptr) = 32;
@@ -99,7 +111,7 @@ void con_write(struct tty_struct * tty){
 				}
 
 			}
-			set_cursor();
+			set_cursor();*/
 		}
 	}
 }

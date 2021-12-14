@@ -199,14 +199,14 @@ alt_map:
 	.fill 	10,1,0
 
 key_table:
-	.long none,none,do_self,do_self		/* 12*/
+	.long none,do_self,do_self,do_self	/* esc 12*/
 	.long do_self,do_self,do_self,do_self	/*3456*/
 	.long do_self,do_self,do_self,do_self	/*7890*/
-	.long do_self,do_self,none,none		/*+'*/
+	.long do_self,do_self,do_self,do_self	/*+' bs tab*/
 	.long do_self,do_self,do_self,do_self	/*qwer*/
 	.long do_self,do_self,do_self,do_self	/*tyui*/
-	.long do_self,do_self,do_self,do_self	/*op}*/
-	.long none,none,do_self,do_self		/*as*/
+	.long do_self,do_self,do_self,do_self	/*op}^*/
+	.long do_self,none,do_self,do_self	/*enter as*/
 	.long do_self,do_self,do_self,do_self	/*dfgh*/
 	.long do_self,do_self,do_self,do_self	/*jkl|*/
 	.long do_self,do_self,lshift,do_self	/*{*/
