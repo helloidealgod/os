@@ -75,8 +75,8 @@ ret_from_sys_call:
 
 .align 2
 timer_interrupt:
-	push %es
 	push %ds
+	push %es
 	push %fs
 	pushl %edx
 	pushl %ecx

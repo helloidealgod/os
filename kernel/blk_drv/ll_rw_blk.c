@@ -29,45 +29,45 @@ static inline void unlock_buffer(struct buffer_head * bh){
 }
 
 static void add_request(struct blk_dev_struct * dev, struct request *req) {
-	printk("in add_request\n");
+//	printk("in add_request\n");
 	struct request * tmp;
 	req->next = NULL;
 	cli();
 	if (req->bh)
 		req->bh->b_dirt = 0;
 
-	printk("in add_request,if before request_fn\n");
+//	printk("in add_request,if before request_fn\n");
 	if (!(tmp = dev->current_request)) {
 		dev->current_request = req;
 		sti();
-		printk("in add_request,if before request_fn,after sti\n");
+//		printk("in add_request,if before request_fn,after sti\n");
 		(dev->request_fn)();
 		return;
 	}
-	printk("in add_request,last for1\n");
+//	printk("in add_request,last for1\n");
 //	printk("in add_request,last for2\n");
 	for (; tmp->next; tmp=tmp->next) {
 		if (!req->bh){
 			if (tmp->next->bh){
-				printk("break1\n");
+//				printk("break1\n");
 				break;
 			}else{
-				printk("continue\n");
+//				printk("continue\n");
 				continue;
 			}
 		}
 		if ((IN_ORDER(tmp,req) ||
 		        !IN_ORDER(tmp,tmp->next))&&
 		        IN_ORDER(req,tmp->next)){
-			printk("break2\n");
+//			printk("break2\n");
 			break;
 		}
 	}
-	printk("in add_request,last for end\n");
+//	printk("in add_request,last for end\n");
 	req->next = tmp->next;
 	tmp->next = req;
 	sti();
-	printk("end add_request\n");
+//	printk("end add_request\n");
 }
 
 static void make_request(int major, int rw, struct buffer_head * bh) {
@@ -136,8 +136,9 @@ void blk_dev_init(void){
 		request[i].next = NULL;
 	}
 	for(i=0;i<NR_BLK_DEV;i++){
-		printk("blk_dev[%d].current_request=%x\n",i,blk_dev[i].current_request);
+//		printk("blk_dev[%d].current_request=%x\n",i,blk_dev[i].current_request);
 		blk_dev[i].current_request = NULL;
+		blk_dev[i].request_fn = NULL;
 	}
 }
 
