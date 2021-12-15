@@ -121,7 +121,13 @@ void init(void){
 		execve("/init/hello",argv,envp);	
 		while(1);
 	}else{
-		count = read(-999,s,512);
-		printf("count1=%d,%s\n",count,s);
+		while(1){
+			count = read(-999,s,512);
+			if('q' == s[0] && 'u' == s[1] 
+				&& 'i' == s[2] && 't' == s[3]){
+				break;
+			}
+			printf("count1=%d,%s\n",count,s);
+		}
 	}
 }
