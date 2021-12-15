@@ -89,10 +89,16 @@ void con_write(struct tty_struct * tty){
 			}
 			set_cursor();
 		}else{
-			//enter=13 esc=27 bs=
+			//enter=13 esc=27 bs= 127
 			if(13 == c || 27 == c){
 				x = 0;
 				y++;
+			}else if(127 == c){
+				if(x > 0){
+					*(ptr-2) = 32;
+					*(ptr-1) = 0x07;
+					x -= 1;
+				}
 			}else{
 				*ptr++ = c;
 				*ptr++ = 0x07;

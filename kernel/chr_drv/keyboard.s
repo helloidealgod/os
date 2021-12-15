@@ -117,6 +117,22 @@ unrshift:
 	andb $0xfd,mode
 	ret
 
+caps:	testb $0x80,mode
+	jne 1f
+	xorb $4,leds
+	xorb $0x40,mode
+	orb $0x80,mode
+set_leds:
+	call kb_wait
+	movb $0xed,%al
+	outb %al,$0x60
+	call kb_wait
+	movb leds,%al
+	outb %al,$0x60
+1:	ret
+uncaps:	andb $0x7f,mode
+	ret
+
 do_self:
 	lea alt_map,%ebx
 	testb $0x20,mode
@@ -213,7 +229,7 @@ key_table:
 	.long do_self,do_self,do_self,do_self	/*zxcv*/
 	.long do_self,do_self,do_self,do_self	/*bnm,*/
 	.long do_self,do_self,rshift,do_self	/*.-*/
-	.long none,do_self,none,none
+	.long none,do_self,caps,none
 	.long none,none,none,none
 	.long none,none,none,none
 	.long none,none,none,none
@@ -245,6 +261,7 @@ key_table:
 	.long none,none,none,none
 	.long none,none,none,none
 	.long none,none,unrshift,none
+	.long none,none,uncaps,none
 	.long none,none,none,none
 	.long none,none,none,none
 	.long none,none,none,none
@@ -262,4 +279,11 @@ key_table:
 	.long none,none,none,none
 	.long none,none,none,none
 	.long none,none,none,none
-	.long none,none,none,none
+
+kb_wait:
+	pushl %eax
+1:	inb $0x64,%al
+	testb $0x02,%al
+	jne 1b
+	popl %eax
+	ret
