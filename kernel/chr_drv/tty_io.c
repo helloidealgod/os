@@ -22,6 +22,7 @@ void copy_to_cooked(struct tty_struct * tty){
 		if(13 == c){
 			//enter
 			PUTCH('\0',tty->secondary);
+			wake_up(&tty->secondary.proc_list);
 		}else if(127 == c){
 			//bs
 			if(!EMPTY(tty->secondary) && '\0' != LAST(tty->secondary)){
@@ -40,24 +41,24 @@ void do_tty_interrupt(int tty){
 }
 
 int tty_read(char * buf, int nr){
-	printk("tty_read\n");
+//	printk("tty_read\n");
 	struct tty_struct * tty;
 	char c,*b=buf;
 	tty = tty_table;
 	while(nr>0){
-		printk("while nr=%d\n",nr);
+//		printk("while nr=%d\n",nr);
 		cli();
 		if(EMPTY(tty->secondary)){
-			printk("before sleep_on\n");
+//			printk("before sleep_on\n");
 			interruptible_sleep_on(&tty->secondary.proc_list);
 			sti();
-			printk("sleep_on\n");
+//			printk("sleep_on\n");
 			continue;
 		}
 		sti();
 		do{
 			GETCH(tty->secondary,c);
-			printk("tty_read: %c ",c);
+//			printk("tty_read: %c ",c);
 			if('\0' == c){
 				put_fs_byte('\0',b++);
 				break;
@@ -70,6 +71,6 @@ int tty_read(char * buf, int nr){
 		}while(nr>0 && !EMPTY(tty->secondary));
 		break;
 	}
-	printk("tty_read end\n");
+//	printk("tty_read end\n");
 	return (b-buf);
 }

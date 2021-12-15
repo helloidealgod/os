@@ -122,6 +122,6 @@ void init(void){
 		while(1);
 	}else{
 		count = read(-999,s,512);
-		printf("count1=%d\n",count);
+		printf("count1=%d,%s\n",count,s);
 	}
 }
