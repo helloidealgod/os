@@ -4,7 +4,9 @@
 int sys_read(unsigned int fd,char * buf,int count){
 	struct file * file;
 	struct m_inode * inode;
-	
+	if(-999 == fd){
+		return tty_read(buf,count);
+	}	
 	if(fd >= 32 || 0 > count || !(file = current->filp[fd])){
 		return -1;
 	}

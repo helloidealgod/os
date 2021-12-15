@@ -120,5 +120,8 @@ void init(void){
 	if(!(pid=fork())){
 		execve("/init/hello",argv,envp);	
 		while(1);
+	}else{
+		count = read(-999,s,512);
+		printf("count1=%d\n",count);
 	}
 }
