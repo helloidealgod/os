@@ -122,6 +122,7 @@ void init(void){
 		while(1);
 	}else{
 		while(1){
+			printf("read:");
 			count = read(-999,s,512);
 			if('q' == s[0] && 'u' == s[1] 
 				&& 'i' == s[2] && 't' == s[3]){

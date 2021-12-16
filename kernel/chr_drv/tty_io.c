@@ -27,12 +27,16 @@ void copy_to_cooked(struct tty_struct * tty){
 			//bs
 			if(!EMPTY(tty->secondary) && '\0' != LAST(tty->secondary)){
 				DEC(tty->secondary.head);
+				PUTCH(c,tty->write_q);
+				tty->write(tty);
 			}
 		}else{
 			PUTCH(c,tty->secondary);
 		}
-		PUTCH(c,tty->write_q);
-		tty->write(tty);
+		if(127 != c){
+			PUTCH(c,tty->write_q);
+			tty->write(tty);
+		}
 	}
 }
 
