@@ -44,12 +44,14 @@ reschedule:
 system_call:
 	cmpl $nr_system_calls-1,%eax
 	ja bad_system_call
+	
 	push %ds
 	push %es
 	push %fs
 	pushl %edx
 	pushl %ecx
 	pushl %ebx
+	
 	movl $0x10,%edx
 	mov %dx,%ds
 	mov %dx,%es
@@ -57,14 +59,38 @@ system_call:
 	mov %dx,%fs
 	call sys_call_table(,%eax,4) #call sys_call_table + 2*4
 	pushl %eax
-	movl current,%eax
+	
+2:	movl current,%eax
 	cmpl $0,state(%eax)
 	jne reschedule
 	cmpl $0,counter(%eax)
 	je reschedule		
 
 ret_from_sys_call:
-	popl %eax
+	movl current,%eax
+	cmpl task,%eax
+	je 3f
+	cmpw $0x0f,CS(%esp)
+	jne 3f
+	cmpw $0x17,OLDSS(%esp)
+	jne 3f
+	
+	movl signal(%eax),%ebx
+	movl blocked(%eax),%ecx
+	notl %ecx
+	andl %ebx,%ecx
+	bsfl %ecx,%ecx
+	je 3f
+	btrl %ecx,%ebx
+	movl %ebx,signal(%eax)
+	incl %ecx
+	pushl %ecx
+	call do_signal
+	popl %ecx
+	testl %eax,%eax
+	jne 2b
+	
+3:	popl %eax
 	popl %ebx
 	popl %ecx
 	popl %edx
